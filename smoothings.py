@@ -7,3 +7,4 @@ def pt1_smooth(tt, signal, cutoff_freq):
     trans_func = lti(num_coeff, den_coeff)
     diff = lsim(trans_func, signal, tt)[1]
     return diff
+    #test
