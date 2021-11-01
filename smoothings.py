@@ -1,4 +1,4 @@
-from scipy.signal import lfilter
+from scipy.signal import lfilter, wiener
 
 # Smoothing filters
 def pt1_smooth(tt, signal, cutoff_freq):
@@ -6,4 +6,8 @@ def pt1_smooth(tt, signal, cutoff_freq):
     num_coeff = [T_sample * cutoff_freq]
     den_coeff = [1, T_sample * cutoff_freq - 1]
     smoothed = lfilter(num_coeff, den_coeff, signal)
+    return smoothed
+
+def wiener_smooth(signal):
+    smoothed = wiener(signal)
     return smoothed

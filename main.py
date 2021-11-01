@@ -21,8 +21,9 @@ noisy_sine = true_sine + noise
 diff_finite = fwd_diff(tt, noisy_sine)
 # PT1-smoothing
 diff_pt1_smoothed = fwd_diff(tt, pt1_smooth(tt, noisy_sine, 5))
-
+diff_wiener_smoothed = fwd_diff(tt, wiener_smooth(noisy_sine))
 
 # plot results
-plot_sig(tt, [noisy_sine, true_sine, diff_finite, diff_pt1_smoothed], ["with noise", "no noise", "Vorwärtsdifferenz", "diff_pt1_smoothed"])
+plot_sig(tt, [noisy_sine, true_sine, diff_wiener_smoothed, diff_pt1_smoothed], ["with noise", "no noise", "wiener_smoothed", "pt1_smoothed"])
+plot_sig(tt, [diff_finite, diff_wiener_smoothed, diff_pt1_smoothed], ["diff_unsmoothed", "wiener_smoothed", "pt1_smoothed"])
 plt.show()
