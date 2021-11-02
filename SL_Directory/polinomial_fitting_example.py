@@ -1,4 +1,4 @@
-#polynomial fitting
+#polynomial fitting fom https://www.youtube.com/watch?v=0TSvo2hOKo0
 import numpy as np
 import matplotlib.pyplot as plt
 from numpy.lib.polynomial import poly
