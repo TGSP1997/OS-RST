@@ -16,14 +16,21 @@ noise = np.random.normal(mean, std_dev, tt_length)
 # add noise to signal
 noisy_sine = true_sine + noise
 
-
 # differentiate noisy signal
 diff_finite = fwd_diff(tt, noisy_sine)
 # PT1-smoothing
-diff_pt1_smoothed = fwd_diff(tt, pt1_smooth(tt, noisy_sine, 5))
-diff_wiener_smoothed = fwd_diff(tt, wiener_smooth(noisy_sine))
+pt1_smoothed = pt1_smooth(tt, noisy_sine, 5)
+diff_pt1_smoothed = fwd_diff(tt, pt1_smoothed)
+# Wiener-smoothing
+# Frage: wie noise std_dev am besten schaetzen, wenn unbekannt?
+wiener_smoothed = wiener_smooth(noisy_sine, 49, std_dev)
+diff_wiener_smoothed = fwd_diff(tt, wiener_smoothed)
+# Kalman-smoothing
+kalman_smoothed = kalman_smooth(noisy_sine, std_dev, 30*std_dev)
+diff_kalman_smoothed = fwd_diff(tt, kalman_smoothed)
 
 # plot results
-plot_sig(tt, [noisy_sine, true_sine, diff_wiener_smoothed, diff_pt1_smoothed], ["with noise", "no noise", "wiener_smoothed", "pt1_smoothed"])
-plot_sig(tt, [diff_finite, diff_wiener_smoothed, diff_pt1_smoothed], ["diff_unsmoothed", "wiener_smoothed", "pt1_smoothed"])
+plot_sig(tt, [noisy_sine, true_sine, diff_wiener_smoothed, diff_pt1_smoothed, diff_kalman_smoothed], ["noisy sine", "noiseless sine", "diff Wiener", "diff PT1", "diff Kalman"])
+plot_sig(tt, [diff_finite, diff_wiener_smoothed, diff_pt1_smoothed, diff_kalman_smoothed], ["diff unsmoothed", "diff Wiener", "diff PT1", "diff Kalman"])
+plot_sig(tt, [noisy_sine, pt1_smoothed, kalman_smoothed], ["noisy sine", "PT1 smoothed", "Kalman smoothed"])
 plt.show()
