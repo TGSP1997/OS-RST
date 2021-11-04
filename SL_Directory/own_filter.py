@@ -12,6 +12,9 @@ current_v1=3
 current_v2=99
 current_v3=0
 window=99
+
+N = 99
+T = 1.0 / 800.0
 ##############################################################################
 def savgol_coeffs(window_length, polyorder, deriv=0, delta=1.0, pos=None,
                   use="conv"):
@@ -367,6 +370,8 @@ def savgol_filter(x, window_length, polyorder, deriv=0, delta=1.0,
 x=np.linspace(0,2*np.pi,100)
 y=np.sin(x)+np.cos(x)+np.random.random(100)
 
+#y = 0.2*np.cos(2*np.pi*2*x) + np.cos(2*np.pi*20*x)
+
 #filter
 y_filtered=savgol_filter(y,99,3)
 
@@ -404,10 +409,26 @@ def update(val2):
     print(current_v2)
     print('pos:')
     print(current_v3)
+
+    new_yf2 = np.fft.fft(new_y)
+    q.set_ydata(2.0/N * np.abs(new_yf2[0:N//2]))
+    fig2.canvas.draw()
     
 
 win_len.on_changed(update)
 pol_len.on_changed(update)
 pos_len.on_changed(update)
+
+
+fig2=plt.figure(2)
+ay=fig2.subplots()
+yf = np.fft.fft(y)
+yf2 = np.fft.fft(y_filtered)
+xf = np.fft.fftfreq(N, T)[:N//2]
+q=ay.plot(xf, 2.0/N * np.abs(yf[0:N//2]),'b')
+q,=ay.plot(xf, 2.0/N * np.abs(yf2[0:N//2]),'g')
+plt.grid()
+
+
 plt.show()
 
