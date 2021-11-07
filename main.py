@@ -10,11 +10,12 @@ tt = np.arange(0, tt_length * tt_step, tt_step)
 sine_period = 5
 true_sine = np.sin(2*np.pi/sine_period * tt)
 true_diff_sine = np.cos(2*np.pi/sine_period * tt)
-# generate white noise
-mean = 0
-std_dev = 0.05
-noise = np.random.normal(mean, std_dev, tt_length)
+
 # add noise to signal
+mean = 0 
+std_dev = 0.05
+rand_seed = 0
+noise = white_noise(mean, std_dev, tt_length, rand_seed)
 noisy_sine = true_sine + noise
 
 # differentiate noisy signal
@@ -29,6 +30,11 @@ diff_wiener_smoothed = fwd_diff(tt, wiener_smoothed)
 # Kalman-smoothing
 kalman_smoothed = kalman_smooth(noisy_sine, std_dev, 30*std_dev)
 diff_kalman_smoothed = fwd_diff(tt, kalman_smoothed)
+
+print(f"Mean Squared Error of Differentials: \n \
+        Forward Difference: {mean_squared_error(diff_finite, true_diff_sine)} \n \
+        PT1: {mean_squared_error(diff_pt1_smoothed, true_diff_sine)} \n \
+        Wiener: {mean_squared_error(diff_wiener_smoothed, true_diff_sine)} \n")
 
 # plot results
 plot_sig(tt, [true_diff_sine, diff_wiener_smoothed, diff_pt1_smoothed, diff_kalman_smoothed], ["true diff sine", "diff Wiener", "diff PT1", "diff Kalman"])
