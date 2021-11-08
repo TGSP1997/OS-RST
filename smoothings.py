@@ -45,10 +45,10 @@ def kalman_smooth(signal, noise_stdev, measure_stdev):
 
     return xhat
 
-def savgol_smooth(signal,window_length,polyorder,pos=None,sample_frequency):
+def savgol_smooth(signal,window_length,polyorder,sample_frequency,pos=None):
     #general savgol filtering in time domain
     winl=window_length
-    savgol_signal_time=adjusted_savgol_filter(signal,winl,polyorder,pos)
+    savgol_signal_time=adjusted_savgol_filter(signal,winl,polyorder,pos=pos)
 
 
     #general savgol filtering in frequency domain

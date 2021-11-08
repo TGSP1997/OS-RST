@@ -42,3 +42,13 @@ plot_sig(tt, [true_diff_sine, diff_wiener_smoothed, diff_pt1_smoothed, diff_kalm
 plot_sig(tt, [diff_finite, diff_wiener_smoothed, diff_pt1_smoothed, diff_kalman_smoothed], ["diff unsmoothed", "diff Wiener", "diff PT1", "diff Kalman"])
 plot_sig(tt, [true_sine, noisy_sine, pt1_smoothed, wiener_smoothed, kalman_smoothed], ["true sine", "noisy sine", "PT1 smoothed", "Wiener smoothed", "Kalman smoothed"])
 plt.show()
+
+
+'''
+#test of savgol_smooth
+x=np.linspace(0,2*np.pi,100)
+y=np.sin(x)+np.cos(x)+np.random.random(100)
+y_filtered,_,_=savgol_smooth(y,99,3,160)
+plot_sig(x,[y,y_filtered],['unfiltered','filtered'])
+plt.show()
+'''
