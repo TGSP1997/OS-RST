@@ -1,5 +1,6 @@
 import numpy as np
-from scipy.signal import lfilter, wiener
+from scipy.signal import lfilter, wiener, convolve
+from adjusted_scipy_savgol_filter import *
 
 # Smoothing filters
 def pt1_smooth(tt, signal, cutoff_freq):
@@ -43,3 +44,34 @@ def kalman_smooth(signal, noise_stdev, measure_stdev):
         P[k] = (1-K[k])*Pminus[k]
 
     return xhat
+
+def savgol_smooth(signal,window_length,polyorder,pos=None,sample_frequency):
+    #general savgol filtering in time domain
+    winl=window_length
+    savgol_signal_time=adjusted_savgol_filter(signal,winl,polyorder,pos)
+
+
+    #general savgol filtering in frequency domain
+    '''
+    sources: 
+    https://github.com/chtaal/pydata2017/blob/master/scripts/gen_presentation_figs.py
+    https://www.youtube.com/watch?v=0TSvo2hOKo0
+
+    '''
+    fs=sample_frequency
+    '''
+    https://cran.r-project.org/web/packages/signal/signal.pdf
+    Selecting an FFT length greater than the window length
+    does not add any information to the spectrum, but it is a good way to interpolate between frequency
+    points which can make for prettier spectrograms
+    '''
+    fft_length=winl*30 
+    #calculate savgol coeeficients
+    fft_coeffs = adjusted_savgol_coeffs(window_length=winl, polyorder=polyorder, pos=pos)
+    convolved_signal=convolve(signal,fft_coeffs)
+
+    #Y = 2*np.abs(np.fft.rfft(convolved_signal, fft_length))/winl
+    savgol_signal_freq = np.fft.rfft(convolved_signal, fft_length)
+    freq_axes = np.fft.rfftfreq(fft_length, d=1 / fs)
+
+    return savgol_signal_time, savgol_signal_freq, freq_axes

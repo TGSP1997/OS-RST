@@ -2,7 +2,7 @@ import numpy as np
 
 from environment import *
 from smoothings import *
-from adjusted_scipy_savgol_filter import *
+
 
 # sine signal and time series
 tt_length = 1000
