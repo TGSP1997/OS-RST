@@ -337,7 +337,7 @@ def adjusted_savgol_filter(x, window_length, polyorder, deriv=0, delta=1.0,
     if x.dtype != np.float64 and x.dtype != np.float32:
         x = x.astype(np.float64)
 
-    coeffs = adjusted_savgol_coeffs(window_length, polyorder, deriv=deriv, delta=delta)
+    coeffs = adjusted_savgol_coeffs(window_length, polyorder, deriv=deriv, delta=delta,pos=pos)
 
     if mode == "interp":
         if window_length > x.size:
