@@ -75,3 +75,10 @@ def savgol_smooth(signal,window_length,polyorder,sample_frequency,pos=None):
     freq_axes = np.fft.rfftfreq(fft_length, d=1 / fs)
 
     return savgol_signal_time, savgol_signal_freq, freq_axes
+
+# numerical differentiation
+def fwd_diff(tt, signal):
+    diff = np.zeros(len(tt))
+    for i in range(0, len(tt)-1):
+        diff[i] = (signal[i+1] - signal[i]) / (tt[1] - tt[0])
+    return diff
