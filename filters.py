@@ -1,5 +1,6 @@
 import numpy as np
-from scipy.signal import lfilter, wiener, convolve
+from scipy.signal import lfilter, wiener, convolve, correlate
+from scipy.linalg import toeplitz
 from adjusted_scipy_savgol_filter import *
 
 # Smoothing filters
@@ -10,10 +11,14 @@ def pt1_smooth(tt, signal, cutoff_freq):
     smoothed = lfilter(num_coeff, den_coeff, signal)
     return smoothed
 
-def wiener_smooth(signal, filter_order, noise_stdev):
-    # scipy Implementation: https://tmramalho.github.io/blog/2013/04/09/an-introduction-to-smoothing-time-series-in-python-part-ii-wiener-filter-and-smoothing-splines/
-    smoothed = wiener(signal, mysize=filter_order, noise=noise_stdev)
-    return smoothed
+# noncausal FIR Wiener filter
+def wiener_smooth(signal, noise, filter_order, noise_stdev):
+    S_nn = np.square(np.abs(np.fft.fft(noise)/len(noise)))
+    S_yy = np.square(np.abs(np.fft.fft(signal)/len(signal)))
+    H_noncausal = np.maximum(0, np.divide(S_yy - S_nn , S_yy))
+    X_hat = np.multiply(H_noncausal, np.fft.fft(signal))
+    x_hat = np.real(np.fft.ifft(X_hat))
+    return x_hat
 
 # https://scipy-cookbook.readthedocs.io/items/KalmanFiltering.html
 def kalman_smooth(signal, noise_stdev, measure_stdev):

@@ -27,7 +27,7 @@ pt1_smoothed = pt1_smooth(tt, noisy_sine, 5)
 diff_pt1_smoothed = fwd_diff(tt, pt1_smoothed)
 # Wiener-smoothing
 # Frage: wie noise std_dev am besten schaetzen, wenn unbekannt?
-wiener_smoothed = wiener_smooth(noisy_sine, 49, std_dev)
+wiener_smoothed = wiener_smooth(noisy_sine, noise, 49, std_dev)
 diff_wiener_smoothed = fwd_diff(tt, wiener_smoothed)
 # Kalman-smoothing
 kalman_smoothed = kalman_smooth(noisy_sine, std_dev, 30*std_dev)
