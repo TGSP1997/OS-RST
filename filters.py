@@ -2,6 +2,16 @@ import numpy as np
 from scipy.signal import lfilter, wiener, convolve, correlate
 from scipy.linalg import toeplitz
 from adjusted_scipy_savgol_filter import *
+from enum import Enum
+
+class filter(Enum):
+    SAVGOL='Savitzky Golay Filter'
+    WIENER='Wiener Filter'
+    DIFF_QUOTIENT='Gleitender Differenzenquotient'
+    BROWN_HOLT='Lineare Exponentielle Glättung'
+    BUTTERWORTH='Butterworth Filter'
+    CHEBYCHEV='Chebychev filter'
+    ROB_EX_DIFF='Robust Exact Differentiator'
 
 # Smoothing filters
 def pt1_smooth(tt, signal, cutoff_freq):
@@ -77,10 +87,10 @@ def kalman_smooth(tt, signal, noise_stdev, process_stdev):
     
     return [x_1, x_2]
 
-def savgol_smooth(signal,window_length,polyorder,sample_frequency,pos=None):
+def savgol_smooth(signal,window_length,polyorder,sample_frequency,pos=None,deriv=0):
     #general savgol filtering in time domain
     winl=window_length
-    savgol_signal_time=adjusted_savgol_filter(signal,winl,polyorder,pos=pos)
+    savgol_signal_time=adjusted_savgol_filter(signal,winl,polyorder,pos=pos,deriv=deriv)
 
 
     #general savgol filtering in frequency domain

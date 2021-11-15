@@ -51,7 +51,7 @@ plt.show()
 #test of savgol_smooth
 x=np.linspace(0,2*np.pi,100)
 y=np.sin(x)+np.cos(x)+np.random.random(100)
-y_filtered,_,_=savgol_smooth(y,99,3,160)
-plot_sig(x,[y,y_filtered],['unfiltered','filtered'])
+y_filtered,_,_=savgol_smooth(y,99,3,160,deriv=0)
+plot_time_sig(x,[y,y_filtered],['unfiltered','filtered'])
 plt.show()
 '''
