@@ -27,16 +27,18 @@ pt1_smoothed = pt1_smooth(tt, noisy_sine, 5)
 diff_pt1_smoothed = fwd_diff(tt, pt1_smoothed)
 # Wiener-smoothing
 # Frage: wie noise std_dev am besten schaetzen, wenn unbekannt?
-wiener_smoothed = wiener_smooth(noisy_sine, 49, std_dev)
+wiener_smoothed = wiener_smooth(noisy_sine, std_dev)
 diff_wiener_smoothed = fwd_diff(tt, wiener_smoothed)
 # Kalman-smoothing
-kalman_smoothed = kalman_smooth(noisy_sine, std_dev, 30*std_dev)
-diff_kalman_smoothed = fwd_diff(tt, kalman_smoothed)
+kalman_smoothed = kalman_smooth(tt, noisy_sine, std_dev, 0.3*std_dev)
+diff_kalman_smoothed = kalman_smoothed[1]
+kalman_smoothed = kalman_smoothed[0]
 
 print(f"Mean Squared Error of Differentials: \n \
         Forward Difference: {mean_squared_error(diff_finite, true_diff_sine)} \n \
         PT1: {mean_squared_error(diff_pt1_smoothed, true_diff_sine)} \n \
-        Wiener: {mean_squared_error(diff_wiener_smoothed, true_diff_sine)} \n")
+        Wiener: {mean_squared_error(diff_wiener_smoothed, true_diff_sine)} \n \
+        Kalman: {mean_squared_error(diff_kalman_smoothed, true_diff_sine)} \n" )
 
 # plot results
 plot_time_sig(tt, [true_diff_sine, diff_wiener_smoothed, diff_pt1_smoothed, diff_kalman_smoothed], ["true diff sine", "diff Wiener", "diff PT1", "diff Kalman"])
