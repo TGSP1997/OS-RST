@@ -20,7 +20,7 @@ class Input_Function:
         self.sampling_period    = sampling_period
 
 
-    # Returns t, y, y_dot
+    # Returns t, n, n_dot
     def get_fun(self):  
         match self.type:
             case Input_Enum.SINE:
@@ -34,22 +34,22 @@ class Input_Function:
 
     def __get_fun_sine(self):
         t = np.arange(0, self.point_counter * self.sampling_period, self.sampling_period)
-        y = self.parameters[0]*np.sin(2*np.pi/self.parameters[1] * t + self.parameters[2]) + self.parameters[3]
-        y_dot = np.cos(2*np.pi/self.parameters[1] * t)
-        return t, y, y_dot
+        n = self.parameters[0]*np.sin(2*np.pi/self.parameters[1] * t + self.parameters[2]) + self.parameters[3]
+        n_dot = np.cos(2*np.pi/self.parameters[1] * t)
+        return t, n, n_dot
 
         
     def __get_fun_polynom(self):
         t = 0
-        y = 0
-        y_dot = 0
-        return t, y, y_dot
+        n = 0
+        n_dot = 0
+        return t, n, n_dot
 
     def __get_fun_exp(self):
         t = 0
-        y = 0
-        y_dot = 0
-        return t, y, y_dot
+        n = 0
+        n_dot = 0
+        return t, n, n_dot
 
 
     
