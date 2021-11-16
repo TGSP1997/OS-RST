@@ -1,14 +1,58 @@
 import numpy as np
-import sympy
+import sympy as sp
 from enum import Enum
 
-# generate sine input function and its derivative
-def sine_input(sampling_period, point_count, sine_period):
-    time = np.arange(0, point_count * sampling_period, sampling_period)
-    sine = np.sin(2*np.pi/sine_period * time)
-    diff_sine = np.cos(2*np.pi/sine_period * time)
+class Input_Enum(Enum):
+    SINE="sine"
+    POLYNOM="polynom"
+    EXP="exponential"
 
-    return [sine, diff_sine]
+class Input_Function:
+    type                = Input_Enum.SINE
+    parameters          = []
+    point_counter       = 1000
+    sampling_period     = 1e-3
+
+    def __init__(self,type,parameters,point_counter = 1000, sampling_period=1e-3):
+        self.type               = type
+        self.parameters         = parameters
+        self.point_counter      = point_counter
+        self.sampling_period    = sampling_period
+
+
+    # Returns t, n, n_dot
+    def get_fun(self):  
+        match self.type:
+            case Input_Enum.SINE:
+                return self.__get_fun_sine()
+            case Input_Enum.POLYNOM:
+                return self.__get_fun_polynom()
+            case Input_Enum.EXP:
+                return self.__get_fun_exp()
+
+# Ab hier bearbeiten
+
+    def __get_fun_sine(self):
+        t = np.arange(0, self.point_counter * self.sampling_period, self.sampling_period)
+        n = self.parameters[0]*np.sin(2*np.pi/self.parameters[1] * t + self.parameters[2]) + self.parameters[3]
+        n_dot = np.cos(2*np.pi/self.parameters[1] * t)
+        return t, n, n_dot
+
+        
+    def __get_fun_polynom(self):
+        t = 0
+        n = 0
+        n_dot = 0
+        return t, n, n_dot
+
+    def __get_fun_exp(self):
+        t = 0
+        n = 0
+        n_dot = 0
+        return t, n, n_dot
+
+
+    
 
 '''
 class inputs(Enum):

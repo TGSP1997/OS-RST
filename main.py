@@ -1,10 +1,27 @@
 import numpy as np
+from cost import Cost_Enum
 
-from inputs import *
+from input_function import *
 from noises import *
-from filters import *
-from plottings import *
-from cost_functions import *
+from filter import *
+from plot_sig import *
+from cost import *
+
+sine    = Input_Function(Input_Enum.SINE,[1,0.1,0,0.5])
+white   = Noise(Noise_Enum.WHITE,0.4)
+pt1     = Filter(Filter_Enum.PT1,1e2)
+plot    = Plot_Sig(Plot_Enum.MULTI,"Overview",[])
+cost    = Cost(Cost_Enum.MSE)
+
+
+t,n,n_dot = sine.get_fun()
+y = white.apply_noise(n)
+y_hat = pt1.filter_fun(t,y)
+print(cost.cost(y,n))
+print(cost.cost(y_hat,n))
+plot.plot_sig(t,[n,y,y_hat],["Roh","Rausch", "Filter"])
+
+'''
 
 # time array and sine signal
 tt_length = 1000
@@ -47,7 +64,7 @@ plot_time_sig(tt, [true_sine, noisy_sine, pt1_smoothed, wiener_smoothed, kalman_
 plt.show()
 
 
-'''
+
 #test of savgol_smooth
 x=np.linspace(0,2*np.pi,100)
 y=np.sin(x)+np.cos(x)+np.random.random(100)
