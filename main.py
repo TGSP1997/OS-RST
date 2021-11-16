@@ -9,11 +9,17 @@ from cost_functions import *
 import matplotlib.pyplot as plt
 
 sine = Input_Function(Input_Enum.SINE,[1,0.1,0,0.5])
-t,y,y_dot = sine.get_fun()
+white  = Noise(Noise_Enum.WHITE,0.4)
+
+
+t,n,n_dot = sine.get_fun()
+
+y = white.apply_noise(n)
 
 
 plt.figure()
-plt.plot(t, y, label="label")
+plt.plot(t, n, label="raw")
+plt.plot(t, y, label="noise")
 plt.xlabel('time', fontsize=20)
 plt.ylabel('value', fontsize=20)
 plt.show()
