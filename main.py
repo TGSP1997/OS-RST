@@ -2,24 +2,27 @@ import numpy as np
 
 from input_function import *
 from noises import *
-from filters import *
+from filter import *
 from plottings import *
 from cost_functions import *
 
 import matplotlib.pyplot as plt
 
-sine = Input_Function(Input_Enum.SINE,[1,0.1,0,0.5])
-white  = Noise(Noise_Enum.WHITE,0.4)
-
+sine    = Input_Function(Input_Enum.SINE,[1,0.1,0,0.5])
+white   = Noise(Noise_Enum.WHITE,0.4)
+pt1     = Filter(Filter_Enum.PT1,1e2)
 
 t,n,n_dot = sine.get_fun()
 
 y = white.apply_noise(n)
 
+y_hat = pt1.filter_fun(t,y)
+
 
 plt.figure()
 plt.plot(t, n, label="raw")
 plt.plot(t, y, label="noise")
+plt.plot(t, y_hat, label="fil")
 plt.xlabel('time', fontsize=20)
 plt.ylabel('value', fontsize=20)
 plt.show()

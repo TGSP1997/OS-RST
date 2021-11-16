@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from filters import *
+from filter import *
 from matplotlib.widgets import Slider
 
 
