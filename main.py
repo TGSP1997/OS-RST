@@ -3,29 +3,18 @@ import numpy as np
 from input_function import *
 from noises import *
 from filter import *
-from plottings import *
+from plot_sig import *
 from cost_functions import *
-
-import matplotlib.pyplot as plt
 
 sine    = Input_Function(Input_Enum.SINE,[1,0.1,0,0.5])
 white   = Noise(Noise_Enum.WHITE,0.4)
 pt1     = Filter(Filter_Enum.PT1,1e2)
+plot    = Plot_Sig(Plot_Enum.MULTI,"Overview",[])
 
 t,n,n_dot = sine.get_fun()
-
 y = white.apply_noise(n)
-
 y_hat = pt1.filter_fun(t,y)
-
-
-plt.figure()
-plt.plot(t, n, label="raw")
-plt.plot(t, y, label="noise")
-plt.plot(t, y_hat, label="fil")
-plt.xlabel('time', fontsize=20)
-plt.ylabel('value', fontsize=20)
-plt.show()
+plot.plot_sig(t,[n,y,y_hat],["Roh","Rausch", "Filter"])
 
 
 '''

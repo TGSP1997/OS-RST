@@ -1,18 +1,44 @@
 import matplotlib.pyplot as plt
 from filter import *
 from matplotlib.widgets import Slider
+from enum import Enum
 
 
-# plot of multiple time series in one graph
-def plot_time_sig(tt, signals, labels):
-    plt.figure()
-    for sig, lab in zip(signals, labels):
-        plt.plot(tt, sig, label=lab)
-    plt.legend()
-    plt.xlabel('time', fontsize=20)
-    plt.ylabel('value', fontsize=20)
+class Plot_Enum(Enum):
+    MULTI = "multi"
 
+class Plot_Sig:
+    type        = Plot_Enum.MULTI
+    title       = ""
+    parameters  = []
+
+    def __init__(self,type, title, parameters):
+        self.type               = type
+        self.title              = title
+        self.parameters         = parameters
+
+    def plot_sig(self,t,signals, labels):
+        match self.type:
+            case Plot_Enum.MULTI:
+                self.__plot_sig_multi(t,signals, labels)
+
+####################################################################
+######################## Plot Functions ############################
+####################################################################
+
+    def __plot_sig_multi(self,t,signals,labels):
+        plt.figure()
+        for sig, lab in zip(signals, labels):
+            plt.plot(t, sig, label=lab)
+        plt.legend()
+        plt.xlabel('time', fontsize=20)
+        plt.ylabel('value', fontsize=20)
+        plt.show()
     
+
+####################################################################
+######################## Nicht angefasst ###########################
+####################################################################
 
 def plot_slider(enum,tt,signals): #match case wouldnt work signals[unfiltered,filtered]
     fig=plt.figure()
