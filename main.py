@@ -1,21 +1,25 @@
 import numpy as np
+from cost import Cost_Enum
 
 from input_function import *
 from noises import *
 from filter import *
 from plot_sig import *
-from cost_functions import *
+from cost import *
 
 sine    = Input_Function(Input_Enum.SINE,[1,0.1,0,0.5])
 white   = Noise(Noise_Enum.WHITE,0.4)
 pt1     = Filter(Filter_Enum.PT1,1e2)
 plot    = Plot_Sig(Plot_Enum.MULTI,"Overview",[])
+cost    = Cost(Cost_Enum.MSE)
+
 
 t,n,n_dot = sine.get_fun()
 y = white.apply_noise(n)
 y_hat = pt1.filter_fun(t,y)
+print(cost.cost(y,n))
+print(cost.cost(y_hat,n))
 plot.plot_sig(t,[n,y,y_hat],["Roh","Rausch", "Filter"])
-
 
 '''
 
