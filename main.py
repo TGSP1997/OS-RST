@@ -1,5 +1,6 @@
 import numpy as np
 from cost import Cost_Enum
+from scipy.optimize import minimize
 
 from input_function import *
 from noises import *
@@ -16,13 +17,19 @@ cost    = Cost(Cost_Enum.MSE)
 
 t,n,n_dot = sine.get_fun()
 y = white.apply_noise(n)
-y_hat = pt1.filter_fun(t,y)
+
+def filter_cost(para_in,t,y,n,filter,cost):
+        y_hat = filter.filter_fun(t,y,para = para_in)
+        return cost.cost(y_hat,n)
+
+f_min = minimize(filter_cost,0.1,args=(t,y,n,pt1,cost))
+print("Minimal solution found. f_min = ")
+print(f_min.x)
+y_hat = pt1.filter_fun(t,y,para = f_min.x)
 print(cost.cost(y,n))
 print(cost.cost(y_hat,n))
 plot.plot_sig(t,[n,y,y_hat],["Roh","Rausch", "Filter"])
-
 '''
-
 # time array and sine signal
 tt_length = 1000
 tt_step = 0.01
