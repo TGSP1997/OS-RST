@@ -1,5 +1,6 @@
 import numpy as np
 from enum import Enum
+import colorednoise as cn
 
 class Noise_Enum(Enum):
     WHITE="white_noise"
@@ -35,51 +36,43 @@ class Noise:
         return y + np.random.normal(0, self.parameters, len(y))
 
     def __apply_noise_pink(self,y):
-        """Generates pink noise using the Voss-McCartney algorithm (source: https://www.dsprelated.com/showarticle/908.php)
-    
-        rcols: number of random sources to add
+        """Generates and applies pink noise based on Timmer, J. and Koenig, M.: On generating power law noise. Astron. Astrophys. 300, 707-710 (1995) 
+        (source: https://github.com/felixpatzelt/colorednoise)
         
+        std_dev: standard deviation of noise
+
         returns: signal with added noise as np array
         """
         np.random.seed(self.seed)
-        nrows = len(y)
-        array = np.empty((nrows, ncols))
-        array.fill(np.nan)
-        array[0, :] = np.random.random(ncols)
-        array[:, 0] = np.random.random(nrows)
-        
-        # the total number of changes is nrows
-        n = nrows
-        cols = np.random.geometric(0.5, n)
-        cols[cols >= ncols] = 0
-        rows = np.random.randint(nrows, size=n)
-        array[rows, cols] = np.random.random(n)
-
-        df = pd.DataFrame(array)
-        df.fillna(method='ffill', axis=0, inplace=True)
-        total = df.sum(axis=1)
-        y = y + total.values
+        beta = 1 # the exponent
+        samples = len(y) # number of samples to generate
+        std_dev = self.parameters 
+        y = y + std_dev * cn.powerlaw_psd_gaussian(beta, samples)
         return y
 
     def __apply_noise_brown(self,y):
         """
-        Brown noise (source: https://github.com/python-acoustics/python-acoustics/blob/master/acoustics/generator.py)
-        :type state: :class:`np.random.RandomState`
-        Power decreases with -3 dB per octave.
-        Power density decreases with 6 dB per octave.
+        Generates and applies brown noise based on Timmer, J. and Koenig, M.: On generating power law noise. Astron. Astrophys. 300, 707-710 (1995) 
+        (source: https://github.com/felixpatzelt/colorednoise)
+
+        std_dev: standard deviation of noise
+
+        returns: signal with added noise as np array        
         """
         np.random.seed(self.seed)
-        N = len(y)
-        state = np.random.RandomState()
-        uneven = N % 2
-        X = state.randn(N // 2 + 1 + uneven) + 1j * state.randn(N // 2 + 1 + uneven)
-        S = (np.arange(len(X)) + 1)  # Filter
-        noise = (irfft(X / S)).real
-        if uneven:
-            noise = noise[:-1]
-        y = y + normalize(noise)
+        beta = 2 # the exponent
+        samples = len(y) # number of samples to generate
+        std_dev = self.parameters 
+        y = y + std_dev * cn.powerlaw_psd_gaussian(beta, samples)
         return y
 
     def __apply_noise_quant(self,y):
+        """
+        Generates and applies quantization noise
 
-        return y
+        resolution: resolution of the measurement system
+
+        returns: signal with added noise as np array
+        """
+        resolution = self.parameters
+        return (resolution * np.around(y/resolution))
