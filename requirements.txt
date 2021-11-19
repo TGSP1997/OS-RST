@@ -1,0 +1,6 @@
+colorednoise==1.1.1
+matplotlib==3.4.1
+numpy==1.21.4
+python=3.10
+scipy==1.7.2
+sympy==1.9
