@@ -33,7 +33,6 @@ class Plot_Sig:
         plt.legend()
         plt.xlabel('time', fontsize=20)
         plt.ylabel('value', fontsize=20)
-        plt.show()
     
 
 ####################################################################

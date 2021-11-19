@@ -1,4 +1,3 @@
-import numpy as np
 from cost import Cost_Enum
 from scipy.optimize import minimize
 
@@ -8,70 +7,59 @@ from filter import *
 from plot_sig import *
 from cost import *
 
-sine    = Input_Function(Input_Enum.SINE,[1,0.1,0,0.5])
-white   = Noise(Noise_Enum.WHITE,0.4)
-pt1     = Filter(Filter_Enum.PT1,1e2)
-plot    = Plot_Sig(Plot_Enum.MULTI,"Overview",[])
+noise_std_dev = 0.1
+
+sine    = Input_Function(Input_Enum.SINE, [1, 0.1, 0, 0.5])
+white   = Noise(Noise_Enum.WHITE, noise_std_dev)
+pt1     = Filter(Filter_Enum.PT1, 1e2)
+wiener  = Filter(Filter_Enum.WIENER, noise_std_dev)
+kalman  = Filter(Filter_Enum.KALMAN, noise_std_dev)
+plot    = Plot_Sig(Plot_Enum.MULTI, "Overview", [])
 cost    = Cost(Cost_Enum.MSE)
 
 
-t,n,n_dot = sine.get_fun()
-y = white.apply_noise(n)
+time, true_sine, true_sine_dot = sine.get_fun()
+y = white.apply_noise(true_sine)
 
-def filter_cost(para_in,t,y,n,filter,cost):
-        y_hat = filter.filter_fun(t,y,para = para_in)
-        return cost.cost(y_hat,n)
+def filter_cost(para_in, t, y, n, filter, cost):
+        y_hat_pt1 = filter.filter_fun(t, y, para = para_in)
+        return cost.cost(y_hat_pt1, n)
 
-f_min = minimize(filter_cost,0.1,args=(t,y,n,pt1,cost))
+f_min = minimize(filter_cost,0.1,args=(time, y, true_sine, pt1,cost))
 print("Minimal solution found. f_min = ")
 print(f_min.x)
-y_hat = pt1.filter_fun(t,y,para = f_min.x)
-print(cost.cost(y,n))
-print(cost.cost(y_hat,n))
-plot.plot_sig(t,[n,y,y_hat],["Roh","Rausch", "Filter"])
-'''
-# time array and sine signal
-tt_length = 1000
-tt_step = 0.01
-tt = np.arange(0, tt_length * tt_step, tt_step)
-sine_period = 5
-true_sine, true_diff_sine = sine_input(tt_step, tt_length, sine_period)
-
-# add noise to signal
-mean = 0 
-std_dev = 0.05
-rand_seed = 0
-noise = white_noise(mean, std_dev, tt_length, rand_seed)
-noisy_sine = true_sine + noise
+y_hat_pt1 = pt1.filter_fun(time, y, para = f_min.x)
+print(cost.cost(y, true_sine))
+print(cost.cost(y_hat_pt1, true_sine))
+plot.plot_sig(time, [true_sine, y, y_hat_pt1],["Roh","Rausch", "Filter"])
 
 # differentiate noisy signal
-diff_finite = fwd_diff(tt, noisy_sine)
+diff_finite = fwd_diff(time, y)
 # PT1-smoothing
-pt1_smoothed = pt1_smooth(tt, noisy_sine, 5)
-diff_pt1_smoothed = fwd_diff(tt, pt1_smoothed)
+y_hat_dot_pt1 = fwd_diff(time, y_hat_pt1)
 # Wiener-smoothing
 # Frage: wie noise std_dev am besten schaetzen, wenn unbekannt?
-wiener_smoothed = wiener_smooth(noisy_sine, std_dev)
-diff_wiener_smoothed = fwd_diff(tt, wiener_smoothed)
+y_hat_wiener = wiener.filter_fun(time, y, noise_std_dev)
+y_hat_dot_wiener = fwd_diff(time, y_hat_wiener)
 # Kalman-smoothing
-kalman_smoothed = kalman_smooth(tt, noisy_sine, std_dev, 0.3*std_dev)
-diff_kalman_smoothed = kalman_smoothed[1]
-kalman_smoothed = kalman_smoothed[0]
+y_hat_kalman = kalman_smooth(time, y, noise_std_dev, 0.3*noise_std_dev)
+y_hat_dot_kalman = y_hat_kalman[1]
+y_hat_kalman = y_hat_kalman[0]
 
 print(f"Mean Squared Error of Differentials: \n \
-        Forward Difference: {mean_squared_error(diff_finite, true_diff_sine)} \n \
-        PT1: {mean_squared_error(diff_pt1_smoothed, true_diff_sine)} \n \
-        Wiener: {mean_squared_error(diff_wiener_smoothed, true_diff_sine)} \n \
-        Kalman: {mean_squared_error(diff_kalman_smoothed, true_diff_sine)} \n" )
+        Forward Difference: {cost.cost(diff_finite, true_sine_dot)} \n \
+        PT1: {cost.cost(y_hat_dot_pt1, true_sine_dot)} \n \
+        Wiener: {cost.cost(y_hat_dot_wiener, true_sine_dot)} \n \
+        Kalman: {cost.cost(y_hat_dot_kalman, true_sine_dot)} \n" )
 
 # plot results
-plot_time_sig(tt, [true_diff_sine, diff_wiener_smoothed, diff_pt1_smoothed, diff_kalman_smoothed], ["true diff sine", "diff Wiener", "diff PT1", "diff Kalman"])
-plot_time_sig(tt, [diff_finite, diff_wiener_smoothed, diff_pt1_smoothed, diff_kalman_smoothed], ["diff unsmoothed", "diff Wiener", "diff PT1", "diff Kalman"])
-plot_time_sig(tt, [true_sine, noisy_sine, pt1_smoothed, wiener_smoothed, kalman_smoothed], ["true sine", "noisy sine", "PT1 smoothed", "Wiener smoothed", "Kalman smoothed"])
+plot.plot_sig(time, [true_sine_dot, y_hat_dot_wiener, y_hat_dot_pt1, y_hat_dot_kalman], ["true diff sine", "diff Wiener", "diff PT1", "diff Kalman"])
+plot.plot_sig(time, [diff_finite, y_hat_dot_wiener, y_hat_dot_pt1, y_hat_dot_kalman], ["diff unsmoothed", "diff Wiener", "diff PT1", "diff Kalman"])
+plot.plot_sig(time, [true_sine, y, y_hat_pt1, y_hat_wiener, y_hat_kalman], ["true sine", "noisy sine", "PT1 smoothed", "Wiener smoothed", "Kalman smoothed"])
 plt.show()
 
 
-
+'''
 #test of savgol_smooth
 x=np.linspace(0,2*np.pi,100)
 y=np.sin(x)+np.cos(x)+np.random.random(100)
