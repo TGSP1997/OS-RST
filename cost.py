@@ -1,3 +1,4 @@
+from scipy.signal import correlate
 from enum import Enum
 
 class Cost_Enum(Enum):
@@ -39,9 +40,20 @@ class Cost:
         mse = 1/len(n) * mse
         return mse
 
+# verstehe ich entweder nicht tief genug oder ist in diesem Projekt nicht sinnvoll
     def __cost_minimax(self,y, n):
         return 0
+
+# wie MSE nur mit Betrag?
     def __cost_avg_loss(self,y, n):
-        return 0
+        avg_loss = 0
+        for i in range(len(n)):
+            avg_loss = avg_loss + abs(n[i] - y[i])
+        avg_loss = 1/len(n) * avg_loss
+        return avg_loss
+
+# returns index of maximum correlation for phase shift
     def __cost_phase_shift(self,y, n):
-        return 0
+        corr = correlate(y, n, mode='same')
+        lag_index = corr.argmax()
+        return lag_index

@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.core.numeric import isscalar
-from scipy.signal import lfilter, wiener, convolve, correlate
+from scipy.signal import lfilter, wiener, convolve
 from scipy.linalg import toeplitz
 from adjusted_scipy_savgol_filter import *
 from enum import Enum
