@@ -21,7 +21,7 @@ y=np.sin(x)+np.cos(x)+np.random.random(100)
 #y = 0.2*np.cos(2*np.pi*2*x) + np.cos(2*np.pi*20*x)
 
 #filter
-y_filtered=adjusted_savgol_filter(y,99,3)
+y_filtered=adjusted_savgol_filter(y,99,3)#,mode="nearest"
 
 #Plotting
 fig=plt.figure()
@@ -68,13 +68,13 @@ pol_len.on_changed(update)
 pos_len.on_changed(update)
 
 
-fig2=plt.figure(2)
-ay=fig2.subplots()
+#fig2=plt.figure(2)
+#ay=fig2.subplots()
 yf = np.fft.fft(y)
 yf2 = np.fft.fft(y_filtered)
 xf = np.fft.fftfreq(N, T)[:N//2]
-q=ay.plot(xf, 2.0/N * np.abs(yf[0:N//2]),'b')
-q,=ay.plot(xf, 2.0/N * np.abs(yf2[0:N//2]),'g')
+#q=ay.plot(xf, 2.0/N * np.abs(yf[0:N//2]),'b')
+#q,=ay.plot(xf, 2.0/N * np.abs(yf2[0:N//2]),'g')
 plt.grid()
 
 

@@ -6,6 +6,7 @@ from enum import Enum
 
 class Plot_Enum(Enum):
     MULTI = "multi"
+    SLIDER = 'Slider'
 
 class Plot_Sig:
     type        = Plot_Enum.MULTI
@@ -16,11 +17,20 @@ class Plot_Sig:
         self.type               = type
         self.title              = title
         self.parameters         = parameters
+        self.fig                = 0
+       
+        
 
     def plot_sig(self,t,signals, labels):
         match self.type:
             case Plot_Enum.MULTI:
                 self.__plot_sig_multi(t,signals, labels)
+    
+    def plot_slider(self,t,signals, labels,parameters,filter): #parameters as array, differrent for ech filter 
+        match self.type:
+            case Plot_Enum.SLIDER:
+                self.parameters==parameters
+                self.__plot_sig_slider(t,signals, labels,filter)
 
 ####################################################################
 ######################## Plot Functions ############################
@@ -33,67 +43,72 @@ class Plot_Sig:
         plt.legend()
         plt.xlabel('time', fontsize=20)
         plt.ylabel('value', fontsize=20)
+
+      
     
 
+    def __plot_sig_slider(self,t,signals,labels,filter): #match case wouldnt work signals[unfiltered,filtered]
+        self.fig=plt.figure()
+        fig_plots=self.fig.subplots()
+        fig_plots.set_xlabel('time')
+        fig_plots.set_ylabel('value')
+        print('true_1')
+        self.parameters=[3,99]
+        match filter.type:
+            case Filter_Enum.SAVGOL: #parameters[polynom grade , window_length)
+                print('true_2')
+                p=fig_plots.plot(t,signals[0],'b', label=labels[0])
+                p,=fig_plots.plot(t,signals[1],'g', label=labels[1])
+                plt.subplots_adjust(bottom=0.3)
+                fig_plots_slide1 = plt.axes([0.25,0.15,0.65,0.03]) #xposition,y position, width,height
+                fig_plots_slide2 = plt.axes([0.25,0.1,0.65,0.03])
+                #fig_plots_slide3 = plt.axes([0.25,0.05,0.65,0.03])
+                if (self.parameters[1]%2)==0:
+                    raise ValueError('Window_Length must be a odd number')
+                slider_1=Slider(fig_plots_slide1,'Polynom Grade',valmin=1,valmax=self.parameters[0]+10,valinit=self.parameters[0],valstep=1)
+                slider_2=Slider(fig_plots_slide2,'Window Length',valmin=1,valmax=self.parameters[1]+50,valinit=self.parameters[1],valstep=2)
+                #deriv_len=Slider(fig_plots_slide3,'Derivative',valmin=0,valmax=5,valinit=0,valstep=1)
+                
+                def __update_SAVGOL(val):
+                    current_v1=int(slider_1.val)
+                    current_v2=int(slider_2.val)
+                    #current_v3=int(deriv_len.val)
+                    filtered_signal=filter.filter_fun(t,signals[0],para=0) #filter_fun(x,y,[3, 99])
+                    p.set_ydata(filtered_signal)
+                    self.fig.canvas.draw() #redraw the figure
+                    print('nach redraw')
+
+                slider_1.on_changed(__update_SAVGOL)
+                slider_2.on_changed(__update_SAVGOL)
+                #deriv_len.on_changed(__update_SAVGOL)
+                fig_plots.legend()
+                plt.show()
+            
+            
+
+            #case Filter_Enum.PT1:        
+            
+            #case Filter_Enum.WIENER:
+                
+            #case Filter_Enum.DIFF_QUOTIENT:
+              
+            #case Filter_Enum.BROWN_HOLT:
+                
+            #case Filter_Enum.BUTTERWORTH:
+                
+            #case Filter_Enum.CHEBYCHEV:
+               
+            #case Filter_Enum.ROB_EX_DIFF:
+                
+            #case Filter_Enum.KALMAN:
+                
+            
+     
+    
 ####################################################################
 ######################## Nicht angefasst ###########################
 ####################################################################
 
-def plot_slider(enum,tt,signals): #match case wouldnt work signals[unfiltered,filtered]
-    fig=plt.figure()
-    fig_plots=fig.subplots()
-    fig_plots.set_xlabel('Time')
-    fig_plots.set_ylabel('Value')
-
-    if enum==filter.SAVGOL:
-        p=fig_plots.plot(tt,signals[0],'b', label='Unfiltered')
-        p,=fig_plots.plot(tt,signals[1],'g', label='Savgol Filtered')
-        plt.subplots_adjust(bottom=0.3)
-        fig_plots_slide1 = plt.axes([0.25,0.15,0.65,0.03]) #xposition,y position, width,height
-        fig_plots_slide2 = plt.axes([0.25,0.1,0.65,0.03])
-        fig_plots_slide3 = plt.axes([0.25,0.05,0.65,0.03])
-        pol_len=Slider(fig_plots_slide1,'Polynom Grade',valmin=1,valmax=10,valinit=3,valstep=1)
-        win_len=Slider(fig_plots_slide2,'Window Length',valmin=5,valmax=99,valinit=99,valstep=2)
-        deriv_len=Slider(fig_plots_slide3,'Derivative',valmin=0,valmax=5,valinit=0,valstep=1)
-
-        def update_SAVGOL(val):
-            current_v1=int(pol_len.val)
-            current_v2=int(win_len.val)
-            current_v3=int(deriv_len.val)
-            filtered_signal,_,_=savgol_smooth(signals[0],current_v2,current_v1,160,deriv=current_v3) 
-            p.set_ydata(filtered_signal)
-            fig.canvas.draw() #redraw the figure
-            print('pol:')
-            print(current_v1)
-            print('window:')
-            print(current_v2)
-            print('deriv:')
-            print(current_v3)
-        
-        pol_len.on_changed(update_SAVGOL)
-        win_len.on_changed(update_SAVGOL)
-        deriv_len.on_changed(update_SAVGOL)
-        
-    else:
-         raise ValueError('Function does not exist')
-    fig_plots.legend()
-    plt.show()
-    '''
-    elif enum==filter.WIENER:
-        def update_WIENER(val):
-    elif enum==filter.DIFF_QUOTIENT:
-        def update_DIFF_QUOTIENT(val):
-    elif enum==filter.BROWN_HOLT:
-        def update_BROWN_HOLT(val):
-    elif enum==filter.BUTTERWORTH:
-        def update_BUTTERWORTH(val):
-    elif enum==filter.CHEBYCHEV:
-        def update_CHEBYCHEV(val):
-    elif enum==filter.ROB_EX_DIFF:
-        def update_ROB_EX_DIFF(val):
-    '''
-    
-    
 
 
 

@@ -16,7 +16,8 @@ wiener  = Filter(Filter_Enum.WIENER, noise_std_dev)
 kalman  = Filter(Filter_Enum.KALMAN, noise_std_dev)
 plot    = Plot_Sig(Plot_Enum.MULTI, "Overview", [])
 cost    = Cost(Cost_Enum.MSE)
-
+plot_s  = Plot_Sig(Plot_Enum.SLIDER, "Detailed View with Slider",[])
+savgol  = Filter(Filter_Enum.SAVGOL, parameters=None)
 
 time, true_sine, true_sine_dot = sine.get_fun()
 y = white.apply_noise(true_sine)
@@ -60,10 +61,11 @@ plt.show()
 
 
 '''
-#test of savgol_smooth
+#test of savgol_smooth funktioniert nur ueber umwege wegen para, aber funktioniert
 x=np.linspace(0,2*np.pi,100)
 y=np.sin(x)+np.cos(x)+np.random.random(100)
-y_filtered,_,_=savgol_smooth(y,99,3,160,deriv=0)
-plot_time_sig(x,[y,y_filtered],['unfiltered','filtered'])
-plt.show()
+#y_filtered,_,_=savgol_smooth(y,99,3,160,deriv=0)
+y_hat_savgol=savgol.filter_fun(x,y,para=[3, 99])
+plot_s.plot_slider(x,[y, y_hat_savgol],['noisy sine','savgol smoothed'],[3,99],savgol)
+#plt.show()
 '''

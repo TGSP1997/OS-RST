@@ -115,11 +115,11 @@ def adjusted_savgol_coeffs(window_length, polyorder, deriv=0, delta=1.0, pos=Non
 
     if use not in ['conv', 'dot']:
         raise ValueError("`use` must be 'conv' or 'dot'")
-
+    
     if deriv > polyorder:
         coeffs = np.zeros(window_length)
         return coeffs
-
+    
     # Form the design matrix A. The columns of A are powers of the integers
     # from -pos to window_length - pos - 1. The powers (i.e., rows) range
     # from 0 to polyorder. (That is, A is a vandermonde matrix, but not
@@ -276,58 +276,8 @@ def adjusted_savgol_filter(x, window_length, polyorder, deriv=0, delta=1.0,
     y : ndarray, same shape as `x`
         The filtered data.
 
-    See Also
-    --------
-    savgol_coeffs
-
-    Notes
-    -----
-    Details on the `mode` options:
-
-        'mirror':
-            Repeats the values at the edges in reverse order. The value
-            closest to the edge is not included.
-        'nearest':
-            The extension contains the nearest input value.
-        'constant':
-            The extension contains the value given by the `cval` argument.
-        'wrap':
-            The extension contains the values from the other end of the array.
-
-    For example, if the input is [1, 2, 3, 4, 5, 6, 7, 8], and
-    `window_length` is 7, the following shows the extended data for
-    the various `mode` options (assuming `cval` is 0)::
-
-        mode       |   Ext   |         Input          |   Ext
-        -----------+---------+------------------------+---------
-        'mirror'   | 4  3  2 | 1  2  3  4  5  6  7  8 | 7  6  5
-        'nearest'  | 1  1  1 | 1  2  3  4  5  6  7  8 | 8  8  8
-        'constant' | 0  0  0 | 1  2  3  4  5  6  7  8 | 0  0  0
-        'wrap'     | 6  7  8 | 1  2  3  4  5  6  7  8 | 1  2  3
-
-    .. versionadded:: 0.14.0
-
-    Examples
-    --------
-    >>> from scipy.signal import savgol_filter
-    >>> np.set_printoptions(precision=2)  # For compact display.
-    >>> x = np.array([2, 2, 5, 2, 1, 0, 1, 4, 9])
-
-    Filter with a window length of 5 and a degree 2 polynomial.  Use
-    the defaults for all other parameters.
-
-    >>> savgol_filter(x, 5, 2)
-    array([1.66, 3.17, 3.54, 2.86, 0.66, 0.17, 1.  , 4.  , 9.  ])
-
-    Note that the last five values in x are samples of a parabola, so
-    when mode='interp' (the default) is used with polyorder=2, the last
-    three values are unchanged. Compare that to, for example,
-    `mode='nearest'`:
-
-    >>> savgol_filter(x, 5, 2, mode='nearest')
-    array([1.74, 3.03, 3.54, 2.86, 0.66, 0.17, 1.  , 4.6 , 7.97])
-
     """
+   
     if mode not in ["mirror", "constant", "nearest", "interp", "wrap"]:
         raise ValueError("mode must be 'mirror', 'constant', 'nearest' "
                          "'wrap' or 'interp'.")
