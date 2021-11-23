@@ -26,7 +26,6 @@ class Filter:
 
     def filter_fun(self,t,y,para=None):
         para = self.parameters if para is None else para
-        para = para if isscalar(para) else para[0] # Aus Gründen(TM) wandelt scp.minimize Skalare Werte in Vektoren mit Länge 1 um.
         match self.type:
             case Filter_Enum.PT1:
                 return self.__filter_fun_pt1(t,y,para)
@@ -47,7 +46,6 @@ class Filter:
                 
     def filter_diff(self,t,y,para=None):
         para = self.parameters if para is None else para
-        para = para if isscalar(para) else para[0] # Aus Gründen(TM) wandelt scp.minimize Skalare Werte in Vektoren mit Länge 1 um.
         match self.type:
             case Filter_Enum.PT1:
                 return self.__filter_diff_pt1(t,y,para)
@@ -72,6 +70,7 @@ class Filter:
 
 
     def __filter_fun_pt1(self,t,y,para):
+        para = para if isscalar(para) else para[0] # Aus Gründen(TM) wandelt scp.minimize Skalare Werte in Vektoren mit Länge 1 um.
         # Parameter: Cutoff frequency
         T_sample = (t[-1] - t[0]) / (len(t) - 1)
         num_coeff = [T_sample * para]            
@@ -107,6 +106,7 @@ class Filter:
 ####################################################################
 
     def __filter_diff_pt1(self,t,y,para):
+        para = para if isscalar(para) else para[0] # Aus Gründen(TM) wandelt scp.minimize Skalare Werte in Vektoren mit Länge 1 um.
             # Parameter: Cutoff frequency
         T_sample = (t[-1] - t[0]) / (len(t) - 1)
         num_coeff = [T_sample * para]
