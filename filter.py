@@ -43,6 +43,8 @@ class Filter:
                 return self.__filter_fun_chebychev(t,y,para)
             case Filter_Enum.ROB_EX_DIFF:
                 return self.__filter_fun_robexdiff(t,y,para)
+            case Filter_Enum.KALMAN:
+                return self.__filter_fun_kalman(t,y,para)
                 
     def filter_diff(self,t,y,para=None):
         para = self.parameters if para is None else para
@@ -63,6 +65,8 @@ class Filter:
                 return self.__filter_diff_chebychev(t,y,para)
             case Filter_Enum.ROB_EX_DIFF:
                 return self.__filter_diff_robexdiff(t,y,para)
+            case Filter_Enum.KALMAN:
+                return self.__filter_diff_kalman(t,y,para)
 
 ####################################################################
 ####################### Filter Functions ###########################
@@ -83,12 +87,42 @@ class Filter:
 
     def __filter_fun_wiener(self,t,y,para):
         # Parameter: Noise standard Deviation
-        S_nn = para**2*np.ones(len(y))
+        noise_stdev = para
+        S_nn = noise_stdev**2*np.ones(len(y))
         S_yy = np.square(np.abs(np.fft.fft(y)/len(y)))
         H_noncausal = np.maximum(0, np.divide(S_yy - S_nn , S_yy))
         Y_hat = np.multiply(H_noncausal, np.fft.fft(y))
         return np.real(np.fft.ifft(Y_hat))
+    
+    def __filter_fun_kalman(self,t,y,para):
+        T_sample = (t[-1] - t[0]) / (len(t) - 1)
+
+        # initialization
+        x_est = np.array([0, 11]).reshape(2, 1)
+        output_n__stdev = 0.1
+        process_n_stdev = 1e6
+        P = np.array([[1e-3, 0],[0, 1e-3]])
+
+        F = np.array([[1, T_sample], [0, 1]])
+        B = np.array([0.5*T_sample**2, T_sample]).reshape(2, 1)
+        H = np.array([[1, 0]]).reshape(1, 2)
+        Q = np.array([[0.25*T_sample**4, 0.5*T_sample**3], [0.5*T_sample**3, T_sample**2]])*process_n_stdev
+        R = np.array([output_n__stdev**2]).reshape(1, 1)
         
+        x_1_list = x_est[0]
+        x_2_list = x_est[1]
+        k = 1
+        while k < len(y):
+            x_est_prior = F@x_est
+            P_prior = H@P@H.transpose() + Q
+            K = P_prior@H.transpose() @ np.linalg.inv(H@P_prior@H.transpose() + R)
+            x_est = x_est_prior + K@(y[k] - H@x_est_prior)
+            P = (np.eye(len(B)) - K@H)@P_prior
+            x_1_list = np.append(x_1_list, x_est[0])
+            x_2_list = np.append(x_2_list, x_est[1])
+            k = k + 1
+        return [x_1_list, x_2_list]
+
     def __filter_fun_diff(self,t,y,para):
         return y
     def __filter_fun_brownholt(self,t,y,para):
@@ -123,7 +157,10 @@ class Filter:
         H_noncausal = np.maximum(0, np.divide(S_yy - S_nn , S_yy))
         Y_hat = np.multiply(H_noncausal, np.fft.fft(y))
         return np.real(np.fft.ifft(Y_hat))
-        
+
+    def __filter_diff_kalman(self,t,y,para):
+        return y
+
     def __filter_diff_diff(self,t,y,para):
         return y
     def __filter_diff_brownholt(self,t,y,para):

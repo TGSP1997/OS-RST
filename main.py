@@ -13,7 +13,7 @@ sine    = Input_Function(Input_Enum.SINE, [1, 0.1, 0, 0.5])
 white   = Noise(Noise_Enum.WHITE, noise_std_dev)
 pt1     = Filter(Filter_Enum.PT1, 1e2)
 wiener  = Filter(Filter_Enum.WIENER, noise_std_dev)
-kalman  = Filter(Filter_Enum.KALMAN, noise_std_dev)
+kalman  = Filter(Filter_Enum.KALMAN, [0, 10])
 plot    = Plot_Sig(Plot_Enum.MULTI, "Overview", [])
 cost    = Cost(Cost_Enum.MSE)
 plot_s  = Plot_Sig(Plot_Enum.SLIDER, "Detailed View with Slider",[])
@@ -32,7 +32,7 @@ print(f_min.x)
 y_hat_pt1 = pt1.filter_fun(time, y, para = f_min.x)
 print(cost.cost(y, true_sine))
 print(cost.cost(y_hat_pt1, true_sine))
-plot.plot_sig(time, [true_sine, y, y_hat_pt1],["Roh","Rausch", "Filter"])
+#plot.plot_sig(time, [true_sine, y, y_hat_pt1],["Roh","Rausch", "Filter"])
 
 # differentiate noisy signal
 diff_finite = fwd_diff(time, y)
@@ -42,8 +42,12 @@ y_hat_dot_pt1 = fwd_diff(time, y_hat_pt1)
 # Frage: wie noise std_dev am besten schaetzen, wenn unbekannt?
 y_hat_wiener = wiener.filter_fun(time, y, noise_std_dev)
 y_hat_dot_wiener = fwd_diff(time, y_hat_wiener)
+
+
 # Kalman-smoothing
-y_hat_kalman = kalman_smooth(time, y, noise_std_dev, 0.3*noise_std_dev)
+y_kalman = 10*time  
+y_kalman = white.apply_noise(y_kalman)
+y_hat_kalman = kalman.filter_fun(time, y_kalman, para=[[0, 10]])
 y_hat_dot_kalman = y_hat_kalman[1]
 y_hat_kalman = y_hat_kalman[0]
 
@@ -54,9 +58,10 @@ print(f"Mean Squared Error of Differentials: \n \
         Kalman: {cost.cost(y_hat_dot_kalman, true_sine_dot)} \n" )
 
 # plot results
-plot.plot_sig(time, [true_sine_dot, y_hat_dot_wiener, y_hat_dot_pt1, y_hat_dot_kalman], ["true diff sine", "diff Wiener", "diff PT1", "diff Kalman"])
-plot.plot_sig(time, [diff_finite, y_hat_dot_wiener, y_hat_dot_pt1, y_hat_dot_kalman], ["diff unsmoothed", "diff Wiener", "diff PT1", "diff Kalman"])
-plot.plot_sig(time, [true_sine, y, y_hat_pt1, y_hat_wiener, y_hat_kalman], ["true sine", "noisy sine", "PT1 smoothed", "Wiener smoothed", "Kalman smoothed"])
+#plot.plot_sig(time, [true_sine_dot, y_hat_dot_wiener, y_hat_dot_pt1, y_hat_dot_kalman], ["true diff sine", "diff Wiener", "diff PT1", "diff Kalman"])
+#plot.plot_sig(time, [diff_finite, y_hat_dot_wiener, y_hat_dot_pt1, y_hat_dot_kalman], ["diff unsmoothed", "diff Wiener", "diff PT1", "diff Kalman"])
+#plot.plot_sig(time, [true_sine, y, y_hat_pt1, y_hat_wiener, y_hat_kalman], ["true sine", "noisy sine", "PT1 smoothed", "Wiener smoothed", "Kalman smoothed"])
+plot.plot_sig(time, [y_kalman, y_hat_kalman, y_hat_dot_kalman], ["true", "Kalman", "dot Kalman"])
 plt.show()
 
 
