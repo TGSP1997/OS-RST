@@ -35,7 +35,7 @@ class Input_Function:
     def __get_fun_sine(self):
         t = np.arange(0, self.point_counter * self.sampling_period, self.sampling_period)
         n = self.parameters[0]*np.sin(2*np.pi/self.parameters[1] * t + self.parameters[2]) + self.parameters[3]
-        n_dot = np.cos(2*np.pi/self.parameters[1] * t)
+        n_dot = 2*np.pi/self.parameters[1]*self.parameters[0]*np.cos(2*np.pi/self.parameters[1] * t)
         return t, n, n_dot
 
         
