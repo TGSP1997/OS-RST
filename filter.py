@@ -92,7 +92,11 @@ class Filter:
     def __filter_fun_diff(self,t,y,para):
         return y
     def __filter_fun_brownholt(self,t,y,para):
-        return y
+        # Parameter: Alpha
+        y_hat = np.zeros(len(y))
+        for i in range(1,len(y)):
+            y_hat[i] = para*y[i] + (1-para)*y_hat[i-1]
+        return y_hat
     def __filter_fun_butterworth(self,t,y,para):
         return y
     def __filter_fun_chebychev(self,t,y,para):
