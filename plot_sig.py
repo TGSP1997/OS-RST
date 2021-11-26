@@ -1,4 +1,7 @@
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+from numpy.core.fromnumeric import size
+from scipy.ndimage.measurements import label
 from filter import *
 from matplotlib.widgets import Slider
 from enum import Enum
@@ -7,6 +10,7 @@ from enum import Enum
 class Plot_Enum(Enum):
     MULTI = "multi"
     SLIDER = 'Slider'
+    SUBPLOT = "subplot"
 
 class Plot_Sig:
     type        = Plot_Enum.MULTI
@@ -25,6 +29,8 @@ class Plot_Sig:
         match self.type:
             case Plot_Enum.MULTI:
                 self.__plot_sig_multi(t,signals, labels)
+            case Plot_Enum.SUBPLOT:
+                self.__plot_sig_subplot(t,signals,labels)
     
     def plot_slider(self,t,signals, labels,parameters,filter): #parameters as array, differrent for ech filter 
         match self.type:
@@ -38,14 +44,39 @@ class Plot_Sig:
 
     def __plot_sig_multi(self,t,signals,labels):
         plt.figure()
+        plt.suptitle(self.title)
         for sig, lab in zip(signals, labels):
             plt.plot(t, sig, label=lab)
         plt.legend()
         plt.xlabel('time', fontsize=20)
         plt.ylabel('value', fontsize=20)
-
+        plt.title(self.title)
       
-    
+    def __plot_sig_subplot(self,t,signals,labels):
+        fig = plt.figure(constrained_layout=True)
+        spec = gridspec.GridSpec(size(signals,0),1, figure = fig, wspace = 0)
+        
+        for i in range(size(signals,0)):
+            ax = fig.add_subplot(spec[i,0])
+            ax.plot(t, signals[i], label=labels[i])
+            plt.legend()
+            plt.ylabel('value', fontsize=20)
+            plt.xlim(min(t),max(t))
+            plt.tick_params(
+                axis="x",
+                which="both",
+                bottom=False,
+                top = False,
+                labelbottom = False
+            )
+        plt.xlabel('time', fontsize=20)
+        plt.tick_params(
+                axis="x",
+                which="both",
+                bottom=True,
+                top = False,
+                labelbottom = True
+            )
 
     def __plot_sig_slider(self,t,signals,labels,filter): #match case wouldnt work signals[unfiltered,filtered]
         self.fig=plt.figure()
