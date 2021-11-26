@@ -43,6 +43,8 @@ class Filter:
                 return self.__filter_fun_chebychev(t,y,para)
             case Filter_Enum.ROB_EX_DIFF:
                 return self.__filter_fun_robexdiff(t,y,para)
+            case Filter_Enum.KALMAN:
+                return self.__filter_fun_kalman(t,y,para)
                 
     def filter_diff(self,t,y,para=None):
         para = self.parameters if para is None else para
@@ -63,6 +65,8 @@ class Filter:
                 return self.__filter_diff_chebychev(t,y,para)
             case Filter_Enum.ROB_EX_DIFF:
                 return self.__filter_diff_robexdiff(t,y,para)
+            case Filter_Enum.KALMAN:
+                return self.__filter_diff_kalman(t,y,para)
 
 ####################################################################
 ####################### Filter Functions ###########################
@@ -83,12 +87,43 @@ class Filter:
 
     def __filter_fun_wiener(self,t,y,para):
         # Parameter: Noise standard Deviation
-        S_nn = para**2*np.ones(len(y))
+        noise_stdev = para
+        S_nn = noise_stdev**2*np.ones(len(y))
         S_yy = np.square(np.abs(np.fft.fft(y)/len(y)))
         H_noncausal = np.maximum(0, np.divide(S_yy - S_nn , S_yy))
         Y_hat = np.multiply(H_noncausal, np.fft.fft(y))
         return np.real(np.fft.ifft(Y_hat))
-        
+    
+    def __filter_fun_kalman(self,t,y,para):
+        # Parameter: x_0 estimation, stdev of output noise, stdev of process noise
+        T_sample = (t[-1] - t[0]) / (len(t) - 1)
+
+        # initialization
+        x_est = para[0]
+        output_n__stdev = para[1]
+        process_n_stdev = para[2]
+
+        F = np.array([[1, T_sample], [0, 1]])
+        B = np.array([0.5*T_sample**2, T_sample]).reshape(2, 1)
+        H = np.array([[1, 0]]).reshape(1, 2)
+        Q = np.array([[0.25*T_sample**4, 0.5*T_sample**3], [0.5*T_sample**3, T_sample**2]])*process_n_stdev
+        R = np.array([output_n__stdev**2]).reshape(1, 1)
+        P = np.array([[1e-3, 0],[0, 1e-3]])
+
+        x_1_list = x_est[0]
+        x_2_list = x_est[1]
+        k = 1
+        while k < len(y):
+            x_est_prior = F@x_est
+            P_prior = H@P@H.transpose() + Q
+            K = P_prior@H.transpose() @ np.linalg.inv(H@P_prior@H.transpose() + R)
+            x_est = x_est_prior + K@(y[k] - H@x_est_prior)
+            P = (np.eye(len(B)) - K@H)@P_prior
+            x_1_list = np.append(x_1_list, x_est[0])
+            x_2_list = np.append(x_2_list, x_est[1])
+            k = k + 1
+        return [x_1_list, x_2_list]
+
     def __filter_fun_diff(self,t,y,para):
         return y
     def __filter_fun_brownholt(self,t,y,para):
@@ -121,13 +156,11 @@ class Filter:
         return y
     
     def __filter_diff_wiener(self,t,y,para):
-        # Parameter: Noise standard Deviation
-        S_nn = para**2*np.ones(len(y))
-        S_yy = np.square(np.abs(np.fft.fft(y)/len(y)))
-        H_noncausal = np.maximum(0, np.divide(S_yy - S_nn , S_yy))
-        Y_hat = np.multiply(H_noncausal, np.fft.fft(y))
-        return np.real(np.fft.ifft(Y_hat))
-        
+        return y
+
+    def __filter_diff_kalman(self,t,y,para):
+        return y
+
     def __filter_diff_diff(self,t,y,para):
         return y
     def __filter_diff_brownholt(self,t,y,para):
@@ -142,65 +175,6 @@ class Filter:
 ####################################################################
 ########################## Old Stuff ###############################
 ####################################################################
-
-# https://github.com/zziz/kalman-filter
-class KalmanFilter(object):
-    def __init__(self, F = None, B = None, H = None, Q = None, R = None, P = None, x0 = None):
-
-        if(F is None or H is None):
-            raise ValueError("Set proper system dynamics.")
-
-        self.n = F.shape[1]
-        self.m = H.shape[1]
-
-        self.F = F
-        self.H = H
-        self.B = 0 if B is None else B
-        self.Q = np.eye(self.n) if Q is None else Q
-        self.R = np.eye(self.n) if R is None else R
-        self.P = np.eye(self.n) if P is None else P
-        self.x = np.zeros((self.n, 1)) if x0 is None else x0
-
-    # prediction step
-    def predict(self, u = 0):
-        self.x = np.dot(self.F, self.x) + np.dot(self.B, u)
-        self.P = np.dot(np.dot(self.F, self.P), self.F.T) + self.Q
-        return self.x
-
-    # correction / update step
-    def update(self, z):
-        y = z - np.dot(self.H, self.x)
-        S = self.R + np.dot(self.H, np.dot(self.P, self.H.T))
-        K = np.dot(np.dot(self.P, self.H.T), np.linalg.inv(S))
-        self.x = self.x + np.dot(K, y)
-        I = np.eye(self.n)
-        self.P = np.dot(np.dot(I - np.dot(K, self.H), self.P), 
-        	(I - np.dot(K, self.H)).T) + np.dot(np.dot(K, self.R), K.T)
-
-def kalman_smooth(tt, signal, noise_stdev, process_stdev):
-    T_sample = (tt[-1] - tt[0]) / (len(tt) - 1)
-    F = np.array([[1, T_sample], [0, 1]])
-    B = np.array([0, 0]).reshape(2, 1)#np.array([T_sample**2/2, T_sample]).reshape(2, 1)
-    H = np.array([[1, 0]]).reshape(1, 2)
-    Q = np.array([[process_stdev, 0], [0, process_stdev]])
-    R = np.array([noise_stdev**2]).reshape(1, 1)
-
-    measurements = signal
-    kf = KalmanFilter(F = F, B = B, H = H, Q = Q, R = R)
-    predictions = []
-    x_1 = []
-    x_2 = []
-
-    for z in measurements:
-        x_hat = kf.predict()
-        predictions.append(np.dot(H, x_hat))
-        x_1.append(x_hat[0])
-        x_2.append(x_hat[1])
-        kf.update(z)
-    
-    return [x_1, x_2]
-
-
 
 # numerical differentiation
 def fwd_diff(tt, signal):

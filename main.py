@@ -15,8 +15,8 @@ sine    = Input_Function(Input_Enum.SINE, [1, 0.1, 0, 0.5])
 white   = Noise(Noise_Enum.WHITE, noise_std_dev)
 pt1     = Filter(Filter_Enum.PT1, 1e2)
 wiener  = Filter(Filter_Enum.WIENER, noise_std_dev)
-kalman  = Filter(Filter_Enum.KALMAN, noise_std_dev)
 brown   = Filter(Filter_Enum.BROWN_HOLT, alpha)
+kalman  = Filter(Filter_Enum.KALMAN, [0, 10])
 plot    = Plot_Sig(Plot_Enum.MULTI, "Overview", [])
 plot_sub= Plot_Sig(Plot_Enum.SUBPLOT, "Overview", [])
 cost    = Cost(Cost_Enum.MSE)
@@ -26,11 +26,22 @@ savgol  = Filter(Filter_Enum.SAVGOL, parameters=None)
 time, true_sine, true_sine_dot = sine.get_fun()
 y = white.apply_noise(true_sine)
 
-def filter_cost(para_in, t, y, n, filter, cost):
+def filter_cost(para_in, t, y, true_y, filter, cost):
         y_hat_pt1 = filter.filter_fun(t, y, para = para_in)
-        return cost.cost(y_hat_pt1, n)
+        return cost.cost(y_hat_pt1, true_y)
 
 
+def kalman_filter_cost(para_in, t, y, para_filt, true_y, filter, cost):
+        y_hat_kalman = filter.filter_fun(t, y, para = para_filt)[1]
+        return cost.cost(y_hat_kalman, true_y)
+
+f_min = minimize(filter_cost,0.1,args=(time, y, true_sine, pt1,cost))
+print("Minimal solution found. f_min = ")
+print(f_min.x)
+y_hat_pt1 = pt1.filter_fun(time, y, para = f_min.x)
+print(cost.cost(y, true_sine))
+print(cost.cost(y_hat_pt1, true_sine))
+plot.plot_sig(time, [true_sine, y, y_hat_pt1],["Roh","Rausch", "Filter"])
 
 # differentiate noisy signal
 diff_finite = fwd_diff(time, y)
@@ -46,8 +57,14 @@ y_hat_dot_pt1 = pt1.filter_fun(time, y_hat_dot_pt1, para = f_min.x)
 # Frage: wie noise std_dev am besten schaetzen, wenn unbekannt?
 y_hat_wiener = wiener.filter_fun(time, y, noise_std_dev)
 y_hat_dot_wiener = fwd_diff(time, y_hat_wiener)
+
+
 # Kalman-smoothing
-y_hat_kalman = kalman_smooth(time, y, noise_std_dev, 0.3*noise_std_dev)
+y_kalman_true = -10*(time-0.5)**2 + 2.5
+y_kalman = white.apply_noise(y_kalman_true)
+kalman_process_noise = minimize(kalman_filter_cost, 3e6, args=(time, y_kalman, [np.array([0, 11]).reshape(2, 1), noise_std_dev, 3e6], y_kalman_true, kalman, cost))
+kalman_process_noise = kalman_process_noise.x
+y_hat_kalman = kalman.filter_fun(time, y_kalman, para=[np.array([0, 11]).reshape(2, 1), noise_std_dev, kalman_process_noise])
 y_hat_dot_kalman = y_hat_kalman[1]
 y_hat_kalman = y_hat_kalman[0]
 
@@ -71,6 +88,8 @@ plot.plot_sig(time, [true_sine, y, y_hat_pt1, y_hat_wiener, y_hat_kalman, y_hat_
 # plot_sub.plot_sig(time,[true_sine_dot, y_hat_dot_wiener, y_hat_dot_pt1, y_hat_dot_kalman, y_hat_dot_brown], ["true diff sine", "diff Wiener", "diff PT1", "diff Kalman", "diff Brown"])
 # plot_sub.plot_sig(time,[true_sine, y_hat_wiener, y_hat_pt1, y_hat_kalman, y_hat_brown], ["true diff sine", "diff Wiener", "diff PT1", "diff Kalman", "diff Brown"])
 # 
+
+plot.plot_sig(time, [y_kalman, y_hat_kalman, y_hat_dot_kalman], ["true", "Kalman", "dot Kalman"])
 plt.show()
 
 
