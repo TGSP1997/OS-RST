@@ -160,9 +160,22 @@ class Plot_Sig:
                
             #case Filter_Enum.ROB_EX_DIFF:
                 
-            #case Filter_Enum.KALMAN:
-                
-            
+            case Filter_Enum.KALMAN:
+                p=fig_plots.plot(t,signals[0],'b', label=labels[0])
+                p,=fig_plots.plot(t,signals[1],'g', label=labels[1])
+                plt.subplots_adjust(bottom=0.3)
+                fig_plots_slide1 = plt.axes([0.25,0.15,0.65,0.03]) #xposition,y position, width,height
+                slider_1=Slider(fig_plots_slide1,'Kalman Process Noise',valmin=0,valmax=10**8,valinit=int(self.parameters[2]),valstep=0.005*(10**8))
+
+                def __update_KALMAN(val):
+                    current_v1=np.array([slider_1.val])
+                    filtered_signal,_,_=filter.filter_fun(t, signals[0], para = [self.parameters[0],self.parameters[1],current_v1])
+                    p.set_ydata(filtered_signal)
+                    self.fig.canvas.draw() #redraw the figure
+                    
+                slider_1.on_changed(__update_KALMAN)
+                fig_plots.legend()
+                plt.show()
      
     
 ####################################################################

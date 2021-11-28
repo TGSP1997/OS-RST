@@ -22,8 +22,8 @@ kalman  = Filter(Filter_Enum.KALMAN, [0, 10])
 plot    = Plot_Sig(Plot_Enum.MULTI, "Overview", [])
 plot_sub= Plot_Sig(Plot_Enum.SUBPLOT, "Overview", [])
 cost    = Cost(Cost_Enum.MSE)
-plot_s  = Plot_Sig(Plot_Enum.SLIDER, "Detailed View with Slider",[])
-savgol  = Filter(Filter_Enum.SAVGOL, parameters=None)
+plot_s  = Plot_Sig(Plot_Enum.SLIDER, "Detailed View with Slider",[])#only one slider window can be open at a time
+savgol  = Filter(Filter_Enum.SAVGOL, parameters=None) #para=[m,polorder,diff=None]
 
 time, true_sine, true_sine_dot = sine.get_fun()
 norm_freq = time[:round(len(time)/2)] / (time[-1] - time[0])
@@ -95,7 +95,6 @@ plot.plot_sig(time, [true_sine, y, y_hat_wiener], ["true sine", "noisy sine", "W
 plot.plot_sig(time, [y_kalman, y_hat_kalman, y_hat_dot_kalman], ["y", "Kalman", "dot Kalman"])
 plt.show()
 
-
 '''
 #test of slider 
 savgol_filter_para=[5,3]
@@ -103,6 +102,7 @@ y_hat_savgol=savgol.filter_fun(time,y,para=savgol_filter_para)
 plot_s.plot_slider(time,[y, y_hat_savgol],['noisy sine','savgol smoothed'],savgol_filter_para,savgol)
 plot_s.plot_slider(time,[y,y_hat_brown],['noisy sine','brown holt smoothed'],alpha_min.x,brown)
 plot_s.plot_slider(time,[y,y_hat_pt1],['noisy sine','pt1 smoothed'],f_min.x,pt1)
+plot_s.plot_slider(time,[y,y_hat_kalman],['noisy sine','kalman smoothed'],[np.array([0, 11]).reshape(2, 1), noise_std_dev, kalman_process_noise],kalman)
 #test of polynom and exp input
 #time_p, true_pol, true_pol_dot = polynom.get_fun()
 #plot.plot_sig(time_p, [true_pol, true_pol_dot], ["polynom", "diff polynom"])
