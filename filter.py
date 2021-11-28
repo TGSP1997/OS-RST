@@ -1,7 +1,6 @@
 import numpy as np
 from numpy.core.numeric import isscalar
 from scipy.signal import lfilter
-from adjusted_scipy_savgol_filter import *
 from enum import Enum
 
 class Filter_Enum(Enum):
@@ -80,8 +79,39 @@ class Filter:
         den_coeff = [1, T_sample * para - 1]
         return lfilter(num_coeff, den_coeff, y)
 
-    def __filter_fun_savgol(self,t,y,para): #wird noch ummgebaut, nach beratung mit betreuer
-        savgol_signal_time=adjusted_savgol_filter(y,para[1],para[0])
+    def __filter_fun_savgol(self,t,y,para): #kausaler savgol filter. point of evluation is end of window_length para=[m,polorder,diff=None]
+        ###################################################
+        #Compute H Matrix: Only Polyorder and window needed
+        m=para[0]
+        polyorder=para[1]
+        window_length=2*m+1
+        if polyorder >= window_length:
+            raise ValueError("polyorder must be less than window_length.")
+        x_vector = np.arange(-m, window_length-m) #for a=H*x
+        order = np.arange(polyorder + 1).reshape(-1, 1)
+        A_t = x_vector ** order #for H=(A_trans*A)^-1*A_trans    
+        A=np.transpose(A_t)
+        B=A_t.dot(A)
+        B_inv=np.linalg.inv(B)
+        H=B_inv.dot(A_t)
+        ###################################################
+        #Filter
+        y_hat=[]
+        for i in range(0,len(y)-window_length+1):
+            y_signal=np.transpose([y[0+i:window_length+i]])
+            f=[]
+            for l in range(0,polyorder+1):
+                f.append(y[window_length+i-1]**l)
+            
+            f=np.asarray(f) 
+            y_zwischen=f.dot(H.dot(y_signal))
+            y_hat.append(y_zwischen[0])
+        ###################################################
+        return y_hat
+        
+        
+        
+        
         return savgol_signal_time
 
     def __filter_fun_wiener(self,t,y,para):

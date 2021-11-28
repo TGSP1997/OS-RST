@@ -94,12 +94,10 @@ plot.plot_sig(time, [y_kalman, y_hat_kalman, y_hat_dot_kalman], ["y", "Kalman", 
 plt.show()
 
 
-'''
-#test of savgol_smooth funktioniert nur ueber umwege wegen para, aber funktioniert
-x=np.linspace(0,2*np.pi,100)
-y=np.sin(x)+np.cos(x)+np.random.random(100)
-#y_filtered,_,_=savgol_smooth(y,99,3,160,deriv=0)
-y_hat_savgol=savgol.filter_fun(x,y,para=[3, 99])
-plot_s.plot_slider(x,[y, y_hat_savgol],['noisy sine','savgol smoothed'],[3,99],savgol)
-#plt.show()
-'''
+
+#test of slider 
+own_filter_para=[5,3]
+y_hat_savgol=savgol.filter_fun(time,y,para=own_filter_para)
+plot_s.plot_slider(time,[y, y_hat_savgol],['noisy sine','savgol smoothed'],own_filter_para,savgol)
+plt.show()
+
