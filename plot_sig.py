@@ -25,10 +25,10 @@ class Plot_Sig:
        
         
 
-    def plot_sig(self,t,signals, labels):
+    def plot_sig(self,t,signals, labels, time_domain=True):
         match self.type:
             case Plot_Enum.MULTI:
-                self.__plot_sig_multi(t,signals, labels)
+                self.__plot_sig_multi(t,signals, labels, time_domain)
             case Plot_Enum.SUBPLOT:
                 self.__plot_sig_subplot(t,signals,labels)
     
@@ -42,13 +42,16 @@ class Plot_Sig:
 ######################## Plot Functions ############################
 ####################################################################
 
-    def __plot_sig_multi(self,t,signals,labels):
+    def __plot_sig_multi(self,t,signals,labels, time_domain):
         plt.figure()
         plt.suptitle(self.title)
         for sig, lab in zip(signals, labels):
             plt.plot(t, sig, label=lab)
         plt.legend()
-        plt.xlabel('time', fontsize=20)
+        if time_domain == True:
+            plt.xlabel('time', fontsize=20)
+        else:
+            plt.xlabel('normalized frequency', fontsize=20)
         plt.ylabel('value', fontsize=20)
         plt.title(self.title)
       

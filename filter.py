@@ -1,7 +1,6 @@
 import numpy as np
 from numpy.core.numeric import isscalar
-from scipy.signal import lfilter, wiener, convolve
-from scipy.linalg import toeplitz
+from scipy.signal import lfilter
 from adjusted_scipy_savgol_filter import *
 from enum import Enum
 
@@ -92,7 +91,7 @@ class Filter:
         S_yy = np.square(np.abs(np.fft.fft(y)/len(y)))
         H_noncausal = np.maximum(0, np.divide(S_yy - S_nn , S_yy))
         Y_hat = np.multiply(H_noncausal, np.fft.fft(y))
-        return np.real(np.fft.ifft(Y_hat))
+        return [np.real(np.fft.ifft(Y_hat)), H_noncausal[:round(len(H_noncausal)/2)]]
     
     def __filter_fun_kalman(self,t,y,para):
         # Parameter: x_0 estimation, stdev of output noise, stdev of process noise
@@ -122,7 +121,11 @@ class Filter:
             x_1_list = np.append(x_1_list, x_est[0])
             x_2_list = np.append(x_2_list, x_est[1])
             k = k + 1
-        return [x_1_list, x_2_list]
+
+        # transfer function
+        G_tf = np.maximum(0, np.divide(abs(np.fft.fft(x_1_list)), abs(np.fft.fft(y))))
+
+        return [x_1_list, x_2_list, G_tf[:round(len(G_tf)/2)]]
 
     def __filter_fun_diff(self,t,y,para):
         return y

@@ -24,6 +24,7 @@ plot_s  = Plot_Sig(Plot_Enum.SLIDER, "Detailed View with Slider",[])
 savgol  = Filter(Filter_Enum.SAVGOL, parameters=None)
 
 time, true_sine, true_sine_dot = sine.get_fun()
+norm_freq = time[:round(len(time)/2)] / (time[-1] - time[0])
 y = white.apply_noise(true_sine)
 
 def filter_cost(para_in, t, y, true_y, filter, cost):
@@ -56,6 +57,8 @@ y_hat_dot_pt1 = pt1.filter_fun(time, y_hat_dot_pt1, para = f_min.x)
 # Wiener-smoothing
 # Frage: wie noise std_dev am besten schaetzen, wenn unbekannt?
 y_hat_wiener = wiener.filter_fun(time, y, noise_std_dev)
+tf_wiener = y_hat_wiener[1]
+y_hat_wiener = y_hat_wiener[0]
 y_hat_dot_wiener = fwd_diff(time, y_hat_wiener)
 
 
@@ -67,6 +70,7 @@ kalman_process_noise = minimize(kalman_filter_cost, 3e6, args=(time, y_kalman, [
 kalman_process_noise = kalman_process_noise.x
 y_hat_kalman = kalman.filter_fun(time, y_kalman, para=[np.array([0, 11]).reshape(2, 1), noise_std_dev, kalman_process_noise])
 y_hat_dot_kalman = y_hat_kalman[1]
+tf_kalman = y_hat_kalman[2]
 y_hat_kalman = y_hat_kalman[0]
 
 # Brown Holt
@@ -78,14 +82,15 @@ print(f"Mean Squared Error of Differentials: \n \
         Forward Difference: {cost.cost(diff_finite, true_sine_dot)} \n \
         PT1: {cost.cost(y_hat_dot_pt1, true_sine_dot)} \n \
         Wiener: {cost.cost(y_hat_dot_wiener, true_sine_dot)} \n \
-        Kalman: {cost.cost(y_hat_dot_kalman, true_sine_dot)} \n \
+        Kalman: {cost.cost(y_hat_dot_kalman, y_dot_kalman_true)} \n \
         Brown-Holt: {cost.cost(y_hat_dot_brown, true_sine_dot)} \n" )
 
 # plot results
 plot.plot_sig(time, [true_sine_dot, y_hat_dot_wiener], ["true diff sine", "diff Wiener"])
+plot.plot_sig(norm_freq, [tf_wiener, tf_kalman], ["Wiener TF", "Kalman TF"], time_domain=False)
 plot.plot_sig(time, [diff_finite, y_hat_dot_wiener], ["diff unsmoothed", "diff Wiener"])
 plot.plot_sig(time, [true_sine, y, y_hat_wiener], ["true sine", "noisy sine", "Wiener smoothed"])
-plot.plot_sig(time, [y_kalman, y_hat_kalman, y_hat_dot_kalman], ["true", "Kalman", "dot Kalman"])
+plot.plot_sig(time, [y_kalman, y_hat_kalman, y_hat_dot_kalman], ["y", "Kalman", "dot Kalman"])
 plt.show()
 
 
