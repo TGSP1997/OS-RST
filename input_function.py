@@ -33,69 +33,27 @@ class Input_Function:
 # Ab hier bearbeiten
 
     def __get_fun_sine(self):
-        t = np.arange(0, self.point_counter * self.sampling_period, self.sampling_period)
+        t = np.arange(0, self.point_counter * self.sampling_period, self.sampling_period) #same as sine
         n = self.parameters[0]*np.sin(2*np.pi/self.parameters[1] * t + self.parameters[2]) + self.parameters[3]
         n_dot = 2*np.pi/self.parameters[1]*self.parameters[0]*np.cos(2*np.pi/self.parameters[1] * t)
         return t, n, n_dot
 
         
-    def __get_fun_polynom(self):
-        t = 0
-        n = 0
-        n_dot = 0
-        return t, n, n_dot
-
-    def __get_fun_exp(self):
-        t = 0
-        n = 0
-        n_dot = 0
+    def __get_fun_polynom(self):#coeefs in descending order 2x^2+1 = [2,0,1]
+        t = np.arange(0, self.point_counter * self.sampling_period, self.sampling_period)
+        polynom=np.poly1d(self.parameters)
+        n = polynom(t)
+        polynom_dot=np.polyder(polynom)
+        n_dot = polynom_dot(t)
         return t, n, n_dot
 
 
-    
-
-'''
-class inputs(Enum):
-    sine='sine'
-    polynom='polynom'
-    exp='exp'
-
-def sine_input(parameters,point_count,sampling_period): #parameters [a,f,o]
-    time = np.arange(0, point_count * sampling_period, sampling_period)
-    sine = parameters[0]*np.sin(2*np.pi/parameters[1] * time)+parameters[2]
-    diff_sine = np.cos(2*np.pi/parameters[1] * time)
-    return [time,sine,diff_sine]
-
-def polynom_input(parameters,point_count,sampling_period): #parameters [a^n,a^n-1,..,a^0]
-    time = np.arange(0, point_count * sampling_period, sampling_period)
-    polynom=np.poly1d(parameters)
-    diff_polynom=np.polyder(polynom)
-    return [time, polynom, diff_polynom]
-
-
-#die ableitung macht noch probleme, bitte drueberschauen
-def exp_input(parameters,point_count,sampling_period): #parmeters [a,t,o]
-    time = np.arange(0, point_count * sampling_period, sampling_period)
-    exp  = parameters[0]*sympy.exp(time/parameters[1])+parameters[2]
-    diff_exp=exp.diff(time, 1)
-
-    return [time,exp,diff_exp]
-    
-
-def get_inputs(enum,parameters,point_count,sampling_period): #sympy needed,see imports
-    if enum==inputs.sine.value:
-        input=sine_input(parameters,point_count,sampling_period)
-    elif enum==inputs.polynom.value: 
-        input=polynom_input(parameters,point_count,sampling_period)
-    elif enum==inputs.exp.value:
-        input=exp_input(parameters,point_count,sampling_period)
-    else:
-         raise ValueError('Function does not exist')
-
-    print(input) #for testing
-    return input
-
-get_inputs('sine',[3,2,1],3,50)
-get_inputs('polynom',[3,2,1],3,50)
-get_inputs('exp',[3,2,1],3,50)
-'''
+    def __get_fun_exp(self):#coeefs [a,b,c,d]= a*e^(t/b+c)+d
+        t = np.arange(0, self.point_counter * self.sampling_period, self.sampling_period) #same as sine
+        a_p=self.parameters[0]
+        b_p=self.parameters[1]
+        c_p=self.parameters[2]
+        d_p=self.parameters[3]
+        n = a_p*np.exp(t/b_p+c_p)+d_p
+        n_dot = a_p/b_p*np.exp(t/b_p+c_p)
+        return t, n, n_dot

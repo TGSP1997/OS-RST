@@ -112,7 +112,7 @@ class Filter:
         
         
         
-        return savgol_signal_time
+        
 
     def __filter_fun_wiener(self,t,y,para):
         # Parameter: Noise standard Deviation

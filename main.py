@@ -12,6 +12,8 @@ alpha           = 0.4
 
 
 sine    = Input_Function(Input_Enum.SINE, [1, 0.1, 0, 0])
+polynom = Input_Function(Input_Enum.POLYNOM, [1,2,3,4]) #coeefs in descending order 2x^2+1 = [2,0,1]
+exp     = Input_Function(Input_Enum.EXP, [1,2,0,0]) #coeefs [a,b,c,d]= a*e^(t/b+c)+d
 white   = Noise(Noise_Enum.WHITE, noise_std_dev)
 pt1     = Filter(Filter_Enum.PT1, 1e2)
 wiener  = Filter(Filter_Enum.WIENER, noise_std_dev)
@@ -94,10 +96,16 @@ plot.plot_sig(time, [y_kalman, y_hat_kalman, y_hat_dot_kalman], ["y", "Kalman", 
 plt.show()
 
 
-
+'''
 #test of slider 
 own_filter_para=[5,3]
 y_hat_savgol=savgol.filter_fun(time,y,para=own_filter_para)
 plot_s.plot_slider(time,[y, y_hat_savgol],['noisy sine','savgol smoothed'],own_filter_para,savgol)
-plt.show()
 
+#test of polynom and exp input
+time_p, true_pol, true_pol_dot = polynom.get_fun()
+plot.plot_sig(time_p, [true_pol, true_pol_dot], ["polynom", "diff polynom"])
+time_exp, true_exp, true_exp_dot = exp.get_fun()
+plot.plot_sig(time_exp, [true_exp, true_exp_dot], ["exponential", "diff exponential"])
+plt.show()
+'''
