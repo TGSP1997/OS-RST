@@ -5,6 +5,7 @@ from scipy.ndimage.measurements import label
 from filter import *
 from matplotlib.widgets import Slider
 from enum import Enum
+import numpy as np
 
 
 class Plot_Enum(Enum):
@@ -83,12 +84,12 @@ class Plot_Sig:
 
     def __plot_sig_slider(self,t,signals,labels,filter): #self.parameters[0]=m self.parameters[1]=polyorder
         self.fig=plt.figure()
-        window_length=2*self.parameters[0]+1
         fig_plots=self.fig.subplots()
         fig_plots.set_xlabel('time')
         fig_plots.set_ylabel('value')
         match filter.type:
             case Filter_Enum.SAVGOL: 
+                window_length=2*self.parameters[0]+1
                 p=fig_plots.plot(t,signals[0],'b', label=labels[0])
                 p,=fig_plots.plot(t[window_length-1:],signals[1],'g', label=labels[1])
                 plt.subplots_adjust(bottom=0.3)
@@ -114,7 +115,7 @@ class Plot_Sig:
                 slider_2.on_changed(__update_SAVGOL)
                 fig_plots.legend()
                 plt.show()
-            
+                
             
 
             #case Filter_Enum.PT1:        
@@ -123,8 +124,23 @@ class Plot_Sig:
                 
             #case Filter_Enum.DIFF_QUOTIENT:
               
-            #case Filter_Enum.BROWN_HOLT:
-                
+            case Filter_Enum.BROWN_HOLT:
+                p=fig_plots.plot(t,signals[0],'b', label=labels[0])
+                p,=fig_plots.plot(t,signals[1],'g', label=labels[1])
+                plt.subplots_adjust(bottom=0.3)
+                fig_plots_slide1 = plt.axes([0.25,0.15,0.65,0.03]) #xposition,y position, width,height
+                slider_1=Slider(fig_plots_slide1,'Alpha',valmin=0,valmax=1,valinit=self.parameters[0],valstep=0.005)
+
+                def __update_BROWN_HOLT(val):
+                    current_v1=np.array([slider_1.val])
+                    filtered_signal=filter.filter_fun(t, signals[0], para = current_v1)
+                    p.set_ydata(filtered_signal)
+                    self.fig.canvas.draw() #redraw the figure
+                    
+                slider_1.on_changed(__update_BROWN_HOLT)
+                fig_plots.legend()
+                plt.show()
+
             #case Filter_Enum.BUTTERWORTH:
                 
             #case Filter_Enum.CHEBYCHEV:
