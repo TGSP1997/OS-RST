@@ -102,10 +102,11 @@ savgol_filter_para=[5,3]
 y_hat_savgol=savgol.filter_fun(time,y,para=savgol_filter_para)
 plot_s.plot_slider(time,[y, y_hat_savgol],['noisy sine','savgol smoothed'],savgol_filter_para,savgol)
 plot_s.plot_slider(time,[y,y_hat_brown],['noisy sine','brown holt smoothed'],alpha_min.x,brown)
+plot_s.plot_slider(time,[y,y_hat_pt1],['noisy sine','pt1 smoothed'],f_min.x,pt1)
 #test of polynom and exp input
 #time_p, true_pol, true_pol_dot = polynom.get_fun()
 #plot.plot_sig(time_p, [true_pol, true_pol_dot], ["polynom", "diff polynom"])
 #time_exp, true_exp, true_exp_dot = exp.get_fun()
 #plot.plot_sig(time_exp, [true_exp, true_exp_dot], ["exponential", "diff exponential"])
-#plt.show()
+plt.show()
 '''
