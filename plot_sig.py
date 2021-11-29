@@ -47,6 +47,8 @@ class Plot_Sig:
         plt.figure()
         plt.suptitle(self.title)
         for sig, lab in zip(signals, labels):
+            if len(sig)<len(t):#only for savgol signals
+                t=t[len(t)-len(sig):]
             plt.plot(t, sig, label=lab)
         plt.legend()
         if time_domain == True:
@@ -62,6 +64,8 @@ class Plot_Sig:
         
         for i in range(size(signals,0)):
             ax = fig.add_subplot(spec[i,0])
+            if len(signals[i])<len(t):#only for savgol signals
+                t=t[len(t)-len(signals[i]):]
             ax.plot(t, signals[i], label=labels[i])
             plt.legend()
             plt.ylabel('value', fontsize=20)
