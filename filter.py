@@ -1,6 +1,6 @@
 import numpy as np
 from numpy.core.numeric import isscalar
-from scipy.signal import lfilter
+from scipy.signal import lfilter, cont2discrete
 from enum import Enum
 
 class Filter_Enum(Enum):
@@ -122,7 +122,7 @@ class Filter:
         H_noncausal = np.maximum(0, np.divide(S_yy - S_nn , S_yy))
         Y_hat = np.multiply(H_noncausal, np.fft.fft(y))
         return [np.real(np.fft.ifft(Y_hat)), H_noncausal[:round(len(H_noncausal)/2)]]
-    
+
     def __filter_fun_kalman(self,t,y,para):
         # Parameter: x_0 estimation, stdev of output noise, stdev of process noise
         T_sample = (t[-1] - t[0]) / (len(t) - 1)
@@ -131,13 +131,24 @@ class Filter:
         x_est = para[0]
         output_n__stdev = para[1]
         process_n_stdev = para[2]
+        filter_order = para[3]
 
-        F = np.array([[1, T_sample], [0, 1]])
-        B = np.array([0.5*T_sample**2, T_sample]).reshape(2, 1)
-        H = np.array([[1, 0]]).reshape(1, 2)
-        Q = np.array([[0.25*T_sample**4, 0.5*T_sample**3], [0.5*T_sample**3, T_sample**2]])*process_n_stdev
+        A = np.zeros((filter_order, filter_order))
+        for i in range(0, filter_order-1):
+            A[i, i+1] = 1
+        B = np.zeros((filter_order, 1))
+        B[-1] = 1
+        C = np.zeros((1, filter_order))
+        C[0, 0] = 1
+        D = np.array([[0]])
+
+        disc_sys = cont2discrete((A,B,C,D), T_sample)
+        F = disc_sys[0]
+        B = disc_sys[1]
+        H = disc_sys[2]
+        Q = B * B.transpose() * process_n_stdev**2
         R = np.array([output_n__stdev**2]).reshape(1, 1)
-        P = np.array([[1e-3, 0],[0, 1e-3]])
+        P = 1e-3*np.eye(filter_order)
 
         x_1_list = x_est[0]
         x_2_list = x_est[1]
@@ -156,6 +167,7 @@ class Filter:
         G_tf = np.maximum(0, np.divide(abs(np.fft.fft(x_1_list)), abs(np.fft.fft(y))))
 
         return [x_1_list, x_2_list, G_tf[:round(len(G_tf)/2)]]
+        
 
     def __filter_fun_diff(self,t,y,para):
         return y

@@ -18,7 +18,7 @@ white   = Noise(Noise_Enum.WHITE, noise_std_dev)
 pt1     = Filter(Filter_Enum.PT1, 1e2)
 wiener  = Filter(Filter_Enum.WIENER, noise_std_dev)
 brown   = Filter(Filter_Enum.BROWN_HOLT, alpha)
-kalman  = Filter(Filter_Enum.KALMAN, [0, 10])
+kalman  = Filter(Filter_Enum.KALMAN, parameters=None)
 plot    = Plot_Sig(Plot_Enum.MULTI, "Overview", [])
 plot_sub= Plot_Sig(Plot_Enum.SUBPLOT, "Overview", [])
 cost    = Cost(Cost_Enum.MSE)
@@ -68,9 +68,11 @@ y_hat_dot_wiener = fwd_diff(time, y_hat_wiener)
 y_kalman_true = -10*(time-0.5)**2 + 2.5
 y_dot_kalman_true = -20*(time-0.5)
 y_kalman = white.apply_noise(y_kalman_true)
-kalman_process_noise = minimize(kalman_filter_cost, 3e6, args=(time, y_kalman, [np.array([0, 11]).reshape(2, 1), noise_std_dev, 3e6], y_kalman_true, kalman, cost))
+kalman_filter_order = 2
+kalman_process_noise = minimize(kalman_filter_cost, 1700, args=(time, y_kalman, [np.array([0, 11]).reshape(2, 1), noise_std_dev, 1700, kalman_filter_order], y_kalman_true, kalman, cost))
 kalman_process_noise = kalman_process_noise.x
-y_hat_kalman = kalman.filter_fun(time, y_kalman, para=[np.array([0, 11]).reshape(2, 1), noise_std_dev, kalman_process_noise])
+print(kalman_process_noise)
+y_hat_kalman = kalman.filter_fun(time, y_kalman, para=[np.array([0, 11]).reshape(2, 1), noise_std_dev, kalman_process_noise, kalman_filter_order])
 y_hat_dot_kalman = y_hat_kalman[1]
 tf_kalman = y_hat_kalman[2]
 y_hat_kalman = y_hat_kalman[0]
@@ -111,4 +113,3 @@ plot_s.plot_slider(time,[y,y_hat_kalman],['noisy sine','kalman smoothed'],[np.ar
 plot.plot_sig(time, [true_sine, y_hat_savgol], ["true diff sine", "saavgol smooth"])
 plot_sub.plot_sig(time, [true_sine, y_hat_savgol], ["true diff sine", "saavgol smooth"])
 plt.show()
-
