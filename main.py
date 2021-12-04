@@ -19,6 +19,7 @@ pt1     = Filter(Filter_Enum.PT1, 1e2)
 wiener  = Filter(Filter_Enum.WIENER, noise_std_dev)
 brown   = Filter(Filter_Enum.BROWN_HOLT, alpha)
 kalman  = Filter(Filter_Enum.KALMAN, parameters=None)
+diff_q  = Filter(Filter_Enum.DIFF_QUOTIENT, parameters=None)
 plot    = Plot_Sig(Plot_Enum.MULTI, "Overview", [])
 plot_sub= Plot_Sig(Plot_Enum.SUBPLOT, "Overview", [])
 cost    = Cost(Cost_Enum.MSE)
@@ -101,7 +102,10 @@ plt.show()
 #test of slider 
 savgol_filter_para=[100,3]
 y_hat_savgol=savgol.filter_fun(time,y,para=savgol_filter_para)
+diff_q_para=[5]
+y_hat_diff_q=diff_q.filter_fun(time,y,para=diff_q_para)
 plot_s.plot_slider(time,[y, y_hat_savgol],['noisy sine','savgol smoothed'],savgol_filter_para,savgol)
+plot_s.plot_slider(time,[y, y_hat_diff_q],['noisy sine','diff_q smoothed'],diff_q_para,diff_q)
 plot_s.plot_slider(time,[y,y_hat_brown],['noisy sine','brown holt smoothed'],alpha_min.x,brown)
 plot_s.plot_slider(time,[y,y_hat_pt1],['noisy sine','pt1 smoothed'],f_min.x,pt1)
 plot_s.plot_slider(time,[y_kalman,y_hat_kalman],['noisy sine','kalman smoothed'],[np.array([0, 11]).reshape(2, 1), noise_std_dev, kalman_process_noise, kalman_filter_order],kalman)

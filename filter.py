@@ -172,8 +172,18 @@ class Filter:
         return [x_1_list, x_2_list, G_tf[:round(len(G_tf)/2)]]
         
 
-    def __filter_fun_diff(self,t,y,para):
-        return y
+    def __filter_fun_diff(self,t,y,para): #kausal definition para=[h], backwards differentiation
+        y_uneven=[]
+        h=para[0]
+        for i in range(h,len(y)):
+            y_zwischen=(y[i]-y[i-h])/h
+            y_uneven.append(y_zwischen)
+
+        if len(t)>len(y_uneven):    
+                filler= np.full([1,len(t)-len(y_uneven) ], None)
+        y_hat=np.concatenate((filler,y_uneven), axis=None)
+        return y_hat
+
     def __filter_fun_brownholt(self,t,y,para):
         # Parameter: Alpha
         y_hat = np.zeros(len(y))

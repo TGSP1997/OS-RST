@@ -133,7 +133,22 @@ class Plot_Sig:
                 fig_plots.legend()
                 plt.show()
                 
-            #case Filter_Enum.DIFF_QUOTIENT:
+            case Filter_Enum.DIFF_QUOTIENT:
+                p=fig_plots.plot(t,signals[0],'b', label=labels[0])
+                p,=fig_plots.plot(t,signals[1],'g', label=labels[1])
+                plt.subplots_adjust(bottom=0.3)
+                fig_plots_slide1 = plt.axes([0.25,0.15,0.65,0.03]) #xposition,y position, width,height
+                slider_1=Slider(fig_plots_slide1,'Difference',valmin=0,valmax=self.parameters[0]+100,valinit=self.parameters[0],valstep=1)
+
+                def __update_DIFF_QUOTIENT(val):
+                    current_v1=np.array([slider_1.val])
+                    filtered_signal=filter.filter_fun(t, signals[0], para = current_v1)
+                    p.set_ydata(filtered_signal)
+                    self.fig.canvas.draw() #redraw the figure
+                    
+                slider_1.on_changed(__update_DIFF_QUOTIENT)
+                fig_plots.legend()
+                plt.show()
               
             case Filter_Enum.BROWN_HOLT:
                 p=fig_plots.plot(t,signals[0],'b', label=labels[0])
