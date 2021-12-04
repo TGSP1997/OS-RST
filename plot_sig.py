@@ -47,8 +47,6 @@ class Plot_Sig:
         plt.figure()
         plt.suptitle(self.title)
         for sig, lab in zip(signals, labels):
-            if len(sig)<len(t):#only for savgol signals
-                t=t[len(t)-len(sig):]
             plt.plot(t, sig, label=lab)
         plt.legend()
         if time_domain == True:
@@ -64,8 +62,6 @@ class Plot_Sig:
         
         for i in range(size(signals,0)):
             ax = fig.add_subplot(spec[i,0])
-            if len(signals[i])<len(t):#only for savgol signals
-                t=t[len(t)-len(signals[i]):]
             ax.plot(t, signals[i], label=labels[i])
             plt.legend()
             plt.ylabel('value', fontsize=20)
@@ -95,7 +91,7 @@ class Plot_Sig:
             case Filter_Enum.SAVGOL: 
                 window_length=2*self.parameters[0]+1
                 p=fig_plots.plot(t,signals[0],'b', label=labels[0])
-                p,=fig_plots.plot(t[window_length-1:],signals[1],'g', label=labels[1])
+                p,=fig_plots.plot(t,signals[1],'g', label=labels[1])
                 plt.subplots_adjust(bottom=0.3)
                 fig_plots_slide1 = plt.axes([0.25,0.15,0.65,0.03]) #xposition,y position, width,height
                 fig_plots_slide2 = plt.axes([0.25,0.1,0.65,0.03])
@@ -110,9 +106,7 @@ class Plot_Sig:
                     current_v2=int(slider_2.val)
                     half,_ = divmod(current_v2, 2)
                     filtered_signal=filter.filter_fun(t,signals[0],para=[half,current_v1]) 
-                    new_t=t[current_v2-1:]
                     p.set_ydata(filtered_signal)
-                    p.set_xdata(new_t)
                     self.fig.canvas.draw() #redraw the figure
 
                 slider_1.on_changed(__update_SAVGOL)
@@ -173,7 +167,7 @@ class Plot_Sig:
 
                 def __update_KALMAN(val):
                     current_v1=np.array([slider_1.val])
-                    filtered_signal,_,_=filter.filter_fun(t, signals[0], para = [self.parameters[0],self.parameters[1],current_v1])
+                    filtered_signal,_,_=filter.filter_fun(t, signals[0], para = [self.parameters[0],self.parameters[1],current_v1,self.parameters[3]])
                     p.set_ydata(filtered_signal)
                     self.fig.canvas.draw() #redraw the figure
                     

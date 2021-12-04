@@ -96,7 +96,7 @@ class Filter:
         H=B_inv.dot(A_t)
         ###################################################
         #Filter
-        y_hat=[]
+        y_uneven=[]
         for i in range(0,len(y)-window_length+1):
             y_signal=np.transpose([y[0+i:window_length+i]])
             f=[]
@@ -105,7 +105,10 @@ class Filter:
             
             f=np.asarray(f) 
             y_zwischen=f.dot(H.dot(y_signal))
-            y_hat.append(y_zwischen[0])
+            y_uneven.append(y_zwischen[0])
+        if len(t)>len(y_uneven):    
+            filler= np.full([1,len(t)-len(y_uneven) ], None)
+        y_hat=np.concatenate((filler,y_uneven), axis=None)
         ###################################################
         return y_hat
         
