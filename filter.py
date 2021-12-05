@@ -79,11 +79,12 @@ class Filter:
         den_coeff = [1, T_sample * para - 1]
         return lfilter(num_coeff, den_coeff, y)
 
-    def __filter_fun_savgol(self,t,y,para): #kausaler savgol filter. point of evluation is end of window_length para=[m,polorder,diff=None]
+    def __filter_fun_savgol(self,t,y,para): #kausaler savgol filter. point of evluation is end of window_length para=[m,polorder,diff=number]
         ###################################################
         #Compute H Matrix: Only Polyorder and window needed
         m=para[0]
         polyorder=para[1]
+        diff=para[2]
         window_length=2*m+1
         if polyorder >= window_length:
             raise ValueError("polyorder must be less than window_length.")
@@ -100,8 +101,11 @@ class Filter:
         for i in range(0,len(y)-window_length+1):
             y_signal=np.transpose([y[0+i:window_length+i]])
             f=[]
-            for l in range(0,polyorder+1):
-                f.append(y[window_length+i-1]**l)
+            if diff>0:
+                for i in range(0,diff):
+                    f.append(0)
+            for l in range(diff,polyorder+1):
+                f.append((l**diff)*y[window_length+i-1]**(l-diff))
             
             f=np.asarray(f) 
             y_zwischen=f.dot(H.dot(y_signal))

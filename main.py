@@ -19,12 +19,12 @@ pt1     = Filter(Filter_Enum.PT1, 1e2)
 wiener  = Filter(Filter_Enum.WIENER, noise_std_dev)
 brown   = Filter(Filter_Enum.BROWN_HOLT, alpha)
 kalman  = Filter(Filter_Enum.KALMAN, parameters=None)
-diff_q  = Filter(Filter_Enum.DIFF_QUOTIENT, parameters=None)
+diff_q  = Filter(Filter_Enum.DIFF_QUOTIENT, parameters=None) #para=[difference]
 plot    = Plot_Sig(Plot_Enum.MULTI, "Overview", [])
 plot_sub= Plot_Sig(Plot_Enum.SUBPLOT, "Overview", [])
 cost    = Cost(Cost_Enum.MSE)
 plot_s  = Plot_Sig(Plot_Enum.SLIDER, "Detailed View with Slider",[])#only one slider window can be open at a time
-savgol  = Filter(Filter_Enum.SAVGOL, parameters=None) #para=[m,polorder,diff=None]
+savgol  = Filter(Filter_Enum.SAVGOL, parameters=None) #para=[m,polorder,diff=number]
 
 time, true_sine, true_sine_dot = sine.get_fun()
 norm_freq = time[:round(len(time)/2)] / (time[-1] - time[0])
@@ -100,7 +100,7 @@ plt.show()
 
 
 #test of slider 
-savgol_filter_para=[100,3]
+savgol_filter_para=[100,3,0]
 y_hat_savgol=savgol.filter_fun(time,y,para=savgol_filter_para)
 diff_q_para=[5]
 y_hat_diff_q=diff_q.filter_fun(time,y,para=diff_q_para)

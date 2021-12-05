@@ -95,22 +95,26 @@ class Plot_Sig:
                 plt.subplots_adjust(bottom=0.3)
                 fig_plots_slide1 = plt.axes([0.25,0.15,0.65,0.03]) #xposition,y position, width,height
                 fig_plots_slide2 = plt.axes([0.25,0.1,0.65,0.03])
+                fig_plots_slide3 = plt.axes([0.25,0.05,0.65,0.03])
                 
                 if (window_length%2)==0:
                     raise ValueError('Window_Length must be a odd number')
                 slider_1=Slider(fig_plots_slide1,'Polynom Grade',valmin=1,valmax=self.parameters[1]+10,valinit=self.parameters[1],valstep=1)
                 slider_2=Slider(fig_plots_slide2,'Window Length',valmin=1,valmax=2*self.parameters[0]+1+50,valinit=2*self.parameters[0]+1,valstep=2)
+                slider_3=Slider(fig_plots_slide3,'Diffgrad',valmin=0,valmax=10,valinit=1,valstep=1)
                
                 def __update_SAVGOL(val):
                     current_v1=int(slider_1.val)
                     current_v2=int(slider_2.val)
+                    current_v3=int(slider_3.val)
                     half,_ = divmod(current_v2, 2)
-                    filtered_signal=filter.filter_fun(t,signals[0],para=[half,current_v1]) 
+                    filtered_signal=filter.filter_fun(t,signals[0],para=[half,current_v1,current_v3]) 
                     p.set_ydata(filtered_signal)
                     self.fig.canvas.draw() #redraw the figure
 
                 slider_1.on_changed(__update_SAVGOL)
                 slider_2.on_changed(__update_SAVGOL)
+                slider_3.on_changed(__update_SAVGOL)
                 fig_plots.legend()
                 plt.show()
                 
