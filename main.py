@@ -66,14 +66,13 @@ y_hat_dot_wiener = fwd_diff(time, y_hat_wiener)
 
 
 # Kalman-smoothing
-y_kalman_true = -10*(time-0.5)**2 + 2.5
-y_dot_kalman_true = -20*(time-0.5)
-y_kalman = white.apply_noise(y_kalman_true)
 kalman_filter_order = 2
-kalman_process_noise = minimize(kalman_filter_cost, 1700, args=(time, y_kalman, [np.array([0, 11]).reshape(2, 1), noise_std_dev, 1700, kalman_filter_order], y_kalman_true, kalman, cost))
+process_std_dev = 2e4
+x_start_guess = np.array([[0], [2*np.pi*10]])
+kalman_process_noise = minimize(kalman_filter_cost, process_std_dev, args=(time, y, [x_start_guess, noise_std_dev, process_std_dev, kalman_filter_order], true_sine, kalman, cost))
 kalman_process_noise = kalman_process_noise.x
 print(kalman_process_noise)
-y_hat_kalman = kalman.filter_fun(time, y_kalman, para=[np.array([0, 11]).reshape(2, 1), noise_std_dev, kalman_process_noise, kalman_filter_order])
+y_hat_kalman = kalman.filter_fun(time, y, para=[x_start_guess, noise_std_dev, kalman_process_noise, kalman_filter_order])
 y_hat_dot_kalman = y_hat_kalman[1]
 tf_kalman = y_hat_kalman[2]
 y_hat_kalman = y_hat_kalman[0]
@@ -87,7 +86,7 @@ print(f"Mean Squared Error of Differentials: \n \
         Forward Difference: {cost.cost(diff_finite, true_sine_dot)} \n \
         PT1: {cost.cost(y_hat_dot_pt1, true_sine_dot)} \n \
         Wiener: {cost.cost(y_hat_dot_wiener, true_sine_dot)} \n \
-        Kalman: {cost.cost(y_hat_dot_kalman, y_dot_kalman_true)} \n \
+        Kalman: {cost.cost(y_hat_dot_kalman, true_sine_dot)} \n \
         Brown-Holt: {cost.cost(y_hat_dot_brown, true_sine_dot)} \n" )
 
 # plot results
@@ -95,10 +94,10 @@ plot.plot_sig(time, [true_sine_dot, y_hat_dot_wiener], ["true diff sine", "diff 
 plot.plot_sig(norm_freq, [tf_wiener, tf_kalman], ["Wiener TF", "Kalman TF"], time_domain=False)
 plot.plot_sig(time, [diff_finite, y_hat_dot_wiener], ["diff unsmoothed", "diff Wiener"])
 plot.plot_sig(time, [true_sine, y, y_hat_wiener], ["true sine", "noisy sine", "Wiener smoothed"])
-plot.plot_sig(time, [y_kalman, y_hat_kalman, y_hat_dot_kalman], ["y", "Kalman", "dot Kalman"])
+plot.plot_sig(time, [y, y_hat_kalman, y_hat_dot_kalman], ["y", "Kalman", "dot Kalman"])
 plt.show()
 
-
+"""
 #test of slider 
 savgol_filter_para=[100,3,0]
 y_hat_savgol=savgol.filter_fun(time,y,para=savgol_filter_para)
@@ -114,6 +113,7 @@ plot_s.plot_slider(time,[y_kalman,y_hat_kalman],['noisy sine','kalman smoothed']
 #plot.plot_sig(time_p, [true_pol, true_pol_dot], ["polynom", "diff polynom"])
 #time_exp, true_exp, true_exp_dot = exp.get_fun()
 #plot.plot_sig(time_exp, [true_exp, true_exp_dot], ["exponential", "diff exponential"])
-plot.plot_sig(time, [y, y_hat_savgol], ["true diff sine", "saavgol smooth"])
-plot_sub.plot_sig(time, [y, y_hat_savgol], ["true diff sine", "saavgol smooth"])
+plot.plot_sig(time, [true_sine, y_hat_savgol], ["true diff sine", "saavgol smooth"])
+plot_sub.plot_sig(time, [true_sine, y_hat_savgol], ["true diff sine", "saavgol smooth"])
 plt.show()
+"""
