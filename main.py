@@ -97,7 +97,6 @@ plot.plot_sig(time, [true_sine, y, y_hat_wiener], ["true sine", "noisy sine", "W
 plot.plot_sig(time, [y, y_hat_kalman, y_hat_dot_kalman], ["y", "Kalman", "dot Kalman"])
 plt.show()
 
-"""
 #test of slider 
 savgol_filter_para=[100,3,0]
 y_hat_savgol=savgol.filter_fun(time,y,para=savgol_filter_para)
@@ -115,5 +114,9 @@ plot_s.plot_slider(time,[y_kalman,y_hat_kalman],['noisy sine','kalman smoothed']
 #plot.plot_sig(time_exp, [true_exp, true_exp_dot], ["exponential", "diff exponential"])
 plot.plot_sig(time, [true_sine, y_hat_savgol], ["true diff sine", "saavgol smooth"])
 plot_sub.plot_sig(time, [true_sine, y_hat_savgol], ["true diff sine", "saavgol smooth"])
+<<<<<<< HEAD
 plt.show()
 """
+=======
+plt.show()
+>>>>>>> forgot deleting comments
