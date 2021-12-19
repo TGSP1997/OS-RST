@@ -135,10 +135,10 @@ class Filter:
         T_sample = (t[-1] - t[0]) / (len(t) - 1)
 
         # initialization
-        x_est = para[0]
-        output_n__stdev = para[1]
-        process_n_stdev = para[2]
-        filter_order = para[3]
+        filter_order = para[0]
+        x_est = para[1]
+        output_n_stdev = para[2]
+        process_n_stdev = para[3]
 
         A = np.zeros((filter_order, filter_order))
         for i in range(0, filter_order-1):
@@ -154,7 +154,7 @@ class Filter:
         B = disc_sys[1]
         H = disc_sys[2]
         Q = B * B.transpose() * process_n_stdev**2
-        R = np.array([output_n__stdev**2]).reshape(1, 1)
+        R = np.array([output_n_stdev**2]).reshape(1, 1)
         P = 1e-3*np.eye(filter_order)
 
         x_1_list = x_est[0]
