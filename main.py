@@ -36,44 +36,50 @@ plot_sub= Plot_Sig(Plot_Enum.SUBPLOT, "Overview", [])
 # apply noise and generate time series
 time, true_sine, true_sine_dot = sine.get_fun()
 norm_freq = time[:round(len(time)/2)] / (time[-1] - time[0])
-y = white.apply_noise(true_sine)
+noisy_sine = white.apply_noise(true_sine)
 
+# unfiltered differentiation of noisy signal
+diff_finite = fwd_diff(time, noisy_sine)
+
+# PT1 smoothing
 # optimize pt1 parameter
-param_pt1 = minimize(filter_cost,0.1,args=(time, y, true_sine, pt1,cost))
-y_hat_pt1 = pt1.filter_fun(time, y, para = param_pt1.x)
-# differentiate noisy signal
-diff_finite = fwd_diff(time, y)
-# pt1 smoothing
+param_pt1 = minimize(filter_cost,0.1,args=(time, noisy_sine, true_sine, pt1,cost))
+param_pt1 = param_pt1.x
+# apply PT1
+y_hat_pt1 = pt1.filter_fun(time, noisy_sine, para = param_pt1)
+# numeric differentiation
 y_hat_dot_pt1 = fwd_diff(time, y_hat_pt1)
-param_pt1 = minimize(filter_cost,0.1,args=(time, y_hat_dot_pt1, true_sine_dot, pt1,cost))
-y_hat_dot_pt1 = pt1.filter_fun(time, y_hat_dot_pt1, para = param_pt1.x)
+print(f"PT1 smoothing and numeric diff: \n \
+        Optimal PT1 parameter: {param_pt1} \n \n")
 
-print("Minimal solution found. param_pt1 = ")
-print(param_pt1.x)
-print(cost.cost(y, true_sine))
-print(cost.cost(y_hat_pt1, true_sine))
-plot.plot_sig(time, [true_sine, y, y_hat_pt1],["Roh","Rausch", "Filter"])
-
-
-# Wiener-smoothing
-# Frage: wie noise std_dev am besten schaetzen, wenn unbekannt?
-y_hat_wiener = wiener.filter_fun(time, y, noise_std_dev)
+# Wiener smoothing
+# apply Wiener filter with known noise std dev
+y_hat_wiener = wiener.filter_fun(time, noisy_sine, noise_std_dev)
+# get transfer function of Wiener filter
 tf_wiener = y_hat_wiener[1]
+# get time series of Wiener output
 y_hat_wiener = y_hat_wiener[0]
+# numeric differentiation
 y_hat_dot_wiener = fwd_diff(time, y_hat_wiener)
 
-
-# Kalman-smoothing
+# Kalman smoothing
+# filter paramters
 kalman_filter_order = 2
-process_std_dev = 2e4
+kalman_process_noise = 2e4
 x_start_guess = np.array([[0], [2*np.pi*10]])
-kalman_process_noise = minimize(kalman_filter_cost, process_std_dev, args=(time, y, [kalman_filter_order, x_start_guess, noise_std_dev], true_sine, kalman, cost), method='Nelder-Mead')
+# optimize Kalman parameter
+kalman_process_noise = minimize(kalman_filter_cost, kalman_process_noise, args=(time, noisy_sine, [kalman_filter_order, x_start_guess, noise_std_dev], true_sine, kalman, cost), method='Nelder-Mead')
 kalman_process_noise = kalman_process_noise.x
-print(kalman_process_noise)
-y_hat_kalman = kalman.filter_fun(time, y, para=[kalman_filter_order, x_start_guess, noise_std_dev, kalman_process_noise])
+# apply Kalman filter
+y_hat_kalman = kalman.filter_fun(time, noisy_sine, para=[kalman_filter_order, x_start_guess, noise_std_dev, kalman_process_noise])
+# get differentiation from state
 y_hat_dot_kalman = y_hat_kalman[1]
+# get transfer function of Kalman filter
 tf_kalman = y_hat_kalman[2]
+# get time series of Kalman output
 y_hat_kalman = y_hat_kalman[0]
+print(f"Kalman smoothing: \n \
+        Optimal Kalman parameter: {kalman_process_noise} \n \n")
 
 
 print(f"Mean Squared Error of Differentials: \n \
@@ -83,9 +89,9 @@ print(f"Mean Squared Error of Differentials: \n \
         Kalman: {cost.cost(y_hat_dot_kalman, true_sine_dot)} \n" )
 
 # plot results
-plot.plot_sig(time, [true_sine_dot, y_hat_dot_wiener], ["true diff sine", "diff Wiener"])
-plot.plot_sig(norm_freq, [tf_wiener, tf_kalman], ["Wiener TF", "Kalman TF"], time_domain=False)
-plot.plot_sig(time, [diff_finite, y_hat_dot_wiener], ["diff unsmoothed", "diff Wiener"])
-plot.plot_sig(time, [true_sine, y, y_hat_wiener], ["true sine", "noisy sine", "Wiener smoothed"])
-plot.plot_sig(time, [y, y_hat_kalman, y_hat_dot_kalman], ["y", "Kalman", "dot Kalman"])
+plot_sub.plot_sig(time, [true_sine_dot, y_hat_dot_wiener], ["true diff sine", "diff Wiener"])
+plot_sub.plot_sig(norm_freq, [tf_wiener, tf_kalman], ["Wiener TF", "Kalman TF"], time_domain=False)
+plot_sub.plot_sig(time, [diff_finite, y_hat_dot_wiener], ["diff unsmoothed", "diff Wiener"])
+plot_sub.plot_sig(time, [true_sine, noisy_sine, y_hat_wiener], ["true sine", "noisy sine", "Wiener smoothed"])
+plot_sub.plot_sig(time, [noisy_sine, y_hat_kalman, y_hat_dot_kalman], ["y", "Kalman", "dot Kalman"])
 plt.show()
