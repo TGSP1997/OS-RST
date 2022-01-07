@@ -36,7 +36,7 @@ def filter_cost(para_in, t, y, true_y, filter, cost):
 
 
 def kalman_filter_cost(para_in, t, y, para_filt, true_y, filter, cost):
-        y_hat_kalman = filter.filter_fun(t, y, para = para_filt)[0]
+        y_hat_kalman = filter.filter_fun(t, y, para = [para_filt[0], para_filt[1], para_filt[2], para_in])[0]
         return cost.cost(y_hat_kalman, true_y)
 
 f_min = minimize(filter_cost,0.1,args=(time, y, true_sine, pt1,cost))
@@ -69,10 +69,10 @@ y_hat_dot_wiener = fwd_diff(time, y_hat_wiener)
 kalman_filter_order = 2
 process_std_dev = 2e4
 x_start_guess = np.array([[0], [2*np.pi*10]])
-kalman_process_noise = minimize(kalman_filter_cost, process_std_dev, args=(time, y, [x_start_guess, noise_std_dev, process_std_dev, kalman_filter_order], true_sine, kalman, cost))
+kalman_process_noise = minimize(kalman_filter_cost, process_std_dev, args=(time, y, [kalman_filter_order, x_start_guess, noise_std_dev], true_sine, kalman, cost), method='Nelder-Mead')
 kalman_process_noise = kalman_process_noise.x
 print(kalman_process_noise)
-y_hat_kalman = kalman.filter_fun(time, y, para=[x_start_guess, noise_std_dev, kalman_process_noise, kalman_filter_order])
+y_hat_kalman = kalman.filter_fun(time, y, para=[kalman_filter_order, x_start_guess, noise_std_dev, kalman_process_noise])
 y_hat_dot_kalman = y_hat_kalman[1]
 tf_kalman = y_hat_kalman[2]
 y_hat_kalman = y_hat_kalman[0]
@@ -114,9 +114,4 @@ plot_s.plot_slider(time,[y_kalman,y_hat_kalman],['noisy sine','kalman smoothed']
 #plot.plot_sig(time_exp, [true_exp, true_exp_dot], ["exponential", "diff exponential"])
 plot.plot_sig(time, [true_sine, y_hat_savgol], ["true diff sine", "saavgol smooth"])
 plot_sub.plot_sig(time, [true_sine, y_hat_savgol], ["true diff sine", "saavgol smooth"])
-<<<<<<< HEAD
 plt.show()
-"""
-=======
-plt.show()
->>>>>>> forgot deleting comments
