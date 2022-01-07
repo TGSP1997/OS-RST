@@ -12,7 +12,7 @@ from filter import *
 from plot_sig import *
 from cost import *
 
-noise_std_dev   = 0.2
+noise_std_dev   = 0.1
 alpha           = 0.4
 freq            = 10 / (1000 / 2) # Normalisierte Grenzfrequenz mit w = fc / (fs / 2)
 
@@ -83,6 +83,7 @@ plot.plot_sig(t,[x_dot,y_dot,y_dot_hat_min1,y_dot_hat_min2,y_dot_hat_min3],['sin
 plt.show()
 
 # >Variation der Alpha-Werte bei der Ableitung
+# Robustheitsbetrachtung
 
 alpha = np.linspace(0,1,51)
 beta = np.linspace(0,1,51)
@@ -110,17 +111,17 @@ lev_exp = np.linspace(-5,-2,31)
 levs = np.power(10, lev_exp)
 
 fig1 = plt.figure()
-cs = plt.contourf(alpha, beta, res1, levs, cmap=cm.PuBu_r)
+cs = plt.contourf(alpha, beta, res1, levs)
 cbar = fig1.colorbar(cs)
 fig1.suptitle('First Order', fontsize=20)
 
 fig2 = plt.figure()
-cs = plt.contourf(alpha, beta, res2, levs, cmap=cm.PuBu_r)
+cs = plt.contourf(alpha, beta, res2, levs)
 cbar = fig2.colorbar(cs)
 fig2.suptitle('Second Order', fontsize=20)
 
 fig3 = plt.figure()
-cs = plt.contourf(alpha, beta, res3, levs, cmap=cm.PuBu_r)
+cs = plt.contourf(alpha, beta, res3, levs)
 cbar = fig3.colorbar(cs)
 fig3.suptitle('Third Order', fontsize=20)
 
