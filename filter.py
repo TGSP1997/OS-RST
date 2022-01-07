@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.core.numeric import isscalar
-from scipy.signal import lfilter, cont2discrete
+from scipy import signal
+from scipy.signal import lfilter, cont2discrete, butter
 from enum import Enum
 
 class Filter_Enum(Enum):
@@ -189,13 +190,24 @@ class Filter:
         return y_hat
 
     def __filter_fun_brownholt(self,t,y,para):
-        # Parameter: Alpha
+        # Parameter: Alpha, Order
+        alpha = para[0]
+        order = para[1]
         y_hat = np.zeros(len(y))
-        for i in range(1,len(y)):
-            y_hat[i] = para*y[i] + (1-para)*y_hat[i-1]
+        for j in range(order):
+            for i in range(1,len(y)):
+                y_hat[i] = alpha*y[i] + (1-alpha)*y_hat[i-1]
+            y = y_hat
         return y_hat
     def __filter_fun_butterworth(self,t,y,para):
-        return y
+        # Parameter: Filterordnung , Normalisierte Grenzfrequenz
+        order = para[0]
+        freq = para[1]
+
+        sos = butter(order, freq,output='sos')
+        y_hat = signal.sosfilt(sos,y)
+        return y_hat
+
     def __filter_fun_chebychev(self,t,y,para):
         return y
     def __filter_fun_robexdiff(self,t,y,para):
@@ -226,8 +238,32 @@ class Filter:
     def __filter_diff_diff(self,t,y,para):
         return y
     def __filter_diff_brownholt(self,t,y,para):
-        return y
+        # Parameter: Alpha, Order
+        alpha   = para[0]
+        order   = para[1]
+        beta    = para[2]
+        a = np.zeros(len(y))
+        b = np.zeros(len(y))
+        
+        for j in range(order):
+            for i in range(1,len(y)):
+                a[i] = alpha*y[i] + (1-alpha)*(a[i-1] + b[i-1])
+                b[i] = beta*(a[i]-a[i-1]) + (1-beta)*b[i-1]
+            y = a
+        y_dot_hat = b
+        return y_dot_hat
+
+
     def __filter_diff_butterworth(self,t,y,para):
+        # Parameter: Filterordnung , Normalisierte Grenzfrequenz
+        order = para[0]
+        freq = para[1]
+
+        sos = butter(order, freq,output='sos')
+        derivative = [1, -1, 0, 1, 1, 0] # Second order section derivative | s= (z-1)/(z+1) | first three numerator, second three denominator
+        sos= np.append(sos,[derivative],axis=0)
+        y_dot_hat = signal.sosfilt(sos,y)
+        return y_dot_hat
         return y
     def __filter_diff_chebychev(self,t,y,para):
         return y
