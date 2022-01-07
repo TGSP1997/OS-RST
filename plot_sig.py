@@ -85,8 +85,8 @@ class Plot_Sig:
     def __plot_sig_slider(self,t,signals,labels,filter): #self.parameters[0]=m self.parameters[1]=polyorder
         self.fig=plt.figure()
         fig_plots=self.fig.subplots()
-        fig_plots.set_xlabel('time')
-        fig_plots.set_ylabel('value')
+        fig_plots.set_xlabel('time',fontsize=14)
+        fig_plots.set_ylabel('value',fontsize=14)
         match filter.type:
             case Filter_Enum.SAVGOL: 
                 window_length=2*self.parameters[0]+1
@@ -155,11 +155,14 @@ class Plot_Sig:
                 plt.show()
               
             case Filter_Enum.BROWN_HOLT:
-                p=fig_plots.plot(t,signals[0],'b', label=labels[0])
-                p,=fig_plots.plot(t,signals[1],'g', label=labels[1])
+                p=fig_plots.plot(t,signals[0],'b:', label=labels[0])
+                p,=fig_plots.plot(t,signals[1],'r', label=labels[1], linewidth=3)
                 plt.subplots_adjust(bottom=0.3)
                 fig_plots_slide1 = plt.axes([0.25,0.15,0.65,0.03]) #xposition,y position, width,height
                 slider_1=Slider(fig_plots_slide1,'Alpha',valmin=0,valmax=1,valinit=self.parameters[0],valstep=0.005)
+                # Plot Settings
+                fig_plots.set_xlim(xmin = 0, xmax = 1)
+                slider_1.label.set_size(20)
 
                 def __update_BROWN_HOLT(val):
                     current_v1=np.array([slider_1.val])
