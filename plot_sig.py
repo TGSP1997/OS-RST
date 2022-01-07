@@ -85,8 +85,8 @@ class Plot_Sig:
     def __plot_sig_slider(self,t,signals,labels,filter): #self.parameters[0]=m self.parameters[1]=polyorder
         self.fig=plt.figure()
         fig_plots=self.fig.subplots()
-        fig_plots.set_xlabel('time')
-        fig_plots.set_ylabel('value')
+        fig_plots.set_xlabel('time', fontsize=20)
+        fig_plots.set_ylabel('value', fontsize=20)
         match filter.type:
             case Filter_Enum.SAVGOL: 
                 window_length=2*self.parameters[0]+1

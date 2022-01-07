@@ -114,9 +114,6 @@ plot_s.plot_slider(time,[y_kalman,y_hat_kalman],['noisy sine','kalman smoothed']
 #plot.plot_sig(time_exp, [true_exp, true_exp_dot], ["exponential", "diff exponential"])
 plot.plot_sig(time, [true_sine, y_hat_savgol], ["true diff sine", "saavgol smooth"])
 plot_sub.plot_sig(time, [true_sine, y_hat_savgol], ["true diff sine", "saavgol smooth"])
-<<<<<<< HEAD
+
 plt.show()
-"""
-=======
-plt.show()
->>>>>>> forgot deleting comments
+
