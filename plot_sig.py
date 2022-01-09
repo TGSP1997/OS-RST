@@ -101,7 +101,7 @@ class Plot_Sig:
                     raise ValueError('Window_Length must be a odd number')
                 slider_1=Slider(fig_plots_slide1,'Polynom Grade',valmin=1,valmax=self.parameters[1]+10,valinit=self.parameters[1],valstep=1)
                 slider_2=Slider(fig_plots_slide2,'Window Length',valmin=1,valmax=2*self.parameters[0]+1+50,valinit=2*self.parameters[0]+1,valstep=2)
-                slider_3=Slider(fig_plots_slide3,'Diffgrad',valmin=0,valmax=10,valinit=1,valstep=1)
+                slider_3=Slider(fig_plots_slide3,'Diffgrad',valmin=0,valmax=10,valinit=0,valstep=1)
                
                 def __update_SAVGOL(val):
                     current_v1=int(slider_1.val)
