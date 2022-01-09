@@ -8,7 +8,7 @@ from filter import *
 from plot_sig import *
 from cost import *
 
-noise_std_dev = 0.01
+noise_std_dev = 0.1
 sine    = Input_Function(Input_Enum.SINE, [1, 1, 0, 0], point_counter=1e3)
 polynom = Input_Function(Input_Enum.POLYNOM, [1,1,1,1]) #coefs in descending order 2x^2+1 = [2,0,1]
 exp     = Input_Function(Input_Enum.EXP, [1,2,0,0]) #coefs [a,b,c,d]= a*e^(t/b+c)+d
@@ -25,6 +25,7 @@ norm_freq = time[:round(len(time))] / (time[-1] - time[0])
 
 print(cost.cost(true_sine_dot, true_sine))
 
+y_white = whites[0].apply_noise(true_sine)
 y = browns[0].apply_noise(true_sine)
 y2 = pinks[0].apply_noise(true_sine)
 
@@ -43,5 +44,7 @@ plt.ylabel('dB')
 plt.tight_layout()
 '''
 
-plot.plot_sig(time, [true_sine, true_sine_dot],["Roh","Rausch"])
+corr = np.correlate(y_white - true_sine, y_white - true_sine, mode='full')
+corr = 1/1000 * corr[round(corr.size/2)-1:]
+plot.plot_sig(time, [y_white - true_sine, corr],["Roh", "R_nn"])
 plt.show()

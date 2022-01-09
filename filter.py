@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.core.numeric import isscalar
 from scipy.signal import lfilter, cont2discrete
+from scipy.linalg import toeplitz
 from enum import Enum
 
 class Filter_Enum(Enum):
@@ -123,12 +124,36 @@ class Filter:
 
     def __filter_fun_wiener(self,t,y,para):
         # Parameter: Noise standard Deviation
-        noise_stdev = para
-        S_nn = noise_stdev**2*np.ones(len(y))
-        S_yy = np.square(np.abs(np.fft.fft(y)/len(y)))
-        H_noncausal = np.maximum(0, np.divide(S_yy - S_nn , S_yy))
-        Y_hat = np.multiply(H_noncausal, np.fft.fft(y))
-        return [np.real(np.fft.ifft(Y_hat)), H_noncausal[:round(len(H_noncausal)/2)]]
+        noise_stdev = para[0]
+        noise = para[1]
+        mode = para[2]
+        N = round(len(y)/2)  # half window length
+        
+        if mode == 'time':
+            # assumption: uncorrelated noise and measurement signal
+            R_yy_long = np.convolve(y, np.flip(y), mode='full')  # correlation of signal
+            R_yy = R_yy_long[N:3*N-1]  # symmetric part of correlation
+            R_Mat = toeplitz(R_yy_long[2*N-1:-1])
+            R_nn_long = np.convolve(noise, np.flip(noise), mode='full')  # correlation of noise
+            R_nn = R_nn_long[N:3*N-1]
+            h_noncausal = np.matmul(np.linalg.inv(R_Mat), R_yy-R_nn)
+
+            # Apply filter time domain wiener filter
+            x_hat_long = np.convolve(y, h_noncausal, mode='full')
+            x_hat = x_hat_long[N-1:-N+1]
+
+            H_noncausal = np.real(np.fft.fft(h_noncausal))
+
+        if mode == 'freq':
+            S_yy = np.square(np.abs(np.fft.fft(y))/len(y))
+            S_nn = noise_stdev**2*np.ones(len(S_yy))
+            H_noncausal = np.maximum(0, np.divide(S_yy - S_nn , S_yy))
+            Y_hat = np.multiply(H_noncausal, np.fft.fft(y, n=len(H_noncausal)))
+            x_hat = np.real(np.fft.ifft(Y_hat))
+
+        return [x_hat, H_noncausal[:N]]
+
+
 
     def __filter_fun_kalman(self,t,y,para):
         # Parameter: x_0 estimation, stdev of output noise, stdev of process noise
