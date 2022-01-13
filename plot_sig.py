@@ -13,6 +13,7 @@ class Plot_Enum(Enum):
     SLIDER = "Slider"
     SUBPLOT = "subplot"
     FILTER1 = "filter1"
+    FILTER2 = "filter2"
 
 class Plot_Sig:
     type        = Plot_Enum.MULTI
@@ -35,6 +36,8 @@ class Plot_Sig:
                 self.__plot_sig_subplot(t,signals,labels)
             case Plot_Enum.FILTER1:
                 self.__plot_sig_filter1(t,signals, labels)
+            case Plot_Enum.FILTER2:
+                self.__plot_sig_filter2(t,signals, labels)
     
     def plot_slider(self,t,signals, labels,parameters,filter): #parameters as array, differrent for ech filter 
         match self.type:
@@ -102,6 +105,41 @@ class Plot_Sig:
             plt.ylabel('value', fontsize=16)
             plt.xlim(min(t),max(t))
             plt.yticks(np.arange(np.floor(np.min(signals)/0.5+1)*0.5, np.floor(np.max(signals)/0.5+1)*0.5, 0.5))
+            plt.tick_params(
+                axis="x",
+                which="both",
+                bottom=False,
+                top = False,
+                labelbottom = False
+            )
+            plt.yticks(fontsize=14)
+        plt.xlabel('time [s]', fontsize=16)
+        plt.tick_params(
+                axis="x",
+                which="both",
+                bottom=True,
+                top = False,
+                labelbottom = True
+            )
+        plt.xticks(fontsize=14)
+
+    def __plot_sig_filter2(self,t,signals,labels):
+        fig = plt.figure(figsize=(15, 10), dpi=120, constrained_layout=True)
+        spec = gridspec.GridSpec(size(signals,0)-4,1, figure = fig, wspace = 0)
+        
+        props = dict(boxstyle='round', facecolor='white', alpha=0.5)
+
+        for i in range(size(signals,0)-4):
+            ax = fig.add_subplot(spec[i,0])
+            ax.plot(t, signals[i+1],'b:', linewidth = 0.5, label=labels[i+1])
+            ax.plot(t, signals[0],'r--', linewidth = 3, label=labels[0])
+            ax.plot(t, signals[i+4],'k', linewidth = 2, label=labels[i+4])
+            ax.text(0.12, 0.95, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
+            plt.legend(loc="lower right")
+            plt.ylabel('value', fontsize=16)
+            plt.xlim(min(t),max(t))
+            plt.ylim(-20,20)
+            plt.yticks(np.arange(-20,25,step=5))#np.arange(np.floor(np.min(signals)/5+1)*5, np.floor(np.max(signals)/5+1)*5, 5))
             plt.tick_params(
                 axis="x",
                 which="both",

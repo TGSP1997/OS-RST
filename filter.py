@@ -248,10 +248,9 @@ class Filter:
         for j in range(order):
             for i in range(1,len(y)):
                 a[i] = alpha*y[i] + (1-alpha)*(a[i-1] + b[i-1])
-                b[i] = beta*(a[i]-a[i-1]) + (1-beta)*b[i-1]
+                b[i] = (beta*(a[i]-a[i-1]) + (1-beta)*b[i-1])
             y = a
-        y_dot_hat = b
-        return y_dot_hat
+        return [x / 1e-3 for x in b] #Divide by stepsize
 
 
     def __filter_diff_butterworth(self,t,y,para):
