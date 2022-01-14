@@ -179,7 +179,7 @@ class Plot_Sig:
         
         plt.sca(ax_amp)    
         plt.ylabel('Amplitude [dB]', fontsize=16)
-        ax_amp.legend(loc="upper right")
+        ax_amp.legend(loc="lower left")
         ax_amp.tick_params(
                 axis="x",
                 which="both",
@@ -192,7 +192,7 @@ class Plot_Sig:
         plt.xlim(np.min(norm_freq),np.max(norm_freq))
 
         plt.sca(ax_phase)    
-        ax_phase.legend(loc="upper right")
+        ax_phase.legend(loc="lower left")
         plt.yticks(fontsize=14)
         plt.xlabel('frequency [rad/s]', fontsize=16)
         ax_phase.tick_params(

@@ -285,19 +285,36 @@ box_label_white,box_label_brown,box_label_quant],True)
 
 # Übertragungsfunktion des Filters bestimmen
 
-exp   = Filter(Filter_Enum.PT1, 10)
-
 
 u = np.zeros(int(point_counter))
 u[10] = 1
 t = np.linspace(0,1,num = int(point_counter))
 
-#y = exp.filter_fun(t,u,para = [0.4,exp.parameters[1],alpha_min_white.x[1]])
-y = exp.filter_fun(t,u)
+y1      = exp.filter_fun(t,u,para = [ 0.1, exp.parameters[1] ])
+y2      = exp.filter_fun(t,u,para = [ 0.2, exp.parameters[1] ])
+y3      = exp.filter_fun(t,u,para = [ 0.3, exp.parameters[1] ])
+y4      = exp.filter_fun(t,u,para = [ 0.4, exp.parameters[1] ])
+y5      = exp.filter_fun(t,u,para = [ 0.5, exp.parameters[1] ])
+y6      = exp.filter_fun(t,u,para = [ 0.6, exp.parameters[1] ])
+y7      = exp.filter_fun(t,u,para = [ 0.7, exp.parameters[1] ])
+y8      = exp.filter_fun(t,u,para = [ 0.8, exp.parameters[1] ])
+y9      = exp.filter_fun(t,u,para = [ 0.9, exp.parameters[1] ])
+y10     = exp.filter_fun(t,u,para = [ 1.0, exp.parameters[1] ])
+
 
 plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot",parameters = 0)
 
-plot_bode.plot_sig(t,[[u],[y]],["Impulsantwort auf alpha = 0.4"])
+plot_bode.plot_sig(t,[[u,u,u,u,u,u,u,u,u,u],[y1,y2,y3,y4,y5,y6,y7,y8,y9,y10]],[
+        "alpha = 0.1", 
+        "alpha = 0.2",
+        "alpha = 0.3",
+        "alpha = 0.4",
+        "alpha = 0.5",
+        "alpha = 0.6",
+        "alpha = 0.7",
+        "alpha = 0.8",
+        "alpha = 0.9",
+        "alpha = 1.0",])
 
 #y_dot = exp.filter_diff(t,u,para = [0.04,exp.parameters[1],0.08])
 
