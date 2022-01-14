@@ -14,6 +14,7 @@ class Plot_Enum(Enum):
     SUBPLOT = "subplot"
     FILTER1 = "filter1"
     FILTER2 = "filter2"
+    BODE = "bode"
 
 class Plot_Sig:
     type        = Plot_Enum.MULTI
@@ -38,6 +39,8 @@ class Plot_Sig:
                 self.__plot_sig_filter1(t,signals, labels)
             case Plot_Enum.FILTER2:
                 self.__plot_sig_filter2(t,signals, labels)
+            case Plot_Enum.BODE:
+                self.__plot_sig_bode(t,signals, labels)
     
     def plot_slider(self,t,signals, labels,parameters,filter): #parameters as array, differrent for ech filter 
         match self.type:
@@ -104,7 +107,6 @@ class Plot_Sig:
             plt.legend(loc="lower right")
             plt.ylabel('value', fontsize=16)
             plt.xlim(min(t),max(t))
-            plt.yticks(np.arange(np.floor(np.min(signals)/0.5+1)*0.5, np.floor(np.max(signals)/0.5+1)*0.5, 0.5))
             plt.tick_params(
                 axis="x",
                 which="both",
@@ -134,12 +136,13 @@ class Plot_Sig:
             ax.plot(t, signals[i+1],'b:', linewidth = 0.5, label=labels[i+1])
             ax.plot(t, signals[0],'r--', linewidth = 3, label=labels[0])
             ax.plot(t, signals[i+4],'k', linewidth = 2, label=labels[i+4])
-            ax.text(0.12, 0.95, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
+            ax.text(0.15, 0.95, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
             plt.legend(loc="lower right")
             plt.ylabel('value', fontsize=16)
             plt.xlim(min(t),max(t))
-            plt.ylim(-20,20)
-            plt.yticks(np.arange(-20,25,step=5))#np.arange(np.floor(np.min(signals)/5+1)*5, np.floor(np.max(signals)/5+1)*5, 5))
+            tick_width = np.ceil(np.max(signals[0]) - np.min(signals[0]))/9
+            tick_width = np.ceil(tick_width/0.5)*0.5
+            plt.ylim(np.min(signals[0])-tick_width, np.max(signals[0])+tick_width)
             plt.tick_params(
                 axis="x",
                 which="both",
@@ -157,6 +160,50 @@ class Plot_Sig:
                 labelbottom = True
             )
         plt.xticks(fontsize=14)
+
+    def __plot_sig_bode(self,t,signals,labels):
+        norm_freq = t[:round(len(t)/2)] / (t[-1] - t[0])
+        fig = plt.figure(figsize=(15, 10), dpi=120, constrained_layout=True)
+        spec = gridspec.GridSpec(2,1, figure = fig, wspace = 0)
+        ax_amp = fig.add_subplot(spec[0,0])
+        ax_phase = fig.add_subplot(spec[1,0])
+        plt.ylabel('Phase [°]', fontsize=16)
+
+
+        for i in range(len(signals[0])):
+            G_in_fft = np.fft.fft(signals[0][i])
+            G_out_fft = np.fft.fft(signals[1][i])
+            G_fft = np.divide(G_out_fft, G_in_fft)            
+            ax_amp.loglog(norm_freq,abs(G_fft[:round(len(G_fft)/2)]), label=labels[i])
+            ax_phase.semilogx(norm_freq,np.multiply(np.arctan(G_fft[:round(len(G_fft)/2)]),(180/np.pi)), label=labels[i])
+        
+        plt.sca(ax_amp)    
+        plt.ylabel('Amplitude [dB]', fontsize=16)
+        ax_amp.legend(loc="upper right")
+        ax_amp.tick_params(
+                axis="x",
+                which="both",
+                bottom=True,
+                top = False,
+                labelbottom = True
+            )
+        plt.xticks(fontsize=14)
+        plt.yticks(fontsize=14)
+        plt.xlim(np.min(norm_freq),np.max(norm_freq))
+
+        plt.sca(ax_phase)    
+        ax_phase.legend(loc="upper right")
+        plt.yticks(fontsize=14)
+        plt.xlabel('frequency [rad/s]', fontsize=16)
+        ax_phase.tick_params(
+                axis="x",
+                which="both",
+                bottom=True,
+                top = False,
+                labelbottom = True
+            )
+        plt.xticks(fontsize=14)
+        plt.xlim(np.min(norm_freq),np.max(norm_freq))
 
     def __plot_sig_slider(self,t,signals,labels,filter): #self.parameters[0]=m self.parameters[1]=polyorder
         self.fig=plt.figure()
