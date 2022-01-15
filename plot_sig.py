@@ -104,7 +104,7 @@ class Plot_Sig:
             ax.plot(t, signals[i+1],'b', linewidth = 1, label=labels[i+1])
             ax.plot(t, signals[i+4],'k', linewidth = 2, label=labels[i+4])
             ax.text(0.05, 0.5, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
-            plt.legend(loc="lower right")
+            plt.legend(loc="upper right")
             plt.ylabel('value', fontsize=16)
             plt.xlim(min(t),max(t))
             plt.tick_params(
@@ -137,7 +137,7 @@ class Plot_Sig:
             ax.plot(t, signals[0],'r--', linewidth = 3, label=labels[0])
             ax.plot(t, signals[i+4],'k', linewidth = 2, label=labels[i+4])
             ax.text(0.15, 0.95, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
-            plt.legend(loc="lower right")
+            plt.legend(loc="best")
             plt.ylabel('value', fontsize=16)
             plt.xlim(min(t),max(t))
             tick_width = np.ceil(np.max(signals[0]) - np.min(signals[0]))/9
@@ -174,12 +174,12 @@ class Plot_Sig:
             G_in_fft = np.fft.fft(signals[0][i])
             G_out_fft = np.fft.fft(signals[1][i])
             G_fft = np.divide(G_out_fft, G_in_fft)            
-            ax_amp.loglog(norm_freq,abs(G_fft[:round(len(G_fft)/2)]), label=labels[i])
+            ax_amp.semilogx(norm_freq,20*np.log10(abs(G_fft[:round(len(G_fft)/2)])), label=labels[i])
             ax_phase.semilogx(norm_freq,np.multiply(np.arctan(G_fft[:round(len(G_fft)/2)]),(180/np.pi)), label=labels[i])
         
         plt.sca(ax_amp)    
         plt.ylabel('Amplitude [dB]', fontsize=16)
-        ax_amp.legend(loc="lower left")
+        ax_amp.legend(loc="best")
         ax_amp.tick_params(
                 axis="x",
                 which="both",
@@ -192,9 +192,9 @@ class Plot_Sig:
         plt.xlim(np.min(norm_freq),np.max(norm_freq))
 
         plt.sca(ax_phase)    
-        ax_phase.legend(loc="lower left")
+        ax_phase.legend(loc="best")
         plt.yticks(fontsize=14)
-        plt.xlabel('frequency [rad/s]', fontsize=16)
+        plt.xlabel('normalized frequency', fontsize=16)
         ax_phase.tick_params(
                 axis="x",
                 which="both",
