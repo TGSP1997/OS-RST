@@ -60,17 +60,17 @@ y_quant = quant.apply_noise(x)
 savgol_para_white,cost_white = own_minimize(time, y_white, x, savgol ,cost)
 x_hat_min_white=savgol.filter_fun(time,y_white,para=savgol_para_white)
 standard_cost_white = cost.cost(y_white,x)
-print('white',savgol_para_white,'cost',cost_white)
+print('1.','white',savgol_para_white,'cost',cost_white)
 
 savgol_para_brown,cost_brown=own_minimize(time, y_brown, x, savgol ,cost)
 x_hat_min_brown=savgol.filter_fun(time,y_brown,para=savgol_para_brown)
 standard_cost_brown = cost.cost(y_brown,x)
-print('brown',savgol_para_brown,'cost',cost_brown)
+print('1.','brown',savgol_para_brown,'cost',cost_brown)
 
 savgol_para_quant,cost_quant=own_minimize(time, y_quant, x, savgol ,cost)
 x_hat_min_quant=savgol.filter_fun(time,y_quant,para=savgol_para_quant)
 standard_cost_quant = cost.cost(y_quant,x)
-print('quant',savgol_para_quant,'cost',cost_quant)
+print('1.','quant',savgol_para_quant,'cost',cost_quant)
 
 box_label_white = '\n'.join((
         r'White Noise',
@@ -111,12 +111,58 @@ y_white_dot = np.diff(y_white, append = 0)/step_size
 y_brown_dot = np.diff(y_brown, append = 0)/step_size
 y_quant_dot = np.diff(y_quant, append = 0)/step_size
 
+savgol_para_white,cost_white = own_minimize(time, y_white_dot, x_dot, savgol ,cost)
+x_hat_min_white=savgol.filter_fun(time,y_white_dot,para=savgol_para_white)
+standard_cost_white = cost.cost(y_white_dot,x_dot)
+print('2.','white',savgol_para_white,'cost',cost_white)
 
+savgol_para_brown,cost_brown=own_minimize(time, y_brown_dot, x_dot, savgol ,cost)
+x_hat_min_brown=savgol.filter_fun(time,y_brown_dot,para=savgol_para_brown)
+standard_cost_brown = cost.cost(y_brown_dot,x_dot)
+print('2.','brown',savgol_para_brown,'cost',cost_brown)
+
+savgol_para_quant,cost_quant=own_minimize(time, y_quant_dot, x_dot, savgol ,cost)
+x_hat_min_quant=savgol.filter_fun(time,y_quant_dot,para=savgol_para_quant)
+standard_cost_quant = cost.cost(y_quant_dot,x_dot)
+print('2.','quant',savgol_para_quant,'cost',cost_quant)
+
+box_label_white = '\n'.join((
+        r'White Noise',
+        r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
+        #r'Process Noise $\sigma=%.2f$' % (savgol_para_white.x, ),
+        r'$MSE_{Noise}=%.5f$' % (standard_cost_white, ),
+        r'$MSE_{Filter}=%.5f$' % (cost_white, ),
+        r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
+
+box_label_brown = '\n'.join((
+        r'Brown Noise',
+        r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
+        #r'Process Noise $\sigma=%.2f$' % (savgol_para_brown.x, ),
+        r'$MSE_{Noise}=%.5f$' % (standard_cost_brown, ),
+        r'$MSE_{Filter}=%.5f$' % (cost_brown, ),
+        r'$r_{MSE}=%.2f$ %%' % (100*cost_brown/standard_cost_brown, )))
+
+box_label_quant = '\n'.join((
+        r'Quantisation Noise',
+        r'$stepsize=%.2f$' % (noise_std_dev, ),
+        #r'Process Noise $\sigma=%.2f$' % (savgol_para_quant.x, ),
+        r'$MSE_{Noise}=%.5f$' % (standard_cost_quant, ),
+        r'$MSE_{Filter}=%.5f$' % (cost_quant, ),
+        r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
+
+plot1.plot_sig(time,[x_dot,y_white_dot,y_brown_dot,y_quant_dot,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],['Input Signal',
+'Diff of signal with White Noise',
+'Diff of signal with Brown Noise',
+'Diff of signal with Quantisation Noise',
+'Savgol Smoothing (White Noise) and Differentation',
+'Savgol Smoothing (Brown Noise) and Differentation',
+'Savgol Smoothing (Quantisation) and Differentation',
+box_label_white,box_label_brown,box_label_quant],True)
 ###########################################################
 #3.
 ###########################################################
 #4.
 ###########################################################
-plot_s  = Plot_Sig(Plot_Enum.SLIDER, "Detailed View with Slider",[])
-plot_s.plot_slider(time,[y_white, x_hat_min_white],['noisy sine','savgol smoothed'],[20,3],savgol)
+#plot_s  = Plot_Sig(Plot_Enum.SLIDER, "Detailed View with Slider",[])
+#plot_s.plot_slider(time,[y_white, x_hat_min_white],['noisy sine','savgol smoothed'],[20,3],savgol)
 plt.show()
