@@ -1,7 +1,9 @@
+from curses import window
 import numpy as np
 from numpy.core.numeric import isscalar
 from scipy import signal
 from scipy.signal import lfilter, cont2discrete, butter
+from scipy.linalg import toeplitz
 from enum import Enum
 
 class Filter_Enum(Enum):
@@ -117,19 +119,103 @@ class Filter:
         ###################################################
         return y_hat
         
-        
-        
-        
-        
 
     def __filter_fun_wiener(self,t,y,para):
+        
+        '''
         # Parameter: Noise standard Deviation
         noise_stdev = para
+        sigma = noise_stdev
+        n = len(y)
+        m = 12
+        N = m//2  # (half) window length
+        
+        ####################### TIME
+
+        # unbiased crosscorrelation function
+        def xcorr(x, y, M):
+            """
+            evaluate the cross-correlation of vectors x and y with lags -M+1 to M-1
+            :param x:
+            :param y:
+            :param M: lags to calculate
+            :return: rxy: the cross-correlation
+            """
+            N = len(x)
+            rxy = np.zeros(2*M-1)
+            for k in range(0, M):
+                rxy[M-k-1] = 1/(N-k)*np.inner(x[k:], y[0:N-k])
+            for k in range(1, M):
+                rxy[M+k-1] = 1/(N-k)*np.inner(x[0:N-k], y[k:])
+            return rxy    
+
+        
+        y_corr_part = xcorr(y, y, m)[N:3*N-1]  # symmetric part of correlation
+        R_part = toeplitz(xcorr(y, y, m)[2*N-1:-1] )
+        
+        noise_corr_part = -np.ones((2*N-1,)) * 0
+        noise_corr_part[N-1] = sigma**2
+
+        h_opt_noncausal = np.matmul(np.linalg.inv(R_part), y_corr_part - noise_corr_part)
+
+        # Apply filter time domain wiener filter
+        # with boundary effects:
+        s_hat_noncausal_long = np.convolve(y, h_opt_noncausal, mode='full')
+        s_hat_noncausal = s_hat_noncausal_long[N-1:-N+1]
+
+        # mitigate boundary effects by padding of initial and last value:
+        y_start_pad = y[0]*np.ones(N)
+        y_end_pad = y[-1]*np.ones(N)
+        s_hat_noncausal_long = np.convolve(np.append(y_start_pad, np.append(y, y_end_pad)), h_opt_noncausal, mode='full')
+        s_hat_noncausal = s_hat_noncausal_long[2*N-1:-2*N+1]
+
+        H_opt_noncausal=np.ones(len(s_hat_noncausal))
+
+        return [s_hat_noncausal, H_opt_noncausal[:round(len(H_opt_noncausal)/2)]]
+        '''
+        ####################### FREQ PERIODO
+        '''
+        S_bb = np.ones(len(y)) # np.square(np.abs(np.fft.fft(noise))) / n  # real
+        S_bb_ideal = np.ones(n) * sigma ** 2   # ideal
+        S_yy = np.square(np.abs(np.fft.fft(y))) / n
+
+        # method of averaged periodograms for psd smoothing
+        # S_yy = np.maximum(S_yy, S_bb_ideal)
+        n_bin = 5
+        m_win = n//n_bin
+        S_tmp = S_yy*0
+        for i in range(n_bin):
+            y_tmp = y.copy()
+            y_tmp[:i*m_win] = 0
+            y_tmp[(i+1)*m_win:] = 0
+            S_tmp += np.square(np.abs(np.fft.fft(y_tmp))) / m_win / n_bin
+
+        # H_opt = np.maximum(0, np.divide(S_yy - S_bb, S_yy))
+        # H_opt = np.maximum(0, np.divide(S_yy - S_bb_ideal, S_yy))
+        H_opt = np.maximum(0, np.divide(S_tmp - S_bb_ideal, S_tmp))
+
+        # apply filter in frequency domain
+        y_fft = np.fft.fft(y)
+        S_hat = np.multiply(H_opt, y_fft)
+        s_hat_noncausal_freq = np.real(np.fft.ifft(S_hat))
+
+        y_ext = np.append(np.flip(y), [y])
+        y_fft_ext = np.fft.fft(y_ext)
+        H_opt_ext = np.repeat(H_opt, 2)
+        S_hat_ext = np.multiply(H_opt_ext, y_fft_ext)
+        s_hat_noncausal_freq_ext = np.real(np.fft.ifft(S_hat_ext))[n:]
+
+        return [s_hat_noncausal_freq_ext, H_opt_ext[:round(len(H_opt_ext)/2)]]
+        '''
+        ####################### FREQ
+
         S_nn = noise_stdev**2*np.ones(len(y))
         S_yy = np.square(np.abs(np.fft.fft(y)/len(y)))
         H_noncausal = np.maximum(0, np.divide(S_yy - S_nn , S_yy))
         Y_hat = np.multiply(H_noncausal, np.fft.fft(y))
         return [np.real(np.fft.ifft(Y_hat)), H_noncausal[:round(len(H_noncausal)/2)]]
+
+
 
     def __filter_fun_kalman(self,t,y,para):
         # Parameter: x_0 estimation, stdev of output noise, stdev of process noise

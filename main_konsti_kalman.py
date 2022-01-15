@@ -14,7 +14,7 @@ from cost import *
 
 step_size       = 5e-3
 
-noise_std_dev   = 0.1
+noise_std_dev   = 0.5
 
 # 1. Filtereigenschaften auf Sinus / Polynom
 

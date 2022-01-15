@@ -23,7 +23,7 @@ bounds_diff          = ((0.0001, 0.9999),(0.0001, 0.9999),)
 
 sine    = Input_Function(Input_Enum.SINE, [1, 0.5, 0, 0], sampling_period = step_size, point_counter=200)
 polynome = Input_Function(Input_Enum.POLYNOM, [100,-150,50,0], sampling_period = step_size, point_counter=200) #coefs in descending order 2x^2+1 = [2,0,1]
-input_func = polynome
+input_func = sine
 
 wiener   = Filter(Filter_Enum.WIENER, noise_std_dev)
 
