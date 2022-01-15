@@ -124,8 +124,7 @@ class Filter:
         
 
     def __filter_fun_wiener(self,t,y,para):
-        
-        '''
+ 
         # Parameter: Noise standard Deviation
         noise_stdev = para
         sigma = noise_stdev
@@ -136,6 +135,7 @@ class Filter:
         ####################### TIME
 
         # unbiased crosscorrelation function
+        '''
         def xcorr(x, y, M):
             """
             evaluate the cross-correlation of vectors x and y with lags -M+1 to M-1
@@ -212,7 +212,7 @@ class Filter:
         '''
         ####################### FREQ
 
-        S_nn = noise_stdev**2*np.ones(len(y))
+        S_nn =  np.ones(len(y))*noise_stdev**2
         S_yy = np.square(np.abs(np.fft.fft(y)/len(y)))
         H_noncausal = np.maximum(0, np.divide(S_yy - S_nn , S_yy))
         Y_hat = np.multiply(H_noncausal, np.fft.fft(y))
