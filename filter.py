@@ -1,4 +1,4 @@
-from curses import window
+#from curses import window
 import numpy as np
 from numpy.core.numeric import isscalar
 from scipy import signal
@@ -86,9 +86,12 @@ class Filter:
         ###################################################
         #Compute H Matrix: Only Polyorder and window needed
         m=para[0]
-        polyorder=para[1]
-        diff=para[2]
-        window_length=2*m+1
+        polyorder=int(para[1])
+        if len(para)<3:
+            diff=0
+        else:
+            diff=int(para[2])
+        window_length=int(2*m+1)
         if polyorder >= window_length:
             raise ValueError("polyorder must be less than window_length.")
         x_vector = np.arange(-m, window_length-m) #for a=H*x
