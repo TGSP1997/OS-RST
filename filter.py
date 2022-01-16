@@ -126,16 +126,15 @@ class Filter:
     def __filter_fun_wiener(self,t,y,para):
  
         # Parameter: Noise standard Deviation
-        noise_stdev = para
+        noise_stdev = para[0]
+        m = para[1]
         sigma = noise_stdev
         n = len(y)
-        m = 12
         N = m//2  # (half) window length
         
-        ####################### TIME
 
+        ####################### TIME
         # unbiased crosscorrelation function
-        '''
         def xcorr(x, y, M):
             """
             evaluate the cross-correlation of vectors x and y with lags -M+1 to M-1
@@ -174,9 +173,9 @@ class Filter:
 
         H_opt_noncausal=np.ones(len(s_hat_noncausal))
 
-        return [s_hat_noncausal, H_opt_noncausal[:round(len(H_opt_noncausal)/2)]]
-        '''
-        ####################### FREQ PERIODO
+        return [s_hat_noncausal]
+    
+        ##################### FREQ PERIODO
         '''
         S_bb = np.ones(len(y)) # np.square(np.abs(np.fft.fft(noise))) / n  # real
         S_bb_ideal = np.ones(n) * sigma ** 2   # ideal
@@ -208,16 +207,19 @@ class Filter:
         S_hat_ext = np.multiply(H_opt_ext, y_fft_ext)
         s_hat_noncausal_freq_ext = np.real(np.fft.ifft(S_hat_ext))[n:]
 
-        return [s_hat_noncausal_freq_ext, H_opt_ext[:round(len(H_opt_ext)/2)]]
+        return [s_hat_noncausal_freq_ext]
         '''
-        ####################### FREQ
 
+        ####################### FREQ
+        '''
         S_nn =  np.ones(len(y))*noise_stdev**2
         S_yy = np.square(np.abs(np.fft.fft(y)/len(y)))
         H_noncausal = np.maximum(0, np.divide(S_yy - S_nn , S_yy))
-        Y_hat = np.multiply(H_noncausal, np.fft.fft(y))
-        return [np.real(np.fft.ifft(Y_hat)), H_noncausal[:round(len(H_noncausal)/2)]]
-
+        X_hat = np.multiply(H_noncausal, np.fft.fft(y))
+        
+        x_hat = np.real(np.fft.ifft(X_hat))
+        return [x_hat]
+        '''
 
 
     def __filter_fun_kalman(self,t,y,para):
@@ -260,10 +262,7 @@ class Filter:
             x_2_list = np.append(x_2_list, x_est[1])
             k = k + 1
 
-        # transfer function
-        G_tf = np.maximum(0, np.divide(abs(np.fft.fft(x_1_list)), abs(np.fft.fft(y))))
-
-        return [x_1_list, x_2_list, G_tf[:round(len(G_tf)/2)]]
+        return [x_1_list, x_2_list]
         
 
     def __filter_fun_diff(self,t,y,para): #kausal definition para=[h], backwards differentiation

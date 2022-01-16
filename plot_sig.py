@@ -104,7 +104,7 @@ class Plot_Sig:
             ax.plot(t, signals[i+1],'b', linewidth = 1, label=labels[i+1])
             ax.plot(t, signals[i+4],'k', linewidth = 2, label=labels[i+4])
             ax.text(0.05, 0.5, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
-            plt.legend(loc="upper right")
+            plt.legend(loc="best")
             plt.ylabel('value', fontsize=16)
             plt.xlim(min(t),max(t))
             plt.tick_params(

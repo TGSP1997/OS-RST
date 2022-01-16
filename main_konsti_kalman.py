@@ -12,19 +12,19 @@ from filter import *
 from plot_sig import *
 from cost import *
 
-step_size       = 5e-3
+step_size       = 2.0e-3
 
 noise_std_dev   = 0.5
 
 # 1. Filtereigenschaften auf Sinus / Polynom
-point_counter = 200
+point_counter = 500
 sine    = Input_Function(Input_Enum.SINE, [1, 0.5, 0, 0], sampling_period = step_size, point_counter=point_counter)
 polynome = Input_Function(Input_Enum.POLYNOM, [100,-150,50,0], sampling_period = step_size, point_counter=point_counter) #coefs in descending order 2x^2+1 = [2,0,1]
-input_func = sine
+input_func = polynome
 
-kalman_filter_order = 2 # 4
+kalman_filter_order = 4 #2
 process_std_dev = 2e4
-x_start_guess = np.array([[0], [2*np.pi*2]])    # np.array([[0], [50], [-300], [600]])
+x_start_guess =     np.array([[0], [50], [-300], [600]]) #np.array([[0], [2*np.pi*2]])
 
 kalman  = Filter(Filter_Enum.KALMAN, parameters=None)
 
@@ -39,7 +39,7 @@ plot1  = Plot_Sig(Plot_Enum.FILTER1, "Filterung",[])
 def filter_cost(para_in, t, y, para_filt, x, filter, cost):
         y_hat = filter.filter_fun(t, y, para = [para_filt[0], para_filt[1], para_filt[2], para_in])[0]
         return cost.cost(y_hat, x)
-def filter_cost_diff(para_in, t, y, para_filt, x, filter, cost):
+def filter_cost_diff(para_in, t, y, para_filt, x_dot, filter, cost):
         y_hat_dot = filter.filter_fun(t, y, para = [para_filt[0], para_filt[1], para_filt[2], para_in])[1]
         return cost.cost(y_hat_dot, x_dot)
 
@@ -105,17 +105,17 @@ y_quant_dot = np.diff(y_quant, append = 0)/step_size
 
 plot2  = Plot_Sig(Plot_Enum.FILTER2, "Filterung",[])
 
-kalman_para_white = minimize(filter_cost_diff,process_std_dev,args=(t, y_white, [kalman_filter_order, x_start_guess, noise_std_dev], x, kalman, cost), method='Nelder-Mead')
+kalman_para_white = minimize(filter_cost_diff,process_std_dev,args=(t, y_white, [kalman_filter_order, x_start_guess, noise_std_dev], x_dot, kalman, cost), method='Nelder-Mead')
 x_hat_min_white = kalman.filter_fun(t,y_white,para = [kalman_filter_order,x_start_guess,noise_std_dev,abs(kalman_para_white.x)])[1]
 cost_white = cost.cost(x_hat_min_white,x_dot)
 standard_cost_white = cost.cost(y_white_dot,x_dot)
 
-kalman_para_brown = minimize(filter_cost_diff,process_std_dev,args=(t, y_brown, [kalman_filter_order, x_start_guess, noise_std_dev], x, kalman, cost), method='Nelder-Mead')
+kalman_para_brown = minimize(filter_cost_diff,process_std_dev,args=(t, y_brown, [kalman_filter_order, x_start_guess, noise_std_dev], x_dot, kalman, cost), method='Nelder-Mead')
 x_hat_min_brown = kalman.filter_fun(t,y_brown,para = [kalman_filter_order,x_start_guess,noise_std_dev,abs(kalman_para_brown.x)])[1]
 cost_brown = cost.cost(x_hat_min_brown,x_dot)
 standard_cost_brown = cost.cost(y_brown_dot,x_dot)
 
-kalman_para_quant = minimize(filter_cost_diff,process_std_dev,args=(t, y_quant, [kalman_filter_order, x_start_guess, noise_std_dev], x, kalman, cost), method='Nelder-Mead')
+kalman_para_quant = minimize(filter_cost_diff,process_std_dev,args=(t, y_quant, [kalman_filter_order, x_start_guess, noise_std_dev], x_dot, kalman, cost), method='Nelder-Mead')
 x_hat_min_quant = kalman.filter_fun(t,y_quant,para = [kalman_filter_order,x_start_guess,noise_std_dev,abs(kalman_para_quant.x)])[1]
 cost_quant = cost.cost(x_hat_min_quant,x_dot)
 standard_cost_quant = cost.cost(y_quant_dot,x_dot)
@@ -163,16 +163,16 @@ u = np.zeros(int(point_counter))
 u[10:] = 1
 t = np.linspace(0,1,num = int(point_counter))
 
-y1      = kalman.filter_fun(t,u,para = [kalman_filter_order,[0,0],noise_std_dev, 1e4])[0]
-y5      = kalman.filter_fun(t,u,para = [kalman_filter_order,[0,0],noise_std_dev, 1e5])[0]
-y10     = kalman.filter_fun(t,u,para = [kalman_filter_order,[0,0],noise_std_dev, 1e6])[0]
+y1      = kalman.filter_fun(t,u,para = [2,[0,0],noise_std_dev, 1e3])[0]
+y5      = kalman.filter_fun(t,u,para = [2,[0,0],noise_std_dev, 1e4])[0]
+y10     = kalman.filter_fun(t,u,para = [2,[0,0],noise_std_dev, 1e5])[0]
 
 
 plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot",parameters = 0)
 
 plot_bode.plot_sig(t,[[u,u,u],[y1,y5,y10]],[
-        "process noise $\sigma$ = 1e4", 
-        "process noise $\sigma$ = 1e5",
-        "process noise $\sigma$ = 1e6",])
+        "process noise $\sigma$ = 1e3", 
+        "process noise $\sigma$ = 1e4",
+        "process noise $\sigma$ = 1e5",])
 
 plt.show()
