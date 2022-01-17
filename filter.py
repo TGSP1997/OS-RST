@@ -278,15 +278,16 @@ class Filter:
         return y_hat
 
     def __filter_fun_brownholt(self,t,y,para):
-        # Parameter: Alpha, Order
+        # Parameter: Alpha, Order, Beta, Startwert
         alpha = para[0]
         order = para[1]
-        y_hat = np.zeros(len(y))
+        x_hat = np.zeros(len(y))
+        x_hat[0] = para[3] if len(para)==4 else 0 # Startwert für y_hat
         for j in range(order):
             for i in range(1,len(y)):
-                y_hat[i] = alpha*y[i] + (1-alpha)*y_hat[i-1]
-            y = y_hat
-        return y_hat
+                x_hat[i] = alpha*y[i] + (1-alpha)*x_hat[i-1]
+            y = x_hat
+        return x_hat
     def __filter_fun_butterworth(self,t,y,para):
         # Parameter: Filterordnung , Normalisierte Grenzfrequenz
         order = para[0]
@@ -331,14 +332,16 @@ class Filter:
         order   = para[1]
         beta    = para[2]
         a = np.zeros(len(y))
+        a[0] = y[0]
         b = np.zeros(len(y))
+        b[0] = para[3]*t[1] # if len(para)==4 else 0 # Startwert für a
         
         for j in range(order):
             for i in range(1,len(y)):
                 a[i] = alpha*y[i] + (1-alpha)*(a[i-1] + b[i-1])
                 b[i] = (beta*(a[i]-a[i-1]) + (1-beta)*b[i-1])
             y = a
-        return [x / 1e-3 for x in b] #Divide by stepsize
+        return [x / t[1] for x in b] #Divide by stepsize
 
 
     def __filter_diff_butterworth(self,t,y,para):
