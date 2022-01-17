@@ -1,0 +1,11 @@
+filter,noise_std_dev,MSE_sine_white,MSE_polynome_white,MSE_sine_brown,MSE_polynome_brown,MSE_sine_quant,MSE_polynome_quant
+wiener,0.1,,,,,,
+wiener,0.2,,,,,,
+wiener,0.3,,,,,,
+wiener,0.4,,,,,,
+wiener,0.5,,,,,,
+kalman,0.1,,,,,,
+kalman,0.2,,,,,,
+kalman,0.3,,,,,,
+kalman,0.4,,,,,,
+kalman,0.5,,,,,,
