@@ -104,7 +104,7 @@ class Plot_Sig:
             ax.plot(t, signals[i+1],'b', linewidth = 1, label=labels[i+1])
             ax.plot(t, signals[i+4],'k', linewidth = 2, label=labels[i+4])
             ax.text(0.05, 0.5, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
-            plt.legend(loc="best")
+            plt.legend(loc="lower center")
             plt.ylabel('value', fontsize=16)
             plt.xlim(min(t),max(t))
             plt.tick_params(
@@ -137,7 +137,7 @@ class Plot_Sig:
             ax.plot(t, signals[0],'r--', linewidth = 3, label=labels[0])
             ax.plot(t, signals[i+4],'k', linewidth = 2, label=labels[i+4])
             ax.text(0.15, 0.95, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
-            plt.legend(loc="best")
+            plt.legend(loc="lower right")
             plt.ylabel('value', fontsize=16)
             plt.xlim(min(t),max(t))
             tick_width = np.ceil(np.max(signals[0]) - np.min(signals[0]))/9

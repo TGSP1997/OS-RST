@@ -319,7 +319,56 @@ class Filter:
         return y
     
     def __filter_diff_wiener(self,t,y,para):
-        return y
+        # Parameter: Noise standard Deviation
+        noise_stdev = para[0]
+        m = para[1]
+        sigma = noise_stdev
+        n = len(y)
+        N = m//2  # (half) window length
+        
+
+        ####################### TIME
+        # unbiased crosscorrelation function
+        def xcorr(x, y, M):
+            """
+            evaluate the cross-correlation of vectors x and y with lags -M+1 to M-1
+            :param x:
+            :param y:
+            :param M: lags to calculate
+            :return: rxy: the cross-correlation
+            """
+            N = len(x)
+            rxy = np.zeros(2*M-1)
+            for k in range(0, M):
+                rxy[M-k-1] = 1/(N-k)*np.inner(x[k:], y[0:N-k])
+            for k in range(1, M):
+                rxy[M+k-1] = 1/(N-k)*np.inner(x[0:N-k], y[k:])
+            return rxy    
+
+        
+        y_corr_part = xcorr(y, y, m)[N:3*N-1]  # symmetric part of correlation
+        R_part = toeplitz(xcorr(y, y, m)[2*N-1:-1] )
+        
+        noise_corr_part = -np.ones((2*N-1,)) * 0
+        noise_corr_part[N-1] = sigma**2
+
+        h_opt_noncausal = np.matmul(np.linalg.inv(R_part), y_corr_part - noise_corr_part)
+
+        # Apply filter time domain wiener filter
+        # with boundary effects:
+        s_hat_noncausal_long = np.convolve(y, h_opt_noncausal, mode='full')
+        s_hat_noncausal = s_hat_noncausal_long[N-1:-N+1]
+
+        # mitigate boundary effects by padding of initial and last value:
+        y_start_pad = y[0]*np.ones(N)
+        y_end_pad = y[-1]*np.ones(N)
+        s_hat_noncausal_long = np.convolve(np.append(y_start_pad, np.append(y, y_end_pad)), h_opt_noncausal, mode='full')
+        s_hat_noncausal = s_hat_noncausal_long[2*N-1:-2*N+1]
+
+        H_opt_noncausal=np.ones(len(s_hat_noncausal))
+        y_diff = np.diff(s_hat_noncausal, append = 0)/(t[1]-t[0])
+
+        return [y_diff]
 
     def __filter_diff_kalman(self,t,y,para):
         return y
