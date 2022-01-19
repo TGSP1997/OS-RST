@@ -36,7 +36,7 @@ def minimize_wiener_window(t,y,x,filter,diff,cost):
 # 1. Filtereigenschaften auf Sinus / Polynom
 sine    = Input_Function(Input_Enum.SINE, [1, 0.5, 0, 0], sampling_period = step_size, point_counter=point_counter)
 polynome = Input_Function(Input_Enum.POLYNOM, [100,-150,50,0], sampling_period = step_size, point_counter=point_counter) #coefs in descending order 2x^2+1 = [2,0,1]
-input_func = polynome
+input_func = sine
 
 wiener   = Filter(Filter_Enum.WIENER, [])
 

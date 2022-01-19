@@ -16,7 +16,6 @@ kalman = Filter(Filter_Enum.KALMAN, [])
 pt1 = Filter(Filter_Enum.PT1, [])
 
 window_len_white = 14
-N = window_len_white//2
 noise_std_dev = 0.1
 
 # Übertragungsfunktion des Filters bestimmen
@@ -30,15 +29,31 @@ y1      = kalman.filter_fun(t,u,para = [2,[0,0],noise_std_dev, 1e4])[0]
 y2      = pt1.filter_fun(t, u, para = 100)
 
 # wiener
-h_opt_noncausal = [0.0496811771626988, 0.06947908478423444, 0.011569497877491324, 0.12133430261881151, 0.13475784870233373, 0.06456927694523334, 0.05501950128199152, 0.06456927694523343, 0.13475784870233454, 0.12133430261881255, 0.011569497877490866, 0.069479084784235, 0.04968117716269913]
-y_start_pad = u[0]*np.ones(N)
-y_end_pad = u[-1]*np.ones(N)
-y3 = np.convolve(np.append(y_start_pad, np.append(u, y_end_pad)), h_opt_noncausal, mode='full')
-y3 = y3[2*N-1:-2*N+1]
+h_wiener = np.array([    [0.31391569, 0.15656016, 0.05496332, 0.15656016, 0.31391569], 
+                         [0.06005379, 0.0781426 , 0.01643154, 0.12433697, 0.13439967, 0.05805149, 0.04271674, 0.05805149, 0.13439967, 0.12433697, 0.01643154, 0.0781426 , 0.06005379],
+                         [0.04968118, 0.06947908, 0.0115695 , 0.1213343 , 0.13475785, 0.06456928, 0.0550195 , 0.06456928, 0.13475785, 0.1213343 , 0.0115695 , 0.06947908, 0.04968118]     ])
+window_wiener = np.array([6, 14, 14])
 
-plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot",parameters = 0)
+y = [np.zeros(int(point_counter)), np.zeros(int(point_counter)), np.zeros(int(point_counter))]
+for i in range(0,3):
+        N = window_wiener[i]//2
+        y_start_pad = u[0]*np.ones(N)
+        y_end_pad = u[-1]*np.ones(N)
+        y[i] = np.convolve(np.append(y_start_pad, np.append(u, y_end_pad)), h_wiener[i], mode='full')
+        y[i] = y[i][2*N-1:-2*N+1]
 
-plot_bode.plot_sig(t,[[u],[y3]],[
-        "$\sigma$ = 0.1"])
+plot_bode1 = Plot_Sig(Plot_Enum.BODE,"Bode Plot",parameters = 0)
+plot_bode1.plot_sig(t,[[u,u,u],[y[0],y[1],y[2]]],[
+        "$\sigma$ = 0.1", "$\sigma$ = 0.3", "$\sigma$ = 0.5"])
+
+y1      = kalman.filter_fun(t,u,para = [2,[0,0],noise_std_dev, 5e3])[0]
+y3      = kalman.filter_fun(t,u,para = [2,[0,0],noise_std_dev, 1e4])[0]
+y5      = kalman.filter_fun(t,u,para = [2,[0,0],noise_std_dev, 5e4])[0]
+
+plot_bode2 = Plot_Sig(Plot_Enum.BODE,"Bode Plot",parameters = 0)
+plot_bode2.plot_sig(t,[[u,u,u],[y1,y3,y5]],[
+        "process noise $\sigma$ = 1e3", 
+        "process noise $\sigma$ = 1e4",
+        "process noise $\sigma$ = 1e5",])
 
 plt.show()
