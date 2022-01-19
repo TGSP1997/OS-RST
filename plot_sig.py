@@ -175,7 +175,7 @@ class Plot_Sig:
             G_out_fft = np.fft.fft(signals[1][i])
             G_fft = np.divide(G_out_fft, G_in_fft)            
             ax_amp.semilogx(norm_freq,20*np.log10(abs(G_fft[:round(len(G_fft)/2)])), label=labels[i])
-            ax_phase.semilogx(norm_freq,np.multiply(np.arctan(G_fft[:round(len(G_fft)/2)]),(180/np.pi)), label=labels[i])
+            ax_phase.semilogx(norm_freq,np.multiply(np.angle(G_fft[:round(len(G_fft)/2)]),(180/np.pi)), label=labels[i])
         
         plt.sca(ax_amp)    
         plt.ylabel('Amplitude [dB]', fontsize=16)
@@ -194,7 +194,7 @@ class Plot_Sig:
         plt.sca(ax_phase)    
         ax_phase.legend(loc="best")
         plt.yticks(fontsize=14)
-        plt.xlabel('normalized frequency', fontsize=16)
+        plt.xlabel(r'normalized frequency = $\frac{f}{f_s}$', fontsize=16)
         ax_phase.tick_params(
                 axis="x",
                 which="both",
