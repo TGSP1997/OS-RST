@@ -16,7 +16,7 @@ from cost import *
 step_size       = 2e-3
 point_counter   = int(1/step_size)
 
-noise_std_dev   = 0.1
+noise_std_dev   = 0.2
 
 order           = 4
 freq            = 10 / (1000 / 2) # Normalisierte Grenzfrequenz mit w = fc / (fs / 2)
@@ -298,9 +298,25 @@ plot_bode.plot_sig(t,[[u,u,u,u,u],[o1,o2,o3,o4,o5]],[
         "4th order",
         "5th order",])
 
+plt.show()
 
 
+sos = signal.butter(order, freq, output='sos')
+#derivative = signal.zpk2sos([1],[-1],2/t[1])  # Second order section derivative | s= (z-1)/(z+1)
+#sos= np.append(sos,derivative,axis=0)
+zi = signal.sosfilt_zi(sos)                 # Initial conditions
 
 
+y_white = np.linspace(25,75,point_counter)
+#y_white = np.multiply(np.ones(point_counter),10)
 
+#y_dot_hat, z_f = signal.sosfilt(sos,y_white, zi=zi)
+y_hat, zf = signal.sosfilt(sos,y_white, zi=zi)
+
+y_dot_hat = np.multiply(np.diff(y_hat, prepend=0), 1/t[1])
+
+
+plt.plot(t,y_dot_hat)
+plt.plot(t,y_hat)
+plt.plot(t,y_white)
 plt.show()
