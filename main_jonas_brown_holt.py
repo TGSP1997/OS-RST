@@ -27,11 +27,12 @@ bounds_fun      = ((0.01, 0.99),)
 bounds_diff     = ((0.01, 0.99),(0.01, 0.99),)
 
 
+sine    = Input_Function(Input_Enum.SINE, [1, 0.5, 0, 0], sampling_period = step_size, point_counter = point_counter)
 
+poly    = Input_Function(Input_Enum.POLYNOM, [4,-6,3,0], sampling_period = step_size, point_counter = point_counter)
 
 # 1. Filtereigenschaften auf Sinus
 
-sine    = Input_Function(Input_Enum.SINE, [1, 0.5, 0, 0], sampling_period = step_size, point_counter = point_counter)
 
 exp   = Filter(Filter_Enum.BROWN_HOLT, [alpha,1])
 
@@ -164,11 +165,9 @@ box_label_white,box_label_brown,box_label_quant],True)
 
 # 3. Filtereigenschaften auf Polynom
 
-poly    = Input_Function(Input_Enum.POLYNOM, [100,-150,50,0], sampling_period = step_size, point_counter = point_counter)
-
-white   = Noise(Noise_Enum.WHITE, 5*noise_std_dev)
-brown   = Noise(Noise_Enum.BROWN, 5*noise_std_dev)
-quant   = Noise(Noise_Enum.QUANT, 5*noise_std_dev)
+white   = Noise(Noise_Enum.WHITE, noise_std_dev)
+brown   = Noise(Noise_Enum.BROWN, noise_std_dev)
+quant   = Noise(Noise_Enum.QUANT, noise_std_dev)
 
 t, x, x_dot = poly.get_fun()
 y_white = white.apply_noise(x)
