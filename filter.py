@@ -349,12 +349,15 @@ class Filter:
         order = para[0]
         freq = para[1]
 
-        sos = butter(order, freq,output='sos')
-        derivative = [1, -1, 0, 1, 1, 0] # Second order section derivative | s= (z-1)/(z+1) | first three numerator, second three denominator
-        sos= np.append(sos,[derivative],axis=0)
+        sos = butter(order, freq, output='sos')
+        derivative = signal.zpk2sos([1],[-1],1/t[1])  #[1, -1, 0, 1, 1, 0] # Second order section derivative | s= (z-1)/(z+1) | first three numerator, second three denominator
+        sos= np.append(sos,derivative,axis=0)
+        # zi = signal.sosfilt_zi(sos)                 # Initial conditions
+        # zi = np.multiply(zi,2)
+        #y_dot_hat, z_f = signal.sosfilt(sos,y, zi=zi)
         y_dot_hat = signal.sosfilt(sos,y)
-        return y_dot_hat
-        return y
+        return y_dot_hat # np.diff(y_dot_hat, append = 0)/t[1]
+
     def __filter_diff_chebychev(self,t,y,para):
         return y
     def __filter_diff_robexdiff(self,t,y,para):
