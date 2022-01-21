@@ -14,7 +14,7 @@ from cost import *
 
 step_size       = 2.0e-3
 point_counter = 500
-noise_std_dev   = 0.1
+noise_std_dev   = 0.4
 
 # 0. Minimize function for window length of Wiener time implementation
 def minimize_wiener_window(t,y,x,filter,diff,cost):

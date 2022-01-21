@@ -15,7 +15,6 @@ from cost import *
 kalman = Filter(Filter_Enum.KALMAN, [])
 pt1 = Filter(Filter_Enum.PT1, [])
 
-window_len_white = 14
 noise_std_dev = 0.1
 
 # Übertragungsfunktion des Filters bestimmen
@@ -29,10 +28,10 @@ y1      = kalman.filter_fun(t,u,para = [2,[0,0],noise_std_dev, 1e4])[0]
 y2      = pt1.filter_fun(t, u, para = 100)
 
 # wiener
-h_wiener = np.array([    [0.31391569, 0.15656016, 0.05496332, 0.15656016, 0.31391569], 
+h_wiener = np.array([    [0.08110043, 0.09482883, 0.02395821, 0.12631018, 0.12790999, 0.03793559, 0.01077581, 0.03793559, 0.12790999, 0.12631018, 0.02395821, 0.09482883, 0.08110043],
                          [0.06005379, 0.0781426 , 0.01643154, 0.12433697, 0.13439967, 0.05805149, 0.04271674, 0.05805149, 0.13439967, 0.12433697, 0.01643154, 0.0781426 , 0.06005379],
-                         [0.04968118, 0.06947908, 0.0115695 , 0.1213343 , 0.13475785, 0.06456928, 0.0550195 , 0.06456928, 0.13475785, 0.1213343 , 0.0115695 , 0.06947908, 0.04968118]     ])
-window_wiener = np.array([6, 14, 14])
+                         [0.05335261, 0.07264862, 0.01354238, 0.12276652, 0.13521046, 0.0631488 , 0.05184152, 0.0631488 , 0.13521046, 0.12276652, 0.01354238, 0.07264862, 0.05335261]   ])
+window_wiener = np.array([14, 14, 14])
 
 y = [np.zeros(int(point_counter)), np.zeros(int(point_counter)), np.zeros(int(point_counter))]
 for i in range(0,3):
@@ -40,11 +39,11 @@ for i in range(0,3):
         y_start_pad = u[0]*np.ones(N)
         y_end_pad = u[-1]*np.ones(N)
         y[i] = np.convolve(np.append(y_start_pad, np.append(u, y_end_pad)), h_wiener[i], mode='full')
-        y[i] = y[i][2*N-1:-2*N+1]
+        y[i] = y[i][2*N-1:-2*N+1]  
 
 plot_bode1 = Plot_Sig(Plot_Enum.BODE,"Bode Plot",parameters = 0)
 plot_bode1.plot_sig(t,[[u,u,u],[y[0],y[1],y[2]]],[
-        "$\sigma$ = 0.1", "$\sigma$ = 0.3", "$\sigma$ = 0.5"])
+        "$\sigma$ = 0.2", "$\sigma$ = 0.3", "$\sigma$ = 0.4"])
 
 y1      = kalman.filter_fun(t,u,para = [2,[0,0],noise_std_dev, 5e3])[0]
 y3      = kalman.filter_fun(t,u,para = [2,[0,0],noise_std_dev, 1e4])[0]
