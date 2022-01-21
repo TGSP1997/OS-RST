@@ -14,15 +14,18 @@ from cost import *
 
 step_size       = 2.0e-3
 point_counter = 500
-noise_std_dev   = 0.5
+noise_std_dev   = 0.1
 
 # 0. Minimize function for window length of Wiener time implementation
-def minimize_wiener_window(t,y,x,filter,cost):
+def minimize_wiener_window(t,y,x,filter,diff,cost):
         window_length = 2
         cost_best = float("inf")
         cost_array = []
         for i in range(window_length, point_counter, 2):
-                x_hat = filter.filter_fun(t,y,[noise_std_dev, i])[0]
+                if diff == 0:
+                        x_hat = filter.filter_fun(t,y,[noise_std_dev, i])[0]
+                else:
+                        x_hat = filter.filter_diff(t,y,[noise_std_dev, i])[0]
                 cost_now = cost.cost(x_hat,x)
                 cost_array.append(cost_now)
                 if cost_now < cost_best:
@@ -51,17 +54,17 @@ y_brown = brown.apply_noise(x)
 y_quant = quant.apply_noise(x)
 
 
-window_len_white = minimize_wiener_window(t,y_white,x,wiener,cost)
+window_len_white = minimize_wiener_window(t,y_white,x,wiener,0,cost)
 x_hat_min_white = wiener.filter_fun(t,y_white,[noise_std_dev, window_len_white])[0]
 cost_white = cost.cost(x_hat_min_white,x)
 standard_cost_white = cost.cost(y_white,x)
 
-window_len_brown = minimize_wiener_window(t,y_brown,x,wiener,cost)
+window_len_brown = minimize_wiener_window(t,y_brown,x,wiener,0,cost)
 x_hat_min_brown = wiener.filter_fun(t,y_brown,[noise_std_dev, window_len_brown])[0]
 cost_brown = cost.cost(x_hat_min_brown,x)
 standard_cost_brown = cost.cost(y_brown,x)
 
-window_len_quant = minimize_wiener_window(t,y_quant,x,wiener,cost)
+window_len_quant = minimize_wiener_window(t,y_quant,x,wiener,0,cost)
 x_hat_min_quant = wiener.filter_fun(t,y_quant,[noise_std_dev, window_len_quant])[0]
 cost_quant = cost.cost(x_hat_min_quant,x)
 standard_cost_quant = cost.cost(y_quant,x)
@@ -108,21 +111,22 @@ y_quant_dot = np.diff(y_quant, append = 0)/step_size
 
 plot2  = Plot_Sig(Plot_Enum.FILTER2, "Filterung",[])
 
-x_hat_dot_white = np.diff(x_hat_min_white, append = 0)/step_size
+x_hat_dot_white = wiener.filter_diff(t,y_white,[noise_std_dev, window_len_white])[0]
 cost_white = cost.cost(x_hat_dot_white,x_dot)
 standard_cost_white = cost.cost(y_white_dot,x_dot)
 
-x_hat_dot_brown = np.diff(x_hat_min_brown, append = 0)/step_size
+x_hat_dot_brown = wiener.filter_diff(t,y_brown,[noise_std_dev, window_len_brown])[0]
 cost_brown = cost.cost(x_hat_dot_brown,x_dot)
 standard_cost_brown = cost.cost(y_brown_dot,x_dot)
 
-x_hat_dot_quant = np.diff(x_hat_min_quant, append = 0)/step_size
+x_hat_dot_quant = wiener.filter_diff(t,y_quant,[noise_std_dev, window_len_quant])[0]
 cost_quant = cost.cost(x_hat_dot_quant,x_dot)
 standard_cost_quant = cost.cost(y_quant_dot,x_dot)
 
 box_label_white = '\n'.join((
         r'White Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
+        r'window_length$=%d$' % (window_len_white, ),
         r'$MSE_{Noise}=%.2f$' % (standard_cost_white, ),
         r'$MSE_{Filter}=%.2f$' % (cost_white, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
@@ -130,6 +134,7 @@ box_label_white = '\n'.join((
 box_label_brown = '\n'.join((
         r'Brown Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
+        r'window_length$=%d$' % (window_len_brown, ),
         r'$MSE_{Noise}=%.2f$' % (standard_cost_brown, ),
         r'$MSE_{Filter}=%.2f$' % (cost_brown, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_brown/standard_cost_brown, )))
@@ -137,6 +142,7 @@ box_label_brown = '\n'.join((
 box_label_quant = '\n'.join((
         r'Quantisation Noise',
         r'$stepsize=%.2f$' % (noise_std_dev, ),
+        r'window_length$=%d$' % (window_len_quant, ),
         r'$MSE_{Noise}=%.2f$' % (standard_cost_quant, ),
         r'$MSE_{Filter}=%.2f$' % (cost_quant, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
@@ -154,7 +160,7 @@ box_label_white,box_label_brown,box_label_quant],True)
 
 # Übertragungsfunktion des Filters bestimmen
 
-
+'''
 u = np.zeros(int(point_counter))
 u[10:] = 1
 t = np.linspace(0,1,num = int(point_counter))
@@ -170,5 +176,6 @@ plot_bode.plot_sig(t,[[u,u,u],[y1,y5,y10]],[
         "$\sigma$ = 0.1", 
         "$\sigma$ = 0.5",
         "$\sigma$ = 1.0",])
+'''
 
 plt.show()

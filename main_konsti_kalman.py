@@ -14,7 +14,7 @@ from cost import *
 
 step_size       = 2.0e-3
 
-noise_std_dev   = 0.5
+noise_std_dev   = 0.1
 
 # 1. Filtereigenschaften auf Sinus / Polynom
 point_counter = 500
@@ -22,9 +22,9 @@ sine    = Input_Function(Input_Enum.SINE, [1, 0.5, 0, 0], sampling_period = step
 polynome = Input_Function(Input_Enum.POLYNOM, [100,-150,50,0], sampling_period = step_size, point_counter=point_counter) #coefs in descending order 2x^2+1 = [2,0,1]
 input_func = polynome
 
-kalman_filter_order = 4 #2
+kalman_filter_order = 2 #4
 process_std_dev = 2e4
-x_start_guess =     np.array([[0], [50], [-300], [600]]) #np.array([[0], [2*np.pi*2]])
+x_start_guess =  np.array([[0], [0]]) # np.array([[0], [50], [-300], [600]])
 
 kalman  = Filter(Filter_Enum.KALMAN, parameters=None)
 
@@ -158,7 +158,7 @@ box_label_white,box_label_brown,box_label_quant],True)
 
 # Übertragungsfunktion des Filters bestimmen
 
-
+'''
 u = np.zeros(int(point_counter))
 u[10:] = 1
 t = np.linspace(0,1,num = int(point_counter))
@@ -174,5 +174,5 @@ plot_bode.plot_sig(t,[[u,u,u],[y1,y5,y10]],[
         "process noise $\sigma$ = 1e3", 
         "process noise $\sigma$ = 1e4",
         "process noise $\sigma$ = 1e5",])
-
+'''
 plt.show()
