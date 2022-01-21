@@ -269,7 +269,7 @@ box_label_quant = '\n'.join((
         r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
 
 plot2.plot_sig(t,[x_dot,y_white_dot,y_brown_dot,y_quant_dot,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],[
-r'$f(t) = \frac{12}{\mathrm{s}^3}\cdot t^2 - \frac{12}{\mathrm{s}^2}\cdot t + \frac{3}{\mathrm{s}}$',
+r'$\frac{df}{dt}(t) = \frac{12}{\mathrm{s}^3}\cdot t^2 - \frac{12}{\mathrm{s}^2}\cdot t + \frac{3}{\mathrm{s}}$',
 'Difference of noisy signal',
 'Difference of noisy signal',
 'Difference of noisy signal',

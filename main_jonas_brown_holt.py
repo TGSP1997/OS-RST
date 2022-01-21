@@ -26,6 +26,7 @@ freq            = 10 / (1000 / 2) # Normalisierte Grenzfrequenz mit w = fc / (fs
 bounds_fun      = ((0.01, 0.99),)
 bounds_diff     = ((0.01, 0.99),(0.01, 0.99),)
 
+order = 1
 
 sine    = Input_Function(Input_Enum.SINE, [1, 0.5, 0, 0], sampling_period = step_size, point_counter = point_counter)
 
@@ -33,6 +34,9 @@ poly    = Input_Function(Input_Enum.POLYNOM, [4,-6,3,0], sampling_period = step_
 
 # 1. Filtereigenschaften auf Sinus
 
+plot1  = Plot_Sig(Plot_Enum.FILTER1, "Exponential Smoothing | Harmonic Signal",[])
+
+plot2  = Plot_Sig(Plot_Enum.FILTER2, "Exponential Smoothing | Derivative Harmonic Signal",[])
 
 exp   = Filter(Filter_Enum.BROWN_HOLT, [alpha,1])
 
@@ -42,7 +46,6 @@ quant   = Noise(Noise_Enum.QUANT, noise_std_dev)
 
 cost    = Cost(Cost_Enum.MSE)
 
-plot1  = Plot_Sig(Plot_Enum.FILTER1, "Filterung",[])
 
 def filter_cost(para_in, t, y, x, filter, cost, start_value):
         y_hat = filter.filter_fun(t, y, para = [para_in, filter.parameters[1],0, start_value])
@@ -75,33 +78,34 @@ box_label_white = '\n'.join((
         r'White Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'$\alpha=%.2f$' % (alpha_min_white.x, ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_white, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_white, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_white, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_white, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
 
 box_label_brown = '\n'.join((
         r'Brown Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'$\alpha=%.2f$' % (alpha_min_brown.x, ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_brown, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_brown, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_brown, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_brown, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_brown/standard_cost_brown, )))
 
 box_label_quant = '\n'.join((
         r'Quantisation Noise',
         r'$stepsize=%.2f$' % (noise_std_dev, ),
         r'$\alpha=%.2f$' % (alpha_min_quant.x, ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_quant, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_quant, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
 
-plot1.plot_sig(t,[x,y_white,y_brown,y_quant,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],['Input Signal',
-'Signal with White Noise',
-'Signal with Brown Noise',
-'Signal with Quantisation Noise',
-'Exponential Smoothing (White Noise)',
-'Exponential Smoothing (Brown Noise)',
-'Exponential Smoothing (Quantisation)',
+plot1.plot_sig(t,[x,y_white,y_brown,y_quant,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],[
+r'$f(t) = \mathrm{sin}\left(2\pi\cdot\frac{t}{0.5\,\mathrm{s}}\right)$',
+'Noisy signal',
+'Noisy signal',
+'Noisy signal',
+'Filtered signal | '+ str(order) + '. order exp. smoothing',
+'Filtered signal | '+ str(order) + '. order exp. smoothing',
+'Filtered signal | '+ str(order) + '. order exp. smoothing',
 box_label_white,box_label_brown,box_label_quant],True)
 
 # 2. Ableitungseigenschaften auf Sinus
@@ -132,8 +136,8 @@ box_label_white = '\n'.join((
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'$\alpha=%.3f$' % (alpha_min_white.x[0], ),
         r'$\beta=%.3f$' % (alpha_min_brown.x[1], ),
-        r'$MSE_{Noise}=%.2f$' % (standard_cost_white, ),
-        r'$MSE_{Filter}=%.2f$' % (cost_white, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_white, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_white, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
 
 box_label_brown = '\n'.join((
@@ -141,8 +145,8 @@ box_label_brown = '\n'.join((
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'$\alpha=%.3f$' % (alpha_min_brown.x[0], ),
         r'$\beta=%.3f$' % (alpha_min_brown.x[1], ),
-        r'$MSE_{Noise}=%.2f$' % (standard_cost_brown, ),
-        r'$MSE_{Filter}=%.2f$' % (cost_brown, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_brown, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_brown, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_brown/standard_cost_brown, )))
 
 box_label_quant = '\n'.join((
@@ -150,20 +154,25 @@ box_label_quant = '\n'.join((
         r'$stepsize=%.2f$' % (noise_std_dev, ),
         r'$\alpha=%.3f$' % (alpha_min_quant.x[0], ),
         r'$\beta=%.3f$' % (alpha_min_brown.x[1], ),
-        r'$MSE_{Noise}=%.2f$' % (standard_cost_quant, ),
-        r'$MSE_{Filter}=%.2f$' % (cost_quant, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
 
-plot2.plot_sig(t,[x_dot,y_white_dot,y_brown_dot,y_quant_dot,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],['Input Signal',
-'Diff of signal with White Noise',
-'Diff of signal with Brown Noise',
-'Diff of signal with Quantisation Noise',
-'Exponential Smoothing and Differentation',
-'Exponential Smoothing and Differentation',
-'Exponential Smoothing and Differentation',
+plot2.plot_sig(t,[x_dot,y_white_dot,y_brown_dot,y_quant_dot,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],[
+r'$\frac{df}{dt}(t) = \left(\frac{2\pi}{0.5 \mathrm{s}}\right)\mathrm{cos}\left(2\pi\cdot\frac{t}{0.5 \mathrm{s}}\right)$',
+'Difference of noisy signal',
+'Difference of noisy signal',
+'Difference of noisy signal',
+'Filtered & derived signal | '+ str(order) + '. order exp. smoothing',
+'Filtered & derived signal | '+ str(order) + '. order exp. smoothing',
+'Filtered & derived signal | '+ str(order) + '. order exp. smoothing',
 box_label_white,box_label_brown,box_label_quant],True)
 
 # 3. Filtereigenschaften auf Polynom
+
+plot1  = Plot_Sig(Plot_Enum.FILTER3, "Exponential Smoothing | Polynomial Signal",[])
+
+plot2  = Plot_Sig(Plot_Enum.FILTER4, "Exponential Smoothing | Derivative Polynomial Signal",[])
 
 white   = Noise(Noise_Enum.WHITE, noise_std_dev)
 brown   = Noise(Noise_Enum.BROWN, noise_std_dev)
@@ -193,33 +202,34 @@ box_label_white = '\n'.join((
         r'White Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'$\alpha=%.2f$' % (alpha_min_white.x, ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_white, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_white, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_white, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_white, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
 
 box_label_brown = '\n'.join((
         r'Brown Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'$\alpha=%.2f$' % (alpha_min_brown.x, ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_brown, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_brown, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_brown, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_brown, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_brown/standard_cost_brown, )))
 
 box_label_quant = '\n'.join((
         r'Quantisation Noise',
         r'$stepsize=%.2f$' % (noise_std_dev, ),
         r'$\alpha=%.2f$' % (alpha_min_quant.x, ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_quant, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_quant, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
 
-plot1.plot_sig(t,[x,y_white,y_brown,y_quant,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],['Input Signal',
-'Signal with White Noise',
-'Signal with Brown Noise',
-'Signal with Quantisation Noise',
-'Exponential Smoothing (White Noise)',
-'Exponential Smoothing (Brown Noise)',
-'Exponential Smoothing (Quantisation)',
+plot1.plot_sig(t,[x,y_white,y_brown,y_quant,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],[
+r'$f(t) = \frac{4}{\mathrm{s}^3}\cdot t^3 - \frac{6}{\mathrm{s}^2}\cdot t^2 + \frac{3}{\mathrm{s}}\cdot t + 0$',
+'Noisy signal',
+'Noisy signal',
+'Noisy signal',
+'Filtered signal | '+ str(order) + '. order exp. smoothing',
+'Filtered signal | '+ str(order) + '. order exp. smoothing',
+'Filtered signal | '+ str(order) + '. order exp. smoothing',
 box_label_white,box_label_brown,box_label_quant],True)
 
 # 4. Ableitungseigenschaften auf Polynom
@@ -248,8 +258,8 @@ box_label_white = '\n'.join((
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'$\alpha=%.3f$' % (alpha_min_white.x[0], ),
         r'$\beta=%.3f$' % (alpha_min_brown.x[1], ),
-        r'$MSE_{Noise}=%.2f$' % (standard_cost_white, ),
-        r'$MSE_{Filter}=%.2f$' % (cost_white, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_white, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_white, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
 
 box_label_brown = '\n'.join((
@@ -257,8 +267,8 @@ box_label_brown = '\n'.join((
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'$\alpha=%.3f$' % (alpha_min_brown.x[0], ),
         r'$\beta=%.3f$' % (alpha_min_brown.x[1], ),
-        r'$MSE_{Noise}=%.2f$' % (standard_cost_brown, ),
-        r'$MSE_{Filter}=%.2f$' % (cost_brown, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_brown, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_brown, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_brown/standard_cost_brown, )))
 
 box_label_quant = '\n'.join((
@@ -266,17 +276,18 @@ box_label_quant = '\n'.join((
         r'$stepsize=%.2f$' % (noise_std_dev, ),
         r'$\alpha=%.3f$' % (alpha_min_quant.x[0], ),
         r'$\beta=%.3f$' % (alpha_min_brown.x[1], ),
-        r'$MSE_{Noise}=%.2f$' % (standard_cost_quant, ),
-        r'$MSE_{Filter}=%.2f$' % (cost_quant, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
 
-plot2.plot_sig(t,[x_dot,y_white_dot,y_brown_dot,y_quant_dot,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],['Input Signal',
-'Diff of signal with White Noise',
-'Diff of signal with Brown Noise',
-'Diff of signal with Quantisation Noise',
-'Exponential Smoothing and Differentation',
-'Exponential Smoothing and Differentation',
-'Exponential Smoothing and Differentation',
+plot2.plot_sig(t,[x_dot,y_white_dot,y_brown_dot,y_quant_dot,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],[
+r'$\frac{df}{dt}(t) = \frac{12}{\mathrm{s}^3}\cdot t^2 - \frac{12}{\mathrm{s}^2}\cdot t + \frac{3}{\mathrm{s}}$',
+'Difference of noisy signal',
+'Difference of noisy signal',
+'Difference of noisy signal',
+'Filtered & derived signal \n'+ str(order) + '. order exp smoothing',
+'Filtered & derived signal \n'+ str(order) + '. order exp smoothing',
+'Filtered & derived signal \n'+ str(order) + '. order exp smoothing',
 box_label_white,box_label_brown,box_label_quant],True)
 
 # 10. Bode-Plot
