@@ -14,7 +14,7 @@ from cost import *
 
 step_size       = 2.0e-3
 point_counter = 500
-noise_std_dev   = 0.1
+noise_std_dev   = 0.5
 
 # 0. Minimize function for window length of Wiener time implementation
 def minimize_wiener_window(t,y,x,filter,diff,cost):
@@ -104,21 +104,23 @@ box_label_white,box_label_brown,box_label_quant],True)
 
 
 # 2. Ableitungseigenschaften auf Sinus / Polynom
-
 y_white_dot = np.diff(y_white, append = 0)/step_size
 y_brown_dot = np.diff(y_brown, append = 0)/step_size
 y_quant_dot = np.diff(y_quant, append = 0)/step_size
 
 plot2  = Plot_Sig(Plot_Enum.FILTER2, "Filterung",[])
 
+window_len_white = minimize_wiener_window(t,y_white,x_dot,wiener,1,cost)
 x_hat_dot_white = wiener.filter_diff(t,y_white,[noise_std_dev, window_len_white])[0]
 cost_white = cost.cost(x_hat_dot_white,x_dot)
 standard_cost_white = cost.cost(y_white_dot,x_dot)
 
+window_len_brown = minimize_wiener_window(t,y_brown,x_dot,wiener,1,cost)
 x_hat_dot_brown = wiener.filter_diff(t,y_brown,[noise_std_dev, window_len_brown])[0]
 cost_brown = cost.cost(x_hat_dot_brown,x_dot)
 standard_cost_brown = cost.cost(y_brown_dot,x_dot)
 
+window_len_quant = minimize_wiener_window(t,y_quant,x_dot,wiener,1,cost)
 x_hat_dot_quant = wiener.filter_diff(t,y_quant,[noise_std_dev, window_len_quant])[0]
 cost_quant = cost.cost(x_hat_dot_quant,x_dot)
 standard_cost_quant = cost.cost(y_quant_dot,x_dot)

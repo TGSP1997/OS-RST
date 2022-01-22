@@ -8,6 +8,21 @@ from filter import *
 from plot_sig import *
 from cost import *
 
+def plot_sig_mse(signals, labels, title):
+    labels = ['0.1', '0.2', '0.3', '0.4', '0.5']
+    x = np.arange(len(labels))  # the label locations
+    width = 0.35  # the width of the bars
+    fig, ax = plt.subplots()
+    ax.bar(x - width/2, signals[0], width, label='Wiener')
+    ax.bar(x + width/2, signals[1], width, label='Kalman')
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax.set_xlabel(r'noise $\sigma$')
+    ax.set_ylabel('MSE')
+    ax.set_title(title)
+    ax.set_xticks(x, labels)
+    ax.legend()
+    fig.tight_layout()
+
 data_csv = np.genfromtxt('filter_compare.csv', delimiter=',')
 std_devs = data_csv[1:6, 1]
 # NICHT abgeleitete MSEs
@@ -39,82 +54,36 @@ MSE_poly_brown_kalman_dot = data_csv[18:23, 6]
 MSE_poly_quant_kalman_dot = data_csv[18:23, 7]
 
 
-labels = ['0.1', '0.2', '0.3', '0.4', '0.5']
-x = np.arange(len(labels))  # the label locations
-width = 0.35  # the width of the bars
-
 ############### NICHT abgeleiteter Sinus
 # white sine
-fig_white_sine, ax_white_sine = plt.subplots()
-rects1 = ax_white_sine.bar(x - width/2, MSE_sine_white_wiener, width, label='Wiener')
-rects2 = ax_white_sine.bar(x + width/2, MSE_sine_white_kalman, width, label='Kalman')
-# Add some text for labels, title and custom x-ax_white_sineis tick labels, etc.
-ax_white_sine.set_xlabel(r'noise $\sigma$')
-ax_white_sine.set_ylabel('MSE')
-ax_white_sine.set_title('MSEs of white noise at sine')
-ax_white_sine.set_xticks(x, labels)
-ax_white_sine.legend()
-fig_white_sine.tight_layout()
-
+plot_sig_mse([MSE_sine_white_wiener, MSE_sine_white_kalman], ['Wiener', 'Kalman'], 'MSEs of white noise at sine')
 # brown sine
-fig_brown_sine, ax_brown_sine = plt.subplots()
-rects1 = ax_brown_sine.bar(x - width/2, MSE_sine_brown_wiener, width, label='Wiener')
-rects2 = ax_brown_sine.bar(x + width/2, MSE_sine_brown_kalman, width, label='Kalman')
-# Add some text for labels, title and custom x-ax_brown_sineis tick labels, etc.
-ax_brown_sine.set_xlabel(r'noise $\sigma$')
-ax_brown_sine.set_ylabel('MSE')
-ax_brown_sine.set_title('MSEs of brown noise at sine')
-ax_brown_sine.set_xticks(x, labels)
-ax_brown_sine.legend()
-fig_brown_sine.tight_layout()
-
+plot_sig_mse([MSE_sine_brown_wiener, MSE_sine_brown_kalman], ['Wiener', 'Kalman'], 'MSEs of brown noise at sine')
 # quant sine
-fig_quant_sine, ax_quant_sine = plt.subplots()
-rects1 = ax_quant_sine.bar(x - width/2, MSE_sine_quant_wiener, width, label='Wiener')
-rects2 = ax_quant_sine.bar(x + width/2, MSE_sine_quant_kalman, width, label='Kalman')
-# Add some text for labels, title and custom x-ax_quant_sineis tick labels, etc.
-ax_quant_sine.set_xlabel(r'noise $\sigma$')
-ax_quant_sine.set_ylabel('MSE')
-ax_quant_sine.set_title('MSEs of quant noise at sine')
-ax_quant_sine.set_xticks(x, labels)
-ax_quant_sine.legend()
-fig_quant_sine.tight_layout()
+plot_sig_mse([MSE_sine_quant_wiener, MSE_sine_quant_kalman], ['Wiener', 'Kalman'], 'MSEs of quant noise at sine')
 
 ############### NICHT abgeleitetes Polynom
 # white poly
-fig_white_poly, ax_white_poly = plt.subplots()
-rects1 = ax_white_poly.bar(x - width/2, MSE_poly_white_wiener, width, label='Wiener')
-rects2 = ax_white_poly.bar(x + width/2, MSE_poly_white_kalman, width, label='Kalman')
-# Add some text for labels, title and custom x-ax_white_polyis tick labels, etc.
-ax_white_poly.set_xlabel(r'noise $\sigma$')
-ax_white_poly.set_ylabel('MSE')
-ax_white_poly.set_title('MSEs of white noise at poly')
-ax_white_poly.set_xticks(x, labels)
-ax_white_poly.legend()
-fig_white_poly.tight_layout()
-
+plot_sig_mse([MSE_poly_white_wiener, MSE_poly_white_kalman], ['Wiener', 'Kalman'], 'MSEs of white noise at poly')
 # brown poly
-fig_brown_poly, ax_brown_poly = plt.subplots()
-rects1 = ax_brown_poly.bar(x - width/2, MSE_poly_brown_wiener, width, label='Wiener')
-rects2 = ax_brown_poly.bar(x + width/2, MSE_poly_brown_kalman, width, label='Kalman')
-# Add some text for labels, title and custom x-ax_brown_polyis tick labels, etc.
-ax_brown_poly.set_xlabel(r'noise $\sigma$')
-ax_brown_poly.set_ylabel('MSE')
-ax_brown_poly.set_title('MSEs of brown noise at poly')
-ax_brown_poly.set_xticks(x, labels)
-ax_brown_poly.legend()
-fig_brown_poly.tight_layout()
-
+plot_sig_mse([MSE_poly_brown_wiener, MSE_poly_brown_kalman], ['Wiener', 'Kalman'], 'MSEs of brown noise at poly')
 # quant poly
-fig_quant_poly, ax_quant_poly = plt.subplots()
-rects1 = ax_quant_poly.bar(x - width/2, MSE_poly_quant_wiener, width, label='Wiener')
-rects2 = ax_quant_poly.bar(x + width/2, MSE_poly_quant_kalman, width, label='Kalman')
-# Add some text for labels, title and custom x-ax_quant_polyis tick labels, etc.
-ax_quant_poly.set_xlabel(r'noise $\sigma$')
-ax_quant_poly.set_ylabel('MSE')
-ax_quant_poly.set_title('MSEs of quant noise at poly')
-ax_quant_poly.set_xticks(x, labels)
-ax_quant_poly.legend()
-fig_quant_poly.tight_layout()
+plot_sig_mse([MSE_poly_quant_wiener, MSE_poly_quant_kalman], ['Wiener', 'Kalman'], 'MSEs of quant noise at poly')
+
+############### abgeleiteter Sinus
+# white sine
+plot_sig_mse([MSE_sine_white_wiener_dot, MSE_sine_white_kalman_dot], ['Wiener', 'Kalman'], 'MSEs of white noise at sine_dot')
+# brown sine
+plot_sig_mse([MSE_sine_brown_wiener_dot, MSE_sine_brown_kalman_dot], ['Wiener', 'Kalman'], 'MSEs of brown noise at sine_dot')
+# quant sine
+plot_sig_mse([MSE_sine_quant_wiener_dot, MSE_sine_quant_kalman_dot], ['Wiener', 'Kalman'], 'MSEs of quant noise at sine_dot')
+
+############### abgeleitetes Polynom
+# white poly
+plot_sig_mse([MSE_poly_white_wiener_dot, MSE_poly_white_kalman_dot], ['Wiener', 'Kalman'], 'MSEs of white noise at poly_dot')
+# brown poly
+plot_sig_mse([MSE_poly_brown_wiener_dot, MSE_poly_brown_kalman_dot], ['Wiener', 'Kalman'], 'MSEs of brown noise at poly_dot')
+# quant poly
+plot_sig_mse([MSE_poly_quant_wiener_dot, MSE_poly_quant_kalman_dot], ['Wiener', 'Kalman'], 'MSEs of quant noise at poly_dot')
 
 plt.show()

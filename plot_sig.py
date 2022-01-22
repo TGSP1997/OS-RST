@@ -14,6 +14,8 @@ class Plot_Enum(Enum):
     SUBPLOT = "subplot"
     FILTER1 = "filter1"
     FILTER2 = "filter2"
+    FILTER3 = "filter3"
+    FILTER4 = "filter4"
     BODE = "bode"
 
 class Plot_Sig:
@@ -39,6 +41,10 @@ class Plot_Sig:
                 self.__plot_sig_filter1(t,signals, labels)
             case Plot_Enum.FILTER2:
                 self.__plot_sig_filter2(t,signals, labels)
+            case Plot_Enum.FILTER3:
+                self.__plot_sig_filter3(t,signals, labels)
+            case Plot_Enum.FILTER4:
+                self.__plot_sig_filter4(t,signals, labels)
             case Plot_Enum.BODE:
                 self.__plot_sig_bode(t,signals, labels)
     
@@ -103,9 +109,12 @@ class Plot_Sig:
             ax.plot(t, signals[0],'r--', linewidth = 3, label=labels[0])
             ax.plot(t, signals[i+1],'b', linewidth = 1, label=labels[i+1])
             ax.plot(t, signals[i+4],'k', linewidth = 2, label=labels[i+4])
-            ax.text(0.05, 0.5, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
-            plt.legend(loc="lower center")
+            ax.text(0.075, 0.5, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
+            plt.legend(loc="upper right")
             plt.ylabel('value', fontsize=16)
+            tick_width = np.ceil(np.max(signals[0]) - np.min(signals[0]))/9
+            tick_width = np.ceil(tick_width/0.5)*0.5
+            plt.ylim(np.min(signals[0])-tick_width, np.max(signals[0])+tick_width)
             plt.xlim(min(t),max(t))
             plt.tick_params(
                 axis="x",
@@ -114,6 +123,7 @@ class Plot_Sig:
                 top = False,
                 labelbottom = False
             )
+            plt.grid(True)
             plt.yticks(fontsize=14)
         plt.xlabel('time [s]', fontsize=16)
         plt.tick_params(
@@ -124,6 +134,7 @@ class Plot_Sig:
                 labelbottom = True
             )
         plt.xticks(fontsize=14)
+        fig.suptitle(self.title, fontsize=16)
 
     def __plot_sig_filter2(self,t,signals,labels):
         fig = plt.figure(figsize=(15, 10), dpi=120, constrained_layout=True)
@@ -133,15 +144,17 @@ class Plot_Sig:
 
         for i in range(size(signals,0)-4):
             ax = fig.add_subplot(spec[i,0])
-            ax.plot(t, signals[i+1],'b:', linewidth = 0.5, label=labels[i+1])
             ax.plot(t, signals[0],'r--', linewidth = 3, label=labels[0])
+            ax.plot(t, signals[i+1],'b:', linewidth = 0.5, label=labels[i+1])
             ax.plot(t, signals[i+4],'k', linewidth = 2, label=labels[i+4])
-            ax.text(0.15, 0.95, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
-            plt.legend(loc="lower right")
-            plt.ylabel('value', fontsize=16)
+            ax.plot(t, signals[0],'r--', linewidth = 3, label="")  # Print another round of signals over everything so it stays on top but doesnt show in the legend
+            ax.plot(t, signals[i+4],'k', linewidth = 2, label="")
+            ax.text(0.2, 0.95, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
+            plt.legend(loc="lower center")
+            plt.ylabel(r'value $\left[\frac{1}{s}\right]$', fontsize=16)
             plt.xlim(min(t),max(t))
             tick_width = np.ceil(np.max(signals[0]) - np.min(signals[0]))/9
-            tick_width = np.ceil(tick_width/0.5)*0.5
+            tick_width = np.ceil(tick_width/1)*1
             plt.ylim(np.min(signals[0])-tick_width, np.max(signals[0])+tick_width)
             plt.tick_params(
                 axis="x",
@@ -160,6 +173,86 @@ class Plot_Sig:
                 labelbottom = True
             )
         plt.xticks(fontsize=14)
+        fig.suptitle(self.title, fontsize=16)
+
+
+    def __plot_sig_filter3(self,t,signals,labels):
+        fig = plt.figure(figsize=(15, 10), dpi=120, constrained_layout=True)
+        spec = gridspec.GridSpec(size(signals,0)-4,1, figure = fig, wspace = 0)
+        
+        props = dict(boxstyle='round', facecolor='white', alpha=0.5)
+
+        for i in range(size(signals,0)-4):
+            ax = fig.add_subplot(spec[i,0])
+            ax.plot(t, signals[0],'r--', linewidth = 3, label=labels[0])
+            ax.plot(t, signals[i+1],'b', linewidth = 1, label=labels[i+1])
+            ax.plot(t, signals[i+4],'k', linewidth = 2, label=labels[i+4])
+            ax.text(0.025, 0.95, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
+            plt.legend(loc="lower right")
+            plt.ylabel('value', fontsize=16)
+            tick_width = np.ceil(np.max(signals[0]) - np.min(signals[0]))/9
+            tick_width = np.ceil(tick_width/0.5)*0.5
+            plt.ylim(np.min(signals[0])-tick_width, np.max(signals[0])+tick_width)
+            ax.set_yticks(np.linspace(np.min(signals[0]),np.max(signals[0]),3))
+            plt.xlim(min(t),max(t))
+            plt.tick_params(
+                axis="x",
+                which="both",
+                bottom=False,
+                top = False,
+                labelbottom = False
+            )
+            plt.grid(False)
+            plt.yticks(fontsize=14)
+        plt.xlabel('time [s]', fontsize=16)
+        plt.tick_params(
+                axis="x",
+                which="both",
+                bottom=True,
+                top = False,
+                labelbottom = True
+            )
+        plt.xticks(fontsize=14)
+        fig.suptitle(self.title, fontsize=16)
+    def __plot_sig_filter4(self,t,signals,labels):
+        fig = plt.figure(figsize=(15, 10), dpi=120, constrained_layout=True)
+        spec = gridspec.GridSpec(size(signals,0)-4,1, figure = fig, wspace = 0)
+        
+        props = dict(boxstyle='round', facecolor='white', alpha=0.5)
+
+        for i in range(size(signals,0)-4):
+            ax = fig.add_subplot(spec[i,0])
+            ax.plot(t, signals[0],'r--', linewidth = 3, label=labels[0])
+            ax.plot(t, signals[i+1],'b:', linewidth = 0.5, label=labels[i+1])
+            ax.plot(t, signals[i+4],'k', linewidth = 2, label=labels[i+4])
+            ax.plot(t, signals[0],'r--', linewidth = 3, label="") # Print another round of signals over everything so it stays on top but doesnt show in the legend
+            ax.plot(t, signals[i+4],'k', linewidth = 2, label="")
+            ax.text(0.25, 0.95, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
+            plt.legend(loc="upper center")
+            plt.ylabel(r'value $\left[\frac{1}{s}\right]$', fontsize=16)
+            plt.xlim(min(t),max(t))
+            tick_width = np.ceil(np.max(signals[0]) - np.min(signals[0]))/5
+            tick_width = np.ceil(tick_width/1)*1
+            ax.set_yticks(np.linspace(np.min(signals[0]),np.max(signals[0]),3))
+            plt.ylim(np.min(signals[0])-tick_width, np.max(signals[0])+tick_width)
+            plt.tick_params(
+                axis="x",
+                which="both",
+                bottom=False,
+                top = False,
+                labelbottom = False
+            )
+            plt.yticks(fontsize=14)
+        plt.xlabel('time [s]', fontsize=16)
+        plt.tick_params(
+                axis="x",
+                which="both",
+                bottom=True,
+                top = False,
+                labelbottom = True
+            )
+        plt.xticks(fontsize=14)
+        fig.suptitle(self.title, fontsize=16)
 
     def __plot_sig_bode(self,t,signals,labels):
         norm_freq = t[:round(len(t)/2)] / (t[-1] - t[0])
@@ -173,9 +266,13 @@ class Plot_Sig:
         for i in range(len(signals[0])):
             G_in_fft = np.fft.fft(signals[0][i])
             G_out_fft = np.fft.fft(signals[1][i])
-            G_fft = np.divide(G_out_fft, G_in_fft)     
+            G_fft = np.divide(G_out_fft, G_in_fft)
+            if max(abs(np.real(G_fft))) < 1e-10:
+                G_fft = np.imag(G_fft)
+            if max(abs(np.imag(G_fft))) < 1e-10:
+                G_fft = np.real(G_fft)
             ax_amp.semilogx(norm_freq,20*np.log10(abs(G_fft[:round(len(G_fft)/2)])), label=labels[i])
-            ax_phase.semilogx(norm_freq,np.multiply(np.unwrap(np.angle(G_fft[:round(len(G_fft)/2)])),(180/np.pi)), label=labels[i])
+            ax_phase.semilogx(norm_freq,np.multiply(np.angle(G_fft[:round(len(G_fft)/2)]),(180/np.pi)), label=labels[i])
         
         plt.sca(ax_amp)    
         plt.ylabel('Amplitude [dB]', fontsize=16)
