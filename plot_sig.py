@@ -266,7 +266,11 @@ class Plot_Sig:
         for i in range(len(signals[0])):
             G_in_fft = np.fft.fft(signals[0][i])
             G_out_fft = np.fft.fft(signals[1][i])
-            G_fft = np.divide(G_out_fft, G_in_fft)            
+            G_fft = np.divide(G_out_fft, G_in_fft)
+            if max(abs(np.real(G_fft))) < 1e-10:
+                G_fft = np.imag(G_fft)
+            if max(abs(np.imag(G_fft))) < 1e-10:
+                G_fft = np.real(G_fft)
             ax_amp.semilogx(norm_freq,20*np.log10(abs(G_fft[:round(len(G_fft)/2)])), label=labels[i])
             ax_phase.semilogx(norm_freq,np.multiply(np.angle(G_fft[:round(len(G_fft)/2)]),(180/np.pi)), label=labels[i])
         
