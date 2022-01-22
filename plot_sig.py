@@ -173,9 +173,9 @@ class Plot_Sig:
         for i in range(len(signals[0])):
             G_in_fft = np.fft.fft(signals[0][i])
             G_out_fft = np.fft.fft(signals[1][i])
-            G_fft = np.divide(G_out_fft, G_in_fft)            
+            G_fft = np.divide(G_out_fft, G_in_fft)     
             ax_amp.semilogx(norm_freq,20*np.log10(abs(G_fft[:round(len(G_fft)/2)])), label=labels[i])
-            ax_phase.semilogx(norm_freq,np.multiply(np.angle(G_fft[:round(len(G_fft)/2)]),(180/np.pi)), label=labels[i])
+            ax_phase.semilogx(norm_freq,np.multiply(np.unwrap(np.angle(G_fft[:round(len(G_fft)/2)])),(180/np.pi)), label=labels[i])
         
         plt.sca(ax_amp)    
         plt.ylabel('Amplitude [dB]', fontsize=16)
