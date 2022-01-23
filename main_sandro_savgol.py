@@ -15,7 +15,7 @@ def own_minimize(t,y,true_y,filter,cost,diff=0):
         minimum_cost= None
         para_out=[]
         for i in range(1,20):
-                for j in range(0,10):
+                for j in range(0,100):
                         
                         if i>=(2*j+1):
                                 continue
@@ -35,8 +35,9 @@ def own_minimize(t,y,true_y,filter,cost,diff=0):
 step_size       = 2e-3#5e-3
 #step_size       = 1e-3
 noise_std_dev   = 0.5
-plot1  = Plot_Sig(Plot_Enum.FILTER1, "Filterung",[])
-plot2  = Plot_Sig(Plot_Enum.FILTER2, "Filterung",[])
+plot1  = Plot_Sig(Plot_Enum.FILTER1, "Savitzky Golay | Harmonic Signal",[])
+
+plot2  = Plot_Sig(Plot_Enum.FILTER2, "Savitzky Golay | Derivative Harmonic Signal",[])
 
 ###########################################################
 #1. Filtereigenschaften Sinus
@@ -69,36 +70,36 @@ standard_cost_quant = cost.cost(y_quant,x)
 print('1.','quant',savgol_para_quant,'cost',cost_quant)
 
 box_label_white = '\n'.join((
-        #r'White Noise',
+        r'White Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'Polyorder=%i Window=%i' % (savgol_para_white[1],savgol_para_white[0]*2+1 ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_white, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_white, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_white, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_white, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
 
 box_label_brown = '\n'.join((
-        #r'Brown Noise',
+        r'Brown Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'Polyorder=%i Window=%i' % (savgol_para_brown[1],savgol_para_brown[0]*2+1 ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_brown, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_brown, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_brown, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_brown, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_brown/standard_cost_brown, )))
 
 box_label_quant = '\n'.join((
-        #r'Quantisation Noise',
+        r'Quantisation Noise',
         r'$stepsize=%.2f$' % (noise_std_dev, ),
         r'Polyorder=%i Window=%i' % (savgol_para_quant[1],savgol_para_quant[0]*2+1 ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_quant, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_quant, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
 
-plot1.plot_sig(time,[x,y_white,y_brown,y_quant,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],['Input Signal (Sinus)',
+plot1.plot_sig(time,[x,y_white,y_brown,y_quant,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],[r'$f(t) = \mathrm{sin}\left(2\pi\cdot\frac{t}{0.5\,\mathrm{s}}\right)$',
 'Signal with White Noise',
 'Signal with Brown Noise',
 'Signal with Quantisation Noise',
-'Savgol Smoothing (White Noise)',
-'Savgol Smoothing (Brown Noise)',
-'Savgol Smoothing (Quantisation)',
+'Savgol Smoothing',
+'Savgol Smoothing',
+'Savgol Smoothing',
 box_label_white,box_label_brown,box_label_quant],True)
 
 ###########################################################
@@ -121,43 +122,44 @@ standard_cost_quant = cost.cost(y_quant,x_dot)
 print('2.','quant',savgol_para_quant,'cost',cost_quant)
 
 box_label_white = '\n'.join((
-        #r'White Noise',
+        r'White Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'Polyorder=%i Window=%i' % (savgol_para_white[1],savgol_para_white[0]*2+1 ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_white, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_white, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_white, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_white, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
 
 box_label_brown = '\n'.join((
-        #r'Brown Noise',
+        r'Brown Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'Polyorder=%i Window=%i' % (savgol_para_brown[1],savgol_para_brown[0]*2+1 ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_brown, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_brown, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_brown, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_brown, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_brown/standard_cost_brown, )))
 
 box_label_quant = '\n'.join((
-        #r'Quantisation Noise',
+        r'Quantisation Noise',
         r'$stepsize=%.2f$' % (noise_std_dev, ),
         r'Polyorder=%i Window=%i' % (savgol_para_quant[1],savgol_para_quant[0]*2+1 ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_quant, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_quant, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
 y_white_dot = np.diff(y_white, append = 0)/step_size
 y_brown_dot = np.diff(y_brown, append = 0)/step_size
 y_quant_dot = np.diff(y_quant, append = 0)/step_size
-plot2.plot_sig(time,[x_dot,y_white_dot,y_brown_dot,y_quant_dot,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],['Input Signal (Diff Sinus)',
+plot2.plot_sig(time,[x_dot,y_white_dot,y_brown_dot,y_quant_dot,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],[r'$\frac{df}{dt}(t) = \left(\frac{2\pi}{0.5 \mathrm{s}}\right)\mathrm{cos}\left(2\pi\cdot\frac{t}{0.5 \mathrm{s}}\right)$',
 'Diff of signal with White Noise',
 'Diff of signal with Brown Noise',
 'Diff of signal with Quantisation Noise',
-'Savgol Smoothing (White Noise) and Differentation',
-'Savgol Smoothing (Brown Noise) and Differentation',
-'Savgol Smoothing (Quantisation) and Differentation',
+'Savgol Smoothing and Differentation',
+'Savgol Smoothing and Differentation',
+'Savgol Smoothing and Differentation',
 box_label_white,box_label_brown,box_label_quant],True)
 ###########################################################
 #3. Filtereigenschaften Polynom
-polynome = Input_Function(Input_Enum.POLYNOM, [100,-150,50,0])
-
+polynome = Input_Function(Input_Enum.POLYNOM, [4, -6, 3, 0]) #[100,-150,50,0]
+plot1  = Plot_Sig(Plot_Enum.FILTER3, "Savitzky Golay | Polynomial Signal",[])
+plot2  = Plot_Sig(Plot_Enum.FILTER4, "Savitzky Golay | Derivative Polynomial Signal",[])
 time, x, x_dot = polynome.get_fun()
 y_white = white.apply_noise(x)
 y_brown = brown.apply_noise(x)
@@ -180,36 +182,36 @@ standard_cost_quant = cost.cost(y_quant,x)
 print('3.','quant',savgol_para_quant,'cost',cost_quant)
 
 box_label_white = '\n'.join((
-        #r'White Noise',
+        r'White Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'Polyorder=%i Window=%i' % (savgol_para_white[1],savgol_para_white[0]*2+1 ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_white, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_white, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_white, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_white, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
 
 box_label_brown = '\n'.join((
-        #r'Brown Noise',
+        r'Brown Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'Polyorder=%i Window=%i' % (savgol_para_brown[1],savgol_para_brown[0]*2+1 ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_brown, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_brown, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_brown, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_brown, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_brown/standard_cost_brown, )))
 
 box_label_quant = '\n'.join((
-        #r'Quantisation Noise',
+        r'Quantisation Noise',
         r'$stepsize=%.2f$' % (noise_std_dev, ),
         r'Polyorder=%i Window=%i' % (savgol_para_quant[1],savgol_para_quant[0]*2+1 ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_quant, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_quant, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
 
-plot1.plot_sig(time,[x,y_white,y_brown,y_quant,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],['Input Signal (Polynom)',
+plot1.plot_sig(time,[x,y_white,y_brown,y_quant,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],[r'$f(t) = \frac{4}{\mathrm{s}^3}\cdot t^3 - \frac{6}{\mathrm{s}^2}\cdot t^2 + \frac{3}{\mathrm{s}}\cdot t + 0$',
 'Signal with White Noise',
 'Signal with Brown Noise',
 'Signal with Quantisation Noise',
-'Savgol Smoothing (White Noise)',
-'Savgol Smoothing (Brown Noise)',
-'Savgol Smoothing (Quantisation)',
+'Savgol Smoothing',
+'Savgol Smoothing',
+'Savgol Smoothing',
 box_label_white,box_label_brown,box_label_quant],True)
 ###########################################################
 #4. Ableitungseigenschaften Polynom
@@ -230,39 +232,39 @@ standard_cost_quant = cost.cost(y_quant,x_dot)
 print('4.','quant',savgol_para_quant,'cost',cost_quant)
 
 box_label_white = '\n'.join((
-        #r'White Noise',
+        r'White Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'Polyorder=%i Window=%i' % (savgol_para_white[1],savgol_para_white[0]*2+1 ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_white, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_white, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_white, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_white, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
 
 box_label_brown = '\n'.join((
-        #r'Brown Noise',
+        r'Brown Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
         r'Polyorder=%i Window=%i' % (savgol_para_brown[1],savgol_para_brown[0]*2+1 ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_brown, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_brown, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_brown, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_brown, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_brown/standard_cost_brown, )))
 
 box_label_quant = '\n'.join((
-        #r'Quantisation Noise',
+        r'Quantisation Noise',
         r'$stepsize=%.2f$' % (noise_std_dev, ),
         r'Polyorder=%i Window=%i' % (savgol_para_quant[1],savgol_para_quant[0]*2+1 ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_quant, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_quant, ),
+        r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
 
 y_white_dot = np.diff(y_white, append = 0)/step_size
 y_brown_dot = np.diff(y_brown, append = 0)/step_size
 y_quant_dot = np.diff(y_quant, append = 0)/step_size
-plot2.plot_sig(time,[x_dot,y_white_dot,y_brown_dot,y_quant_dot,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],['Input Signal (Diff Polynom)',
+plot2.plot_sig(time,[x_dot,y_white_dot,y_brown_dot,y_quant_dot,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],[r'$\frac{df}{dt}(t) = \frac{12}{\mathrm{s}^3}\cdot t^2 - \frac{12}{\mathrm{s}^2}\cdot t + \frac{3}{\mathrm{s}}$',
 'Diff of signal with White Noise',
 'Diff of signal with Brown Noise',
 'Diff of signal with Quantisation Noise',
-'Savgol Smoothing (White Noise) and Differentation',
-'Savgol Smoothing (Brown Noise) and Differentation',
-'Savgol Smoothing (Quantisation) and Differentation',
+'Savgol Smoothing and Differentation',
+'Savgol Smoothing and Differentation',
+'Savgol Smoothing and Differentation',
 box_label_white,box_label_brown,box_label_quant],True)
 ###########################################################
 #5.
