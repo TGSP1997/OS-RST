@@ -20,7 +20,7 @@ point_counter   = int(1/step_size)
 for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
 
         order           = 4
-        freq            = 10 / (1000 / 2) # Normalisierte Grenzfrequenz mit w = fc / (fs / 2)
+        freq            = 5 / (1000 / 2) # Normalisierte Grenzfrequenz mit w = fc / (fs / 2)
 
         bounds          = ((0.001, 0.9),) # Komische Tupeldarstellung damit Minimize Glücklich ist.
 
@@ -293,6 +293,23 @@ for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
         u[10] = 1
         t = np.linspace(0,1,num = int(point_counter))
 
+        o1      = butter1.filter_fun(t,u)
+        o2      = butter2.filter_fun(t,u)
+        o3      = butter3.filter_fun(t,u)
+        o4      = butter4.filter_fun(t,u)
+        o5      = butter5.filter_fun(t,u)
+
+
+        plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot Butterworth Filter",parameters = 0)
+
+        plot_bode.plot_sig(t,[[u,u,u,u,u],[o1,o2,o3,o4,o5]],[
+                r"1st order, $\frac{f}{f_S}$ = " + str(freq), 
+                r"2nd order, $\frac{f}{f_S}$ = " + str(freq),
+                r"3rd order, $\frac{f}{f_S}$ = " + str(freq),
+                r"4th order, $\frac{f}{f_S}$ = " + str(freq),
+                r"5th order, $\frac{f}{f_S}$ = " + str(freq),], ylim = [-80,20])
+
+
         o1      = butter1.filter_diff(t,u)
         o2      = butter2.filter_diff(t,u)
         o3      = butter3.filter_diff(t,u)
@@ -300,14 +317,14 @@ for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
         o5      = butter5.filter_diff(t,u)
 
 
-        plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot",parameters = 0)
+        plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot Butterworth Filter and Derivative",parameters = 0)
 
         plot_bode.plot_sig(t,[[u,u,u,u,u],[o1,o2,o3,o4,o5]],[
-                "1st order", 
-                "2nd order",
-                "3rd order",
-                "4th order",
-                "5th order",])
+                r"1st order, $\frac{f}{f_S}$ = " + str(freq), 
+                r"2nd order, $\frac{f}{f_S}$ = " + str(freq),
+                r"3rd order, $\frac{f}{f_S}$ = " + str(freq),
+                r"4th order, $\frac{f}{f_S}$ = " + str(freq),
+                r"5th order, $\frac{f}{f_S}$ = " + str(freq),], ylim = [-60,40])
 
 
         from os import path
