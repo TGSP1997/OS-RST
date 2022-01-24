@@ -39,12 +39,12 @@ MSE_poly_white_kalman = data_csv[6:11, 5]
 MSE_poly_brown_kalman = data_csv[6:11, 6]
 MSE_poly_quant_kalman = data_csv[6:11, 7]
 
-MSE_sine_white_savgol = data_csv[27:31, 2]
-MSE_sine_brown_savgol = data_csv[27:31, 3]
-MSE_sine_quant_savgol = data_csv[27:31, 4]
-MSE_poly_white_savgol = data_csv[27:31, 5]
-MSE_poly_brown_savgol = data_csv[27:31, 6]
-MSE_poly_quant_savgol = data_csv[27:31, 7]
+MSE_sine_white_savgol = data_csv[25:30, 2]
+MSE_sine_brown_savgol = data_csv[25:30, 3]
+MSE_sine_quant_savgol = data_csv[25:30, 4]
+MSE_poly_white_savgol = data_csv[25:30, 5]
+MSE_poly_brown_savgol = data_csv[25:30, 6]
+MSE_poly_quant_savgol = data_csv[25:30, 7]
 
 
 # abgeleitete MSEs
@@ -61,12 +61,12 @@ MSE_poly_white_kalman_dot = data_csv[18:23, 5]
 MSE_poly_brown_kalman_dot = data_csv[18:23, 6]
 MSE_poly_quant_kalman_dot = data_csv[18:23, 7]
 
-MSE_sine_white_savgol_dot = data_csv[34:38, 2]
-MSE_sine_brown_savgol_dot = data_csv[34:38, 3]
-MSE_sine_quant_savgol_dot = data_csv[34:38, 4]
-MSE_poly_white_savgol_dot = data_csv[34:38, 5]
-MSE_poly_brown_savgol_dot = data_csv[34:38, 6]
-MSE_poly_quant_savgol_dot = data_csv[34:38, 7]
+MSE_sine_white_savgol_dot = data_csv[32:37, 2]
+MSE_sine_brown_savgol_dot = data_csv[32:37, 3]
+MSE_sine_quant_savgol_dot = data_csv[32:37, 4]
+MSE_poly_white_savgol_dot = data_csv[32:37, 5]
+MSE_poly_brown_savgol_dot = data_csv[32:37, 6]
+MSE_poly_quant_savgol_dot = data_csv[32:37, 7]
 
 
 ############### NICHT abgeleiteter Sinus
