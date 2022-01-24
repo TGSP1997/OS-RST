@@ -31,7 +31,7 @@ class Plot_Sig:
        
         
 
-    def plot_sig(self,t,signals, labels, time_domain=True):
+    def plot_sig(self,t,signals, labels, time_domain=True, ylim = [-40,60]):
         match self.type:
             case Plot_Enum.MULTI:
                 self.__plot_sig_multi(t,signals, labels, time_domain)
@@ -46,7 +46,7 @@ class Plot_Sig:
             case Plot_Enum.FILTER4:
                 self.__plot_sig_filter4(t,signals, labels)
             case Plot_Enum.BODE:
-                self.__plot_sig_bode(t,signals, labels)
+                self.__plot_sig_bode(t,signals, labels, ylim)
     
     def plot_slider(self,t,signals, labels,parameters,filter): #parameters as array, differrent for ech filter 
         match self.type:
@@ -256,7 +256,7 @@ class Plot_Sig:
         plt.xticks(fontsize=14)
         fig.suptitle(self.title, fontsize=16)
 
-    def __plot_sig_bode(self,t,signals,labels):
+    def __plot_sig_bode(self,t,signals,labels, ylim_amp):
         norm_freq = t[:round(len(t)/2)] / (t[-1] - t[0])
         fig = plt.figure(figsize=(15, 10), dpi=120, constrained_layout=True)
         spec = gridspec.GridSpec(2,1, figure = fig, wspace = 0)
@@ -294,7 +294,7 @@ class Plot_Sig:
             )
         plt.xticks(fontsize=14)
         plt.yticks(fontsize=14)
-        plt.ylim(-40,60)
+        plt.ylim(ylim_amp)
         plt.xlim(np.min(norm_freq),np.max(norm_freq))
         fig.suptitle(self.title, fontsize=16)
 
