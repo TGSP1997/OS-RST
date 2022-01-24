@@ -163,6 +163,7 @@ class Plot_Sig:
                 top = False,
                 labelbottom = False
             )
+            plt.grid(True)
             plt.yticks(fontsize=14)
         plt.xlabel('time [s]', fontsize=16)
         plt.tick_params(
@@ -202,7 +203,7 @@ class Plot_Sig:
                 top = False,
                 labelbottom = False
             )
-            plt.grid(False)
+            plt.grid(True)
             plt.yticks(fontsize=14)
         plt.xlabel('time [s]', fontsize=16)
         plt.tick_params(
@@ -242,6 +243,7 @@ class Plot_Sig:
                 top = False,
                 labelbottom = False
             )
+            plt.grid(True)
             plt.yticks(fontsize=14)
         plt.xlabel('time [s]', fontsize=16)
         plt.tick_params(
@@ -263,6 +265,8 @@ class Plot_Sig:
         plt.ylabel('Phase [°]', fontsize=16)
 
 
+        
+
         for i in range(len(signals[0])):
             G_in_fft = np.fft.fft(signals[0][i])
             G_out_fft = np.fft.fft(signals[1][i])
@@ -273,7 +277,10 @@ class Plot_Sig:
                 G_fft = np.real(G_fft)
             ax_amp.semilogx(norm_freq,20*np.log10(abs(G_fft[:round(len(G_fft)/2)])), label=labels[i])
             ax_phase.semilogx(norm_freq,np.multiply(np.unwrap(np.angle(G_fft[:round(len(G_fft)/2)])),(180/np.pi)), label=labels[i])
-
+            G_fft_min = np.amin(20*np.log10(abs(G_fft[:round(len(G_fft)/2)])))
+            G_fft_max = np.amax(20*np.log10(abs(G_fft[:round(len(G_fft)/2)])))
+            plt.grid(True)
+        
         plt.sca(ax_amp)    
         plt.ylabel('Amplitude [dB]', fontsize=16)
         ax_amp.legend(loc="best")
@@ -286,6 +293,7 @@ class Plot_Sig:
             )
         plt.xticks(fontsize=14)
         plt.yticks(fontsize=14)
+        plt.ylim(-40,60)
         plt.xlim(np.min(norm_freq),np.max(norm_freq))
         fig.suptitle(self.title, fontsize=16)
 
