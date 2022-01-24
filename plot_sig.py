@@ -276,11 +276,11 @@ class Plot_Sig:
             if max(abs(np.imag(G_fft))) < 1e-10:
                 G_fft = np.real(G_fft)
             ax_amp.semilogx(norm_freq,20*np.log10(abs(G_fft[:round(len(G_fft)/2)])), label=labels[i])
-            plt.grid(True)
+            ax_amp.grid(True)
             ax_phase.semilogx(norm_freq,np.multiply(np.unwrap(np.angle(G_fft[:round(len(G_fft)/2)])),(180/np.pi)), label=labels[i])
             G_fft_min = np.amin(20*np.log10(abs(G_fft[:round(len(G_fft)/2)])))
             G_fft_max = np.amax(20*np.log10(abs(G_fft[:round(len(G_fft)/2)])))
-            plt.grid(True)
+            ax_phase.grid(True)
         
         plt.sca(ax_amp)    
         plt.ylabel('Amplitude [dB]', fontsize=16)
