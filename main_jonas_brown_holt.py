@@ -338,7 +338,7 @@ for beta in [0.1,0.2,0.4,0.8]:
 
 
 from os import path
-outpath = r"D:/Uni/Oberseminar/Rep/Bilder_Jonas/sigma" + str(noise_std_dev) + r"/"
+outpath = r"D:/Uni/Oberseminar/Rep/Bilder_Jonas/Exp/sigma" + str(noise_std_dev) + r"/"
 for i in plt.get_fignums():
         plt.figure(i).savefig(path.join(outpath,"figure_{0}.png".format(i)))
 
