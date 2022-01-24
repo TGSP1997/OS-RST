@@ -194,7 +194,7 @@ class Plot_Sig:
             tick_width = np.ceil(np.max(signals[0]) - np.min(signals[0]))/9
             tick_width = np.ceil(tick_width/0.5)*0.5
             plt.ylim(np.min(signals[0])-tick_width, np.max(signals[0])+tick_width)
-            ax.set_yticks(np.linspace(np.min(signals[0]),np.max(signals[0]),3))
+            ax.set_yticks([0,0.5,1])
             plt.xlim(min(t),max(t))
             plt.tick_params(
                 axis="x",
