@@ -300,20 +300,39 @@ u[10] = 1
 t = np.linspace(0,1,num = int(point_counter))
 
 y1      = exp.filter_fun(t,u,para = [ 0.1, exp.parameters[1] ])
+y2      = exp.filter_fun(t,u,para = [ 0.2, exp.parameters[1] ])
 y4      = exp.filter_fun(t,u,para = [ 0.4, exp.parameters[1] ])
 y8      = exp.filter_fun(t,u,para = [ 0.8, exp.parameters[1] ])
-y10      = exp.filter_fun(t,u,para = [ 1, exp.parameters[1] ])
 
 
-plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot",parameters = 0)
+plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot Exp. Smoothing",parameters = 0)
 
-plot_bode.plot_sig(t,[[u,u,u,u],[y1,y4,y8,y10]],[
+plot_bode.plot_sig(t,[[u,u,u,u],[y1,y2,y4,y8]],[
         "alpha = 0.1", 
+        "alpha = 0.2",
         "alpha = 0.4",
-        "alpha = 0.8",
-        "alpha = 1.0",])
+        "alpha = 0.8",])
 
 
+u = np.zeros(int(point_counter))
+u[10] = 1
+t = np.linspace(0,1,num = int(point_counter))
+
+for beta in [0.1,0.2,0.4,0.8]:
+
+        y1      = exp.filter_diff(t,u,para = [ 0.1, exp.parameters[1], beta ])
+        y2      = exp.filter_diff(t,u,para = [ 0.2, exp.parameters[1], beta])
+        y4      = exp.filter_diff(t,u,para = [ 0.4, exp.parameters[1], beta])
+        y8      = exp.filter_diff(t,u,para = [ 0.8, exp.parameters[1], beta])
+
+
+        plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot Exp. Smoothing and Derivative",parameters = 0)
+
+        plot_bode.plot_sig(t,[[u,u,u,u],[y1,y2,y4,y8]],[
+                "alpha = 0.1, beta = "+ str(beta), 
+                "alpha = 0.2, beta = "+ str(beta),
+                "alpha = 0.4, beta = "+ str(beta),
+                "alpha = 0.8, beta = "+ str(beta),])
 
 
 
