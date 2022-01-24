@@ -39,6 +39,14 @@ MSE_poly_white_kalman = data_csv[6:11, 5]
 MSE_poly_brown_kalman = data_csv[6:11, 6]
 MSE_poly_quant_kalman = data_csv[6:11, 7]
 
+MSE_sine_white_savgol = data_csv[27:31, 2]
+MSE_sine_brown_savgol = data_csv[27:31, 3]
+MSE_sine_quant_savgol = data_csv[27:31, 4]
+MSE_poly_white_savgol = data_csv[27:31, 5]
+MSE_poly_brown_savgol = data_csv[27:31, 6]
+MSE_poly_quant_savgol = data_csv[27:31, 7]
+
+
 # abgeleitete MSEs
 MSE_sine_white_wiener_dot = data_csv[13:18, 2]
 MSE_sine_brown_wiener_dot = data_csv[13:18, 3]
@@ -53,37 +61,44 @@ MSE_poly_white_kalman_dot = data_csv[18:23, 5]
 MSE_poly_brown_kalman_dot = data_csv[18:23, 6]
 MSE_poly_quant_kalman_dot = data_csv[18:23, 7]
 
+MSE_sine_white_savgol_dot = data_csv[34:38, 2]
+MSE_sine_brown_savgol_dot = data_csv[34:38, 3]
+MSE_sine_quant_savgol_dot = data_csv[34:38, 4]
+MSE_poly_white_savgol_dot = data_csv[34:38, 5]
+MSE_poly_brown_savgol_dot = data_csv[34:38, 6]
+MSE_poly_quant_savgol_dot = data_csv[34:38, 7]
+
 
 ############### NICHT abgeleiteter Sinus
 # white sine
-plot_sig_mse([MSE_sine_white_wiener, MSE_sine_white_kalman], ['Wiener', 'Kalman'], 'MSEs of white noise at sine')
+plot_sig_mse([MSE_sine_white_wiener, MSE_sine_white_kalman,MSE_sine_white_savgol], ['Wiener', 'Kalman','Savgol'], 'MSEs of white noise at sine')
 # brown sine
-plot_sig_mse([MSE_sine_brown_wiener, MSE_sine_brown_kalman], ['Wiener', 'Kalman'], 'MSEs of brown noise at sine')
+plot_sig_mse([MSE_sine_brown_wiener, MSE_sine_brown_kalman,MSE_sine_brown_savgol], ['Wiener', 'Kalman','Savgol'], 'MSEs of brown noise at sine')
 # quant sine
-plot_sig_mse([MSE_sine_quant_wiener, MSE_sine_quant_kalman], ['Wiener', 'Kalman'], 'MSEs of quant noise at sine')
+plot_sig_mse([MSE_sine_quant_wiener, MSE_sine_quant_kalman,MSE_sine_quant_savgol], ['Wiener', 'Kalman','Savgol'], 'MSEs of quant noise at sine')
 
 ############### NICHT abgeleitetes Polynom
 # white poly
-plot_sig_mse([MSE_poly_white_wiener, MSE_poly_white_kalman], ['Wiener', 'Kalman'], 'MSEs of white noise at poly')
+plot_sig_mse([MSE_poly_white_wiener, MSE_poly_white_kalman,MSE_poly_white_savgol], ['Wiener', 'Kalman','Savgol'], 'MSEs of white noise at poly')
 # brown poly
-plot_sig_mse([MSE_poly_brown_wiener, MSE_poly_brown_kalman], ['Wiener', 'Kalman'], 'MSEs of brown noise at poly')
+plot_sig_mse([MSE_poly_brown_wiener, MSE_poly_brown_kalman,MSE_poly_brown_savgol], ['Wiener', 'Kalman','Savgol'], 'MSEs of brown noise at poly')
 # quant poly
-plot_sig_mse([MSE_poly_quant_wiener, MSE_poly_quant_kalman], ['Wiener', 'Kalman'], 'MSEs of quant noise at poly')
+plot_sig_mse([MSE_poly_quant_wiener, MSE_poly_quant_kalman,MSE_poly_quant_savgol], ['Wiener', 'Kalman','Savgol'], 'MSEs of quant noise at poly')
 
 ############### abgeleiteter Sinus
 # white sine
-plot_sig_mse([MSE_sine_white_wiener_dot, MSE_sine_white_kalman_dot], ['Wiener', 'Kalman'], 'MSEs of white noise at sine_dot')
+plot_sig_mse([MSE_sine_white_wiener_dot, MSE_sine_white_kalman_dot,MSE_sine_white_savgol_dot], ['Wiener', 'Kalman','Savgol'], 'MSEs of white noise at sine_dot')
 # brown sine
-plot_sig_mse([MSE_sine_brown_wiener_dot, MSE_sine_brown_kalman_dot], ['Wiener', 'Kalman'], 'MSEs of brown noise at sine_dot')
+plot_sig_mse([MSE_sine_brown_wiener_dot, MSE_sine_brown_kalman_dot, MSE_sine_brown_savgol_dot], ['Wiener', 'Kalman','Savgol'], 'MSEs of brown noise at sine_dot')
 # quant sine
-plot_sig_mse([MSE_sine_quant_wiener_dot, MSE_sine_quant_kalman_dot], ['Wiener', 'Kalman'], 'MSEs of quant noise at sine_dot')
+plot_sig_mse([MSE_sine_quant_wiener_dot, MSE_sine_quant_kalman_dot, MSE_sine_quant_savgol_dot], ['Wiener', 'Kalman','Savgol'], 'MSEs of quant noise at sine_dot')
 
 ############### abgeleitetes Polynom
 # white poly
-plot_sig_mse([MSE_poly_white_wiener_dot, MSE_poly_white_kalman_dot], ['Wiener', 'Kalman'], 'MSEs of white noise at poly_dot')
+plot_sig_mse([MSE_poly_white_wiener_dot, MSE_poly_white_kalman_dot, MSE_poly_white_savgol_dot], ['Wiener', 'Kalman','Savgol'], 'MSEs of white noise at poly_dot')
 # brown poly
-plot_sig_mse([MSE_poly_brown_wiener_dot, MSE_poly_brown_kalman_dot], ['Wiener', 'Kalman'], 'MSEs of brown noise at poly_dot')
+plot_sig_mse([MSE_poly_brown_wiener_dot, MSE_poly_brown_kalman_dot, MSE_poly_brown_savgol_dot], ['Wiener', 'Kalman','Savgol'], 'MSEs of brown noise at poly_dot')
 # quant poly
-plot_sig_mse([MSE_poly_quant_wiener_dot, MSE_poly_quant_kalman_dot], ['Wiener', 'Kalman'], 'MSEs of quant noise at poly_dot')
+plot_sig_mse([MSE_poly_quant_wiener_dot, MSE_poly_quant_kalman_dot, MSE_poly_quant_savgol_dot], ['Wiener', 'Kalman','Savgol'], 'MSEs of quant noise at poly_dot')
 
 plt.show()
