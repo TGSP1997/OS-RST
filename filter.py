@@ -129,7 +129,6 @@ class Filter:
         noise_stdev = para[0]
         m = para[1]
         sigma = noise_stdev
-        n = len(y)
         N = m//2  # (half) window length
         
 

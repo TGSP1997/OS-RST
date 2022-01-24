@@ -14,12 +14,12 @@ from cost import *
 
 step_size       = 2.0e-3
 
-noise_std_dev   = 0.1
+noise_std_dev   = 0.5
 
 # 1. Filtereigenschaften auf Sinus / Polynom
 point_counter = 500
 sine    = Input_Function(Input_Enum.SINE, [1, 0.5, 0, 0], sampling_period = step_size, point_counter=point_counter)
-polynome = Input_Function(Input_Enum.POLYNOM, [100,-150,50,0], sampling_period = step_size, point_counter=point_counter) #coefs in descending order 2x^2+1 = [2,0,1]
+polynome = Input_Function(Input_Enum.POLYNOM, [20,-30,15,0], sampling_period = step_size, point_counter=point_counter) #coefs in descending order 2x^2+1 = [2,0,1]
 input_func = polynome
 
 kalman_filter_order = 2 #4
@@ -66,25 +66,25 @@ standard_cost_quant = cost.cost(y_quant,x)
 box_label_white = '\n'.join((
         r'White Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
-        r'Process Noise $\sigma=%.2f$' % (abs(kalman_para_white.x), ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_white, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_white, ),
+        r'Process Noise $\sigma=%.2e$' % (abs(kalman_para_white.x), ),
+        r'$MSE_{Filter}=%.2e$' % (cost_white, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_white, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
 
 box_label_brown = '\n'.join((
         r'Brown Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
-        r'Process Noise $\sigma=%.2f$' % (abs(kalman_para_brown.x), ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_brown, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_brown, ),
+        r'Process Noise $\sigma=%.2e$' % (abs(kalman_para_brown.x), ),
+        r'$MSE_{Filter}=%.2e$' % (cost_brown, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_brown, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_brown/standard_cost_brown, )))
 
 box_label_quant = '\n'.join((
         r'Quantisation Noise',
         r'$stepsize=%.2f$' % (noise_std_dev, ),
-        r'Process Noise $\sigma=%.2f$' % (abs(kalman_para_quant.x), ),
-        r'$MSE_{Noise}=%.5f$' % (standard_cost_quant, ),
-        r'$MSE_{Filter}=%.5f$' % (cost_quant, ),
+        r'Process Noise $\sigma=%.2e$' % (abs(kalman_para_quant.x), ),
+        r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
 
 plot1.plot_sig(t,[x,y_white,y_brown,y_quant,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],['Input Signal',
@@ -124,25 +124,25 @@ standard_cost_quant = cost.cost(y_quant_dot,x_dot)
 box_label_white = '\n'.join((
         r'White Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
-        r'Process Noise $\sigma=%.3f$' % (abs(kalman_para_white.x), ),
-        r'$MSE_{Noise}=%.2f$' % (standard_cost_white, ),
-        r'$MSE_{Filter}=%.2f$' % (cost_white, ),
+        r'Process Noise $\sigma=%.2e$' % (abs(kalman_para_white.x), ),
+        r'$MSE_{Filter}=%.2e$' % (cost_white, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_white, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
 
 box_label_brown = '\n'.join((
         r'Brown Noise',
         r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
-        r'Process Noise $\sigma=%.3f$' % (abs(kalman_para_brown.x), ),
-        r'$MSE_{Noise}=%.2f$' % (standard_cost_brown, ),
-        r'$MSE_{Filter}=%.2f$' % (cost_brown, ),
+        r'Process Noise $\sigma=%.2e$' % (abs(kalman_para_brown.x), ),
+        r'$MSE_{Filter}=%.2e$' % (cost_brown, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_brown, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_brown/standard_cost_brown, )))
 
 box_label_quant = '\n'.join((
         r'Quantisation Noise',
         r'$stepsize=%.2f$' % (noise_std_dev, ),
-        r'Process Noise $\sigma=%.3f$' % (abs(kalman_para_quant.x), ),
-        r'$MSE_{Noise}=%.2f$' % (standard_cost_quant, ),
-        r'$MSE_{Filter}=%.2f$' % (cost_quant, ),
+        r'Process Noise $\sigma=%.2e$' % (abs(kalman_para_quant.x), ),
+        r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
+        r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
 
 plot2.plot_sig(t,[x_dot,y_white_dot,y_brown_dot,y_quant_dot,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],['Input Signal',
