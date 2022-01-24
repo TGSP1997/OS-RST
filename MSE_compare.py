@@ -11,10 +11,13 @@ from cost import *
 def plot_sig_mse(signals, labels, title):
     labels = ['0.1', '0.2', '0.3', '0.4', '0.5']
     x = np.arange(len(labels))  # the label locations
-    width = 0.35  # the width of the bars
+    width = 0.16  # the width of the bars
     fig, ax = plt.subplots()
-    ax.bar(x - width/2, signals[0], width, label='Wiener')
-    ax.bar(x + width/2, signals[1], width, label='Kalman')
+    ax.bar(x - 2*width, signals[0], width, label='Wiener')
+    ax.bar(x - width, signals[1], width, label='Kalman')
+    ax.bar(x  , signals[2], width, label='Savgol')
+    ax.bar(x + width , signals[2], width, label='jonas1')
+    ax.bar(x+ 2*width  , signals[2], width, label='jonas2')
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax.set_xlabel(r'noise $\sigma$')
     ax.set_ylabel('MSE')
@@ -23,7 +26,7 @@ def plot_sig_mse(signals, labels, title):
     ax.legend()
     fig.tight_layout()
 
-data_csv = np.genfromtxt('filter_compare.csv', delimiter=',')
+data_csv = np.genfromtxt(r'C:\Users\Sandro\Documents\Code\OS\OS-RST\filter_compare.csv', delimiter=',')#r'C:\Users\Sandro\Documents\Code\OS\OS-RST\filter_compare.csv'
 std_devs = data_csv[1:6, 1]
 # NICHT abgeleitete MSEs
 MSE_sine_white_wiener = data_csv[1:6, 2]
