@@ -383,7 +383,7 @@ class Filter:
         a = np.zeros(len(y))
         a[0] = y[0]
         b = np.zeros(len(y))
-        b[0] = para[3]*t[1] # if len(para)==4 else 0 # Startwert für a
+        b[0] = para[3]*t[1] if len(para)==4 else 0 # Startwert für a
         
         for j in range(order):
             for i in range(1,len(y)):
