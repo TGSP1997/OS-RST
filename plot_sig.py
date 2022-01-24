@@ -151,7 +151,7 @@ class Plot_Sig:
             ax.plot(t, signals[i+4],'k', linewidth = 2, label="")
             ax.text(0.2, 0.95, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
             plt.legend(loc="lower center")
-            plt.ylabel(r'value $\left[\frac{1}{s}\right]$', fontsize=16)
+            plt.ylabel(r'Derivative', fontsize=16)
             plt.xlim(min(t),max(t))
             tick_width = np.ceil(np.max(signals[0]) - np.min(signals[0]))/9
             tick_width = np.ceil(tick_width/1)*1
@@ -230,7 +230,7 @@ class Plot_Sig:
             ax.plot(t, signals[i+4],'k', linewidth = 2, label="")
             ax.text(0.25, 0.95, labels[i+7], transform=ax.transAxes, fontsize=11,verticalalignment='top', bbox=props)
             plt.legend(loc="upper center")
-            plt.ylabel(r'value $\left[\frac{1}{s}\right]$', fontsize=16)
+            plt.ylabel(r'Derivative', fontsize=16)
             plt.xlim(min(t),max(t))
             tick_width = np.ceil(np.max(signals[0]) - np.min(signals[0]))/5
             tick_width = np.ceil(tick_width/1)*1
