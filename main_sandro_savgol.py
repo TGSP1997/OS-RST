@@ -34,7 +34,7 @@ def own_minimize(t,y,true_y,filter,cost,diff=0):
 #0. Vorbereitung
 step_size       = 2e-3#5e-3
 #step_size       = 1e-3
-noise_std_dev   = 0.5
+noise_std_dev   = 0.1
 plot1  = Plot_Sig(Plot_Enum.FILTER1, "Savitzky Golay | Harmonic Signal",[])
 
 plot2  = Plot_Sig(Plot_Enum.FILTER2, "Savitzky Golay | Derivative Harmonic Signal",[])
@@ -105,20 +105,23 @@ box_label_white,box_label_brown,box_label_quant],True)
 ###########################################################
 #2. Ableitungseigenschaften Sinus
 
+y_white_dot = np.diff(y_white, append = 0)/step_size
+y_brown_dot = np.diff(y_brown, append = 0)/step_size
+y_quant_dot = np.diff(y_quant, append = 0)/step_size
+
 savgol_para_white,cost_white = own_minimize(time, y_white, x_dot, savgol ,cost,diff=1)
-#savgol_para_white=np.append(savgol_para_white,1)
 x_hat_min_white=savgol.filter_fun(time,y_white,para=savgol_para_white)
-standard_cost_white = cost.cost(y_white,x_dot)
+standard_cost_white = cost.cost(y_white_dot,x_dot)
 print('2.','white',savgol_para_white,'cost',cost_white)
 
 savgol_para_brown,cost_brown=own_minimize(time, y_brown, x_dot, savgol ,cost,diff=1)
 x_hat_min_brown=savgol.filter_fun(time,y_brown,para=savgol_para_brown)
-standard_cost_brown = cost.cost(y_brown,x_dot)
+standard_cost_brown = cost.cost(y_brown_dot,x_dot)
 print('2.','brown',savgol_para_brown,'cost',cost_brown)
 
 savgol_para_quant,cost_quant=own_minimize(time, y_quant, x_dot, savgol ,cost,diff=1)
 x_hat_min_quant=savgol.filter_fun(time,y_quant,para=savgol_para_quant)
-standard_cost_quant = cost.cost(y_quant,x_dot)
+standard_cost_quant = cost.cost(y_quant_dot,x_dot)
 print('2.','quant',savgol_para_quant,'cost',cost_quant)
 
 box_label_white = '\n'.join((
@@ -144,9 +147,7 @@ box_label_quant = '\n'.join((
         r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
         r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
-y_white_dot = np.diff(y_white, append = 0)/step_size
-y_brown_dot = np.diff(y_brown, append = 0)/step_size
-y_quant_dot = np.diff(y_quant, append = 0)/step_size
+
 plot2.plot_sig(time,[x_dot,y_white_dot,y_brown_dot,y_quant_dot,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],[r'$\frac{df}{dt}(t) = \left(\frac{2\pi}{0.5 \mathrm{s}}\right)\mathrm{cos}\left(2\pi\cdot\frac{t}{0.5 \mathrm{s}}\right)$',
 'Diff of signal with White Noise',
 'Diff of signal with Brown Noise',
@@ -215,20 +216,23 @@ plot1.plot_sig(time,[x,y_white,y_brown,y_quant,x_hat_min_white,x_hat_min_brown,x
 box_label_white,box_label_brown,box_label_quant],True)
 ###########################################################
 #4. Ableitungseigenschaften Polynom
+y_white_dot = np.diff(y_white, append = 0)/step_size
+y_brown_dot = np.diff(y_brown, append = 0)/step_size
+y_quant_dot = np.diff(y_quant, append = 0)/step_size
 
 savgol_para_white,cost_white = own_minimize(time, y_white, x_dot, savgol ,cost,diff=1)
 x_hat_min_white=savgol.filter_fun(time,y_white,para=savgol_para_white)
-standard_cost_white = cost.cost(y_white,x_dot)
+standard_cost_white = cost.cost(y_white_dot,x_dot)
 print('4.','white',savgol_para_white,'cost',cost_white)
 
 savgol_para_brown,cost_brown=own_minimize(time, y_brown, x_dot, savgol ,cost,diff=1)
 x_hat_min_brown=savgol.filter_fun(time,y_brown,para=savgol_para_brown)
-standard_cost_brown = cost.cost(y_brown,x_dot)
+standard_cost_brown = cost.cost(y_brown_dot,x_dot)
 print('4.','brown',savgol_para_brown,'cost',cost_brown)
 
 savgol_para_quant,cost_quant=own_minimize(time, y_quant, x_dot, savgol ,cost,diff=1)
 x_hat_min_quant=savgol.filter_fun(time,y_quant,para=savgol_para_quant)
-standard_cost_quant = cost.cost(y_quant,x_dot)
+standard_cost_quant = cost.cost(y_quant_dot,x_dot)
 print('4.','quant',savgol_para_quant,'cost',cost_quant)
 
 box_label_white = '\n'.join((
@@ -255,9 +259,7 @@ box_label_quant = '\n'.join((
         r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
         r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
 
-y_white_dot = np.diff(y_white, append = 0)/step_size
-y_brown_dot = np.diff(y_brown, append = 0)/step_size
-y_quant_dot = np.diff(y_quant, append = 0)/step_size
+
 plot2.plot_sig(time,[x_dot,y_white_dot,y_brown_dot,y_quant_dot,x_hat_min_white,x_hat_min_brown,x_hat_min_quant],[r'$\frac{df}{dt}(t) = \frac{12}{\mathrm{s}^3}\cdot t^2 - \frac{12}{\mathrm{s}^2}\cdot t + \frac{3}{\mathrm{s}}$',
 'Diff of signal with White Noise',
 'Diff of signal with Brown Noise',
@@ -291,14 +293,14 @@ y7=[i if i is not None else 0 for i in y7]
 y9=[i if i is not None else 0 for i in y9]
 y10=[i if i is not None else 0 for i in y10]
 
-plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot",parameters = 0)
+plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot Savgol Filter",parameters = 0)
 plot_bode.plot_sig(t,[[u,u,u,u,u,u],[y1,y3,y5,y7,y9,y10]],[
         "Window=21 p=1", 
         "Window=21 p=3",
         "Window=21 p=5",
         "Window=21 p=7",
         "Window=21 p=9",
-        "Window=21 p=10",])
+        "Window=21 p=10",],ylim = [-70,10])
 
 ###########################################################
 #7. Impuls Filtereigenschaften - Scipy Implementation
@@ -314,17 +316,21 @@ y7      = savgol_filter(u, 21, 7 )
 y9      = savgol_filter(u, 21, 9 )
 y10     = savgol_filter(u, 21, 10)
 
-plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot",parameters = 0)
+plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot Savgol Scipy Filter",parameters = 0)
 plot_bode.plot_sig(t,[[u,u,u,u,u,u],[y1,y3,y5,y7,y9,y10]],[
         "Scipy Window=21 p=1", 
         "Scipy Window=21 p=3",
         "Scipy Window=21 p=5",
         "Scipy Window=21 p=7",
         "Scipy Window=21 p=9",
-        "Scipy Window=21 p=10",])
+        "Scipy Window=21 p=10",],ylim = [-70,10])
 
 ###########################################################
 
-#plot_s  = Plot_Sig(Plot_Enum.SLIDER, "Detailed View with Slider",[])
-#plot_s.plot_slider(time,[y_white, x_hat_min_white],['noisy sine','savgol smoothed'],[20,3],savgol)
-plt.show()
+
+#C:\Users\Sandro\Desktop\Bilder_OS
+from os import path
+outpath = r"C:\Users\Sandro\Desktop\Bilder_OS\sigma" + str(noise_std_dev) + r"/"
+for i in plt.get_fignums():
+        plt.figure(i).savefig(path.join(outpath,"figure_{0}.png".format(i)))
+#plt.show()
