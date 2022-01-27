@@ -34,18 +34,6 @@ poly    = Input_Function(Input_Enum.POLYNOM, [4,-6,3,0], sampling_period = step_
 
 # 1. Filtereigenschaften auf Sinus
 
-plot1  = Plot_Sig(Plot_Enum.FILTER1, "Exponential Smoothing | Harmonic Signal",[])
-
-plot2  = Plot_Sig(Plot_Enum.FILTER2, "Exponential Smoothing | Derivative Harmonic Signal",[])
-
-exp   = Filter(Filter_Enum.BROWN_HOLT, [alpha,1])
-
-white   = Noise(Noise_Enum.WHITE, noise_std_dev)
-brown   = Noise(Noise_Enum.BROWN, noise_std_dev)
-quant   = Noise(Noise_Enum.QUANT, noise_std_dev)
-
-cost    = Cost(Cost_Enum.MSE)
-
 
 def filter_cost(para_in, t, y, x, filter, cost):
         y_hat = filter.filter_fun(t, y, para = [para_in, filter.parameters[1],0])
@@ -55,6 +43,18 @@ def filter_cost_diff(para_in, t, y, x_dot, filter, cost):
         return cost.cost(y_hat_dot, x_dot)
 
 for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
+        exp   = Filter(Filter_Enum.BROWN_HOLT, [alpha,1])
+
+        white   = Noise(Noise_Enum.WHITE, noise_std_dev)
+        brown   = Noise(Noise_Enum.BROWN, noise_std_dev)
+        quant   = Noise(Noise_Enum.QUANT, noise_std_dev)
+
+        cost    = Cost(Cost_Enum.MSE)
+
+        plot1  = Plot_Sig(Plot_Enum.FILTER1, "Exponential Smoothing | Harmonic Signal",[])
+
+        plot2  = Plot_Sig(Plot_Enum.FILTER2, "Exponential Smoothing | Derivative Harmonic Signal",[])
+
         t, x, x_dot = sine.get_fun()
         y_white = white.apply_noise(x)
         y_brown = brown.apply_noise(x)
@@ -114,8 +114,6 @@ for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
         y_white_dot = np.diff(y_white, append = 0)/step_size
         y_brown_dot = np.diff(y_brown, append = 0)/step_size
         y_quant_dot = np.diff(y_quant, append = 0)/step_size
-
-        plot2  = Plot_Sig(Plot_Enum.FILTER2, "Filterung",[])
 
         alpha_min_white = minimize(filter_cost_diff,(alpha, beta),args=(t, y_white, x_dot, exp ,cost), bounds = bounds_diff)
         x_hat_min_white = exp.filter_diff(t,y_white,para = [alpha_min_white.x[0],exp.parameters[1],alpha_min_white.x[1]])
