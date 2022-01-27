@@ -347,7 +347,7 @@ for beta in [0.1,0.2,0.4,0.8]:
                 "alpha = 0.8, beta = "+ str(beta),])
 
 from os import path
-outpath = r"D:/Uni/Oberseminar/Rep/Bilder_Jonas/Exp/sigma" + str(0.1) + r"/"
+outpath = r"D:/Uni/Oberseminar/Rep/Bilder_Jonas/Exp/bode/"
 for i in plt.get_fignums():
         plt.figure(i).savefig(path.join(outpath,"figure_{0}.png".format(i)))
 
