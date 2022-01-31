@@ -321,7 +321,7 @@ plot_bode.plot_sig(t,[[u,u,u,u],[y1,y2,y4,y8]],[
         "alpha = 0.1", 
         "alpha = 0.2",
         "alpha = 0.4",
-        "alpha = 0.8",])
+        "alpha = 0.8",], ylim=[-40,20])
 
 
 u = np.zeros(int(point_counter))
@@ -342,7 +342,7 @@ for beta in [0.1,0.2,0.4,0.8]:
                 "alpha = 0.1, beta = "+ str(beta), 
                 "alpha = 0.2, beta = "+ str(beta),
                 "alpha = 0.4, beta = "+ str(beta),
-                "alpha = 0.8, beta = "+ str(beta),])
+                "alpha = 0.8, beta = "+ str(beta),], ylim=[0,60])
 
 from os import path
 outpath = r"D:/Uni/Oberseminar/Rep/Bilder_Jonas/Exp/bode/"
