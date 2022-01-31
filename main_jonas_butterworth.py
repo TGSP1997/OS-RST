@@ -20,7 +20,7 @@ point_counter   = int(1/step_size)
 for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
 
         order           = 4
-        freq            = 5 / (1000 / 2) # Normalisierte Grenzfrequenz mit w = fc / (fs / 2)
+        freq            = 10 / (1000 / 2) # Normalisierte Grenzfrequenz mit w = fc / (fs / 2)
 
         bounds          = ((0.001, 0.9),) # Komische Tupeldarstellung damit Minimize Glücklich ist.
 
@@ -279,52 +279,7 @@ for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
         'Filtered & derived signal | '+ str(order) + '. order BW-Filter',
         box_label_white,box_label_brown,box_label_quant],True)
 
-        # 10. Bode-Plot
-
-        # Übertragungsfunktion des Filters bestimmen
-
-        butter1   = Filter(Filter_Enum.BUTTERWORTH, [1,freq])
-        butter2   = Filter(Filter_Enum.BUTTERWORTH, [2,freq])
-        butter3   = Filter(Filter_Enum.BUTTERWORTH, [3,freq])
-        butter4   = Filter(Filter_Enum.BUTTERWORTH, [4,freq])
-        butter5   = Filter(Filter_Enum.BUTTERWORTH, [5,freq])
-
-        u = np.zeros(int(point_counter))
-        u[10] = 1
-        t = np.linspace(0,1,num = int(point_counter))
-
-        o1      = butter1.filter_fun(t,u)
-        o2      = butter2.filter_fun(t,u)
-        o3      = butter3.filter_fun(t,u)
-        o4      = butter4.filter_fun(t,u)
-        o5      = butter5.filter_fun(t,u)
-
-
-        plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot Butterworth Filter",parameters = 0)
-
-        plot_bode.plot_sig(t,[[u,u,u,u,u],[o1,o2,o3,o4,o5]],[
-                r"1st order, $\frac{f}{f_S}$ = " + str(freq), 
-                r"2nd order, $\frac{f}{f_S}$ = " + str(freq),
-                r"3rd order, $\frac{f}{f_S}$ = " + str(freq),
-                r"4th order, $\frac{f}{f_S}$ = " + str(freq),
-                r"5th order, $\frac{f}{f_S}$ = " + str(freq),], ylim = [-80,20])
-
-
-        o1      = butter1.filter_diff(t,u)
-        o2      = butter2.filter_diff(t,u)
-        o3      = butter3.filter_diff(t,u)
-        o4      = butter4.filter_diff(t,u)
-        o5      = butter5.filter_diff(t,u)
-
-
-        plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot Butterworth Filter and Derivative",parameters = 0)
-
-        plot_bode.plot_sig(t,[[u,u,u,u,u],[o1,o2,o3,o4,o5]],[
-                r"1st order, $\frac{f}{f_S}$ = " + str(freq), 
-                r"2nd order, $\frac{f}{f_S}$ = " + str(freq),
-                r"3rd order, $\frac{f}{f_S}$ = " + str(freq),
-                r"4th order, $\frac{f}{f_S}$ = " + str(freq),
-                r"5th order, $\frac{f}{f_S}$ = " + str(freq),], ylim = [-60,40])
+       
 
 
         from os import path
@@ -333,3 +288,62 @@ for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
                 plt.figure(i).savefig(path.join(outpath,"figure_{0}.png".format(i)))
 
         plt.show()
+
+ # 10. Bode-Plot
+
+# Übertragungsfunktion des Filters bestimmen
+
+butter1   = Filter(Filter_Enum.BUTTERWORTH, [1,freq])
+butter2   = Filter(Filter_Enum.BUTTERWORTH, [2,freq])
+butter3   = Filter(Filter_Enum.BUTTERWORTH, [3,freq])
+butter4   = Filter(Filter_Enum.BUTTERWORTH, [4,freq])
+butter5   = Filter(Filter_Enum.BUTTERWORTH, [5,freq])
+butter6   = Filter(Filter_Enum.BUTTERWORTH, [6,freq])
+
+u = np.zeros(int(point_counter))
+u[10] = 1
+t = np.linspace(0,1,num = int(point_counter))
+
+o1      = butter1.filter_fun(t,u)
+o2      = butter2.filter_fun(t,u)
+o3      = butter3.filter_fun(t,u)
+o4      = butter4.filter_fun(t,u)
+o5      = butter5.filter_fun(t,u)
+o6      = butter6.filter_fun(t,u)
+
+
+plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot Butterworth Filter",parameters = 0)
+
+plot_bode.plot_sig(t,[[u,u,u,u,u,u],[o1,o2,o3,o4,o5,o6]],[
+        r"1st order, $\frac{f}{f_S}$ = " + str((freq/2)), 
+        r"2nd order, $\frac{f}{f_S}$ = " + str((freq/2)),
+        r"3rd order, $\frac{f}{f_S}$ = " + str((freq/2)),
+        r"4th order, $\frac{f}{f_S}$ = " + str((freq/2)),
+        r"5th order, $\frac{f}{f_S}$ = " + str((freq/2)),
+        r"6th order, $\frac{f}{f_S}$ = " + str((freq/2)),], ylim = [-80,20])
+
+
+o1      = butter1.filter_diff(t,u)
+o2      = butter2.filter_diff(t,u)
+o3      = butter3.filter_diff(t,u)
+o4      = butter4.filter_diff(t,u)
+o5      = butter5.filter_diff(t,u)
+o6      = butter6.filter_diff(t,u)
+
+
+plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot Butterworth Filter and Derivative",parameters = 0)
+
+plot_bode.plot_sig(t,[[u,u,u,u,u,u],[o1,o2,o3,o4,o5,o6]],[
+        r"1st order, $\frac{f}{f_S}$ = " + str((freq/2)), 
+        r"2nd order, $\frac{f}{f_S}$ = " + str((freq/2)),
+        r"3rd order, $\frac{f}{f_S}$ = " + str((freq/2)),
+        r"4th order, $\frac{f}{f_S}$ = " + str((freq/2)),
+        r"5th order, $\frac{f}{f_S}$ = " + str((freq/2)),
+        r"6th order, $\frac{f}{f_S}$ = " + str((freq/2)),], ylim = [-60,40])
+
+from os import path
+outpath = r"D:/Uni/Oberseminar/Rep/Bilder_Jonas/Butter/Bode/"
+for i in plt.get_fignums():
+        plt.figure(i).savefig(path.join(outpath,"figure_{0}.png".format(i)))
+
+plt.show()
