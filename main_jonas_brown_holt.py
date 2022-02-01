@@ -120,12 +120,12 @@ for noise_std_dev  in [0.1, 0.2, 0.3, 0.4, 0.5]:
         standard_cost_white = cost.cost(y_white_dot,x_dot)
 
         alpha_min_brown = minimize(filter_cost_diff,(alpha, beta),args=(t, y_brown, x_dot, exp ,cost, x_dot[0]), bounds = bounds_diff)
-        x_hat_min_brown = exp.filter_diff(t,y_brown,para = [alpha_min_white.x[0],exp.parameters[1],alpha_min_white.x[1],x_dot[0]])  # Startwert x_dot[0] wird übergeben um die Konvergierungszeit zu verkürzen
+        x_hat_min_brown = exp.filter_diff(t,y_brown,para = [alpha_min_brown.x[0],exp.parameters[1],alpha_min_brown.x[1],x_dot[0]])  # Startwert x_dot[0] wird übergeben um die Konvergierungszeit zu verkürzen
         cost_brown = cost.cost(x_hat_min_brown,x_dot)
         standard_cost_brown = cost.cost(y_brown_dot,x_dot)
 
         alpha_min_quant = minimize(filter_cost_diff,(alpha, beta),args=(t, y_quant, x_dot, exp ,cost, x_dot[0]), bounds = bounds_diff)
-        x_hat_min_quant = exp.filter_diff(t,y_quant,para = [alpha_min_white.x[0],exp.parameters[1],alpha_min_white.x[1],x_dot[0]])  # Startwert x_dot[0] wird übergeben um die Konvergierungszeit zu verkürzen
+        x_hat_min_quant = exp.filter_diff(t,y_quant,para = [alpha_min_quant.x[0],exp.parameters[1],alpha_min_quant.x[1],x_dot[0]])  # Startwert x_dot[0] wird übergeben um die Konvergierungszeit zu verkürzen
         cost_quant = cost.cost(x_hat_min_quant,x_dot)
         standard_cost_quant = cost.cost(y_quant_dot,x_dot)
 
@@ -133,7 +133,7 @@ for noise_std_dev  in [0.1, 0.2, 0.3, 0.4, 0.5]:
                 r'White Noise',
                 r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
                 r'$\alpha=%.3f$' % (alpha_min_white.x[0], ),
-                r'$\beta=%.3f$' % (alpha_min_brown.x[1], ),
+                r'$\beta=%.3f$' % (alpha_min_white.x[1], ),
                 r'$MSE_{Filter}=%.2e$' % (cost_white, ),
                 r'$MSE_{Noise}=%.2e$' % (standard_cost_white, ),
                 r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
@@ -151,7 +151,7 @@ for noise_std_dev  in [0.1, 0.2, 0.3, 0.4, 0.5]:
                 r'Quantisation Noise',
                 r'$stepsize=%.2f$' % (noise_std_dev, ),
                 r'$\alpha=%.3f$' % (alpha_min_quant.x[0], ),
-                r'$\beta=%.3f$' % (alpha_min_brown.x[1], ),
+                r'$\beta=%.3f$' % (alpha_min_quant.x[1], ),
                 r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
                 r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
                 r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
@@ -242,12 +242,12 @@ for noise_std_dev  in [0.1, 0.2, 0.3, 0.4, 0.5]:
         standard_cost_white = cost.cost(y_white_dot,x_dot)
 
         alpha_min_brown = minimize(filter_cost_diff,(alpha, beta),args=(t, y_brown, x_dot, exp ,cost,x_dot[0]), bounds = bounds_diff)
-        x_hat_min_brown = exp.filter_diff(t,y_brown,para = [alpha_min_white.x[0],exp.parameters[1],alpha_min_white.x[1],x_dot[0]])
+        x_hat_min_brown = exp.filter_diff(t,y_brown,para = [alpha_min_brown.x[0],exp.parameters[1],alpha_min_brown.x[1],x_dot[0]])
         cost_brown = cost.cost(x_hat_min_brown,x_dot)
         standard_cost_brown = cost.cost(y_brown_dot,x_dot)
 
         alpha_min_quant = minimize(filter_cost_diff,(alpha, beta),args=(t, y_quant, x_dot, exp ,cost,x_dot[0]), bounds = bounds_diff)
-        x_hat_min_quant = exp.filter_diff(t,y_quant,para = [alpha_min_white.x[0],exp.parameters[1],alpha_min_white.x[1],x_dot[0]])
+        x_hat_min_quant = exp.filter_diff(t,y_quant,para = [alpha_min_quant.x[0],exp.parameters[1],alpha_min_quant.x[1],x_dot[0]])
         cost_quant = cost.cost(x_hat_min_quant,x_dot)
         standard_cost_quant = cost.cost(y_quant_dot,x_dot)
 
@@ -255,7 +255,7 @@ for noise_std_dev  in [0.1, 0.2, 0.3, 0.4, 0.5]:
                 r'White Noise',
                 r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
                 r'$\alpha=%.3f$' % (alpha_min_white.x[0], ),
-                r'$\beta=%.3f$' % (alpha_min_brown.x[1], ),
+                r'$\beta=%.3f$' % (alpha_min_white.x[1], ),
                 r'$MSE_{Filter}=%.2e$' % (cost_white, ),
                 r'$MSE_{Noise}=%.2e$' % (standard_cost_white, ),
                 r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
@@ -273,7 +273,7 @@ for noise_std_dev  in [0.1, 0.2, 0.3, 0.4, 0.5]:
                 r'Quantisation Noise',
                 r'$stepsize=%.2f$' % (noise_std_dev, ),
                 r'$\alpha=%.3f$' % (alpha_min_quant.x[0], ),
-                r'$\beta=%.3f$' % (alpha_min_brown.x[1], ),
+                r'$\beta=%.3f$' % (alpha_min_quant.x[1], ),
                 r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
                 r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
                 r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))

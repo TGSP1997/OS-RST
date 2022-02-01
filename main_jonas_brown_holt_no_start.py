@@ -23,8 +23,8 @@ alpha           = 0.4
 beta            = 0.2
 freq            = 10 / (1000 / 2) # Normalisierte Grenzfrequenz mit w = fc / (fs / 2)
 
-bounds_fun      = ((0.01, 0.99),)
-bounds_diff     = ((0.01, 0.99),(0.01, 0.99),)
+bounds_fun      = ((0.001, 0.99),)
+bounds_diff     = ((0.001, 0.99),(0.001, 0.99),)
 
 order = 1
 
@@ -38,10 +38,12 @@ poly    = Input_Function(Input_Enum.POLYNOM, [4,-6,3,0], sampling_period = step_
 def filter_cost(para_in, t, y, x, filter, cost):
         y_hat = filter.filter_fun(t, y, para = [para_in, filter.parameters[1],0])
         return cost.cost(y_hat, x)
-def filter_cost_diff(para_in, t, y, x_dot, filter, cost):
-        y_hat_dot = filter.filter_diff(t, y, para = [para_in[0], filter.parameters[1], para_in[1]])
-        return cost.cost(y_hat_dot, x_dot)
-
+def filter_cost_diff(para_in, t, y, x_dot, filter, cost, start_value):
+                y_hat_dot = filter.filter_diff(t, y, para = [para_in[0], filter.parameters[1], para_in[1], start_value])
+                return cost.cost(y_hat_dot, x_dot)
+def filter_cost_diff_no_start(para_in, t, y, x_dot, filter, cost):
+                y_hat_dot = filter.filter_diff(t, y, para = [para_in[0], filter.parameters[1], para_in[1]])
+                return cost.cost(y_hat_dot, x_dot)
 for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
         exp   = Filter(Filter_Enum.BROWN_HOLT, [alpha,1])
 
@@ -115,18 +117,25 @@ for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
         y_brown_dot = np.diff(y_brown, append = 0)/step_size
         y_quant_dot = np.diff(y_quant, append = 0)/step_size
 
-        alpha_min_white = minimize(filter_cost_diff,(alpha, beta),args=(t, y_white, x_dot, exp ,cost), bounds = bounds_diff)
-        x_hat_min_white = exp.filter_diff(t,y_white,para = [alpha_min_white.x[0],exp.parameters[1],alpha_min_white.x[1]])
+        alpha_min_white = minimize(filter_cost_diff_no_start,(alpha, beta),args=(t, y_white, x_dot, exp ,cost), bounds = bounds_diff)
+        if alpha_min_white.x[0] == 0.001 or alpha_min_white.x[1]==0.001:
+                alpha_min_white = minimize(filter_cost_diff,(alpha, beta),args=(t, y_white, x_dot, exp ,cost, x_dot[0]), bounds = bounds_diff) # Provide starting values for optimize, otherwise maybe trivial solution
+                
+        x_hat_min_white = exp.filter_diff(t,y_white,para = [alpha_min_white.x[0],exp.parameters[1],alpha_min_white.x[1]]) # Don't provide starting value for calculation for better comparison
         cost_white = cost.cost(x_hat_min_white,x_dot)
         standard_cost_white = cost.cost(y_white_dot,x_dot)
 
-        alpha_min_brown = minimize(filter_cost_diff,(alpha, beta),args=(t, y_brown, x_dot, exp ,cost), bounds = bounds_diff)
-        x_hat_min_brown = exp.filter_diff(t,y_brown,para = [alpha_min_white.x[0],exp.parameters[1],alpha_min_white.x[1]])
+        alpha_min_brown = minimize(filter_cost_diff_no_start,(alpha, beta),args=(t, y_brown, x_dot, exp ,cost), bounds = bounds_diff)
+        if alpha_min_brown.x[0] == 0.001 or alpha_min_brown.x[1]==0.001:
+                alpha_min_brown = minimize(filter_cost_diff,(alpha, beta),args=(t, y_brown, x_dot, exp ,cost, x_dot[0]), bounds = bounds_diff) # Provide starting values for optimize, otherwise maybe trivial solution
+        x_hat_min_brown = exp.filter_diff(t,y_brown,para = [alpha_min_brown.x[0],exp.parameters[1],alpha_min_brown.x[1]]) # Don't provide starting value for calculation for better comparison
         cost_brown = cost.cost(x_hat_min_brown,x_dot)
         standard_cost_brown = cost.cost(y_brown_dot,x_dot)
-
-        alpha_min_quant = minimize(filter_cost_diff,(alpha, beta),args=(t, y_quant, x_dot, exp ,cost), bounds = bounds_diff)
-        x_hat_min_quant = exp.filter_diff(t,y_quant,para = [alpha_min_white.x[0],exp.parameters[1],alpha_min_white.x[1]])
+        
+        alpha_min_quant = minimize(filter_cost_diff_no_start,(alpha, beta),args=(t, y_quant, x_dot, exp ,cost), bounds = bounds_diff)
+        if alpha_min_quant.x[0] == 0.001 or alpha_min_quant.x[1]==0.001:
+                alpha_min_quant = minimize(filter_cost_diff,(alpha, beta),args=(t, y_quant, x_dot, exp ,cost, x_dot[0]), bounds = bounds_diff) # Provide starting values for optimize, otherwise maybe trivial solution
+        x_hat_min_quant = exp.filter_diff(t,y_quant,para = [alpha_min_quant.x[0],exp.parameters[1],alpha_min_quant.x[1]]) # Don't provide starting value for calculation for better comparison
         cost_quant = cost.cost(x_hat_min_quant,x_dot)
         standard_cost_quant = cost.cost(y_quant_dot,x_dot)
 
@@ -134,7 +143,7 @@ for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
                 r'White Noise',
                 r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
                 r'$\alpha=%.3f$' % (alpha_min_white.x[0], ),
-                r'$\beta=%.3f$' % (alpha_min_brown.x[1], ),
+                r'$\beta=%.3f$' % (alpha_min_white.x[1], ),
                 r'$MSE_{Filter}=%.2e$' % (cost_white, ),
                 r'$MSE_{Noise}=%.2e$' % (standard_cost_white, ),
                 r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
@@ -152,7 +161,7 @@ for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
                 r'Quantisation Noise',
                 r'$stepsize=%.2f$' % (noise_std_dev, ),
                 r'$\alpha=%.3f$' % (alpha_min_quant.x[0], ),
-                r'$\beta=%.3f$' % (alpha_min_brown.x[1], ),
+                r'$\beta=%.3f$' % (alpha_min_quant.x[1], ),
                 r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
                 r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
                 r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
@@ -237,18 +246,24 @@ for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
         y_brown_dot = np.diff(y_brown, append = 0)/step_size
         y_quant_dot = np.diff(y_quant, append = 0)/step_size
 
-        alpha_min_white = minimize(filter_cost_diff,(alpha, beta),args=(t, y_white, x_dot, exp ,cost), bounds = bounds_diff)
+        alpha_min_white = minimize(filter_cost_diff_no_start,(alpha, beta),args=(t, y_white, x_dot, exp ,cost), bounds = bounds_diff)
+        if alpha_min_white.x[0] == 0.001 or alpha_min_white.x[1]==0.001:
+                alpha_min_white = minimize(filter_cost_diff,(alpha, beta),args=(t, y_white, x_dot, exp ,cost, x_dot[0]), bounds = bounds_diff)
         x_hat_min_white = exp.filter_diff(t,y_white,para = [alpha_min_white.x[0],exp.parameters[1],alpha_min_white.x[1]])
         cost_white = cost.cost(x_hat_min_white,x_dot)
         standard_cost_white = cost.cost(y_white_dot,x_dot)
 
-        alpha_min_brown = minimize(filter_cost_diff,(alpha, beta),args=(t, y_brown, x_dot, exp ,cost), bounds = bounds_diff)
-        x_hat_min_brown = exp.filter_diff(t,y_brown,para = [alpha_min_white.x[0],exp.parameters[1],alpha_min_white.x[1]])
+        alpha_min_brown = minimize(filter_cost_diff_no_start,(alpha, beta),args=(t, y_brown, x_dot, exp ,cost), bounds = bounds_diff)
+        if alpha_min_brown.x[0] == 0.001 or alpha_min_brown.x[1]==0.001:
+                alpha_min_brown = minimize(filter_cost_diff,(alpha, beta),args=(t, y_brown, x_dot, exp ,cost, x_dot[0]), bounds = bounds_diff)
+        x_hat_min_brown = exp.filter_diff(t,y_brown,para = [alpha_min_brown.x[0],exp.parameters[1],alpha_min_brown.x[1]])
         cost_brown = cost.cost(x_hat_min_brown,x_dot)
         standard_cost_brown = cost.cost(y_brown_dot,x_dot)
 
-        alpha_min_quant = minimize(filter_cost_diff,(alpha, beta),args=(t, y_quant, x_dot, exp ,cost), bounds = bounds_diff)
-        x_hat_min_quant = exp.filter_diff(t,y_quant,para = [alpha_min_white.x[0],exp.parameters[1],alpha_min_white.x[1]])
+        alpha_min_quant = minimize(filter_cost_diff_no_start,(alpha, beta),args=(t, y_quant, x_dot, exp ,cost), bounds = bounds_diff)
+        if alpha_min_quant.x[0] == 0.001 or alpha_min_quant.x[1]==0.001:
+                alpha_min_quant = minimize(filter_cost_diff,(alpha, beta),args=(t, y_quant, x_dot, exp ,cost, x_dot[0]), bounds = bounds_diff)
+        x_hat_min_quant = exp.filter_diff(t,y_quant,para = [alpha_min_quant.x[0],exp.parameters[1],alpha_min_quant.x[1]])
         cost_quant = cost.cost(x_hat_min_quant,x_dot)
         standard_cost_quant = cost.cost(y_quant_dot,x_dot)
 
@@ -256,7 +271,7 @@ for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
                 r'White Noise',
                 r'$\sigma_{Noise}=%.2f$' % (noise_std_dev, ),
                 r'$\alpha=%.3f$' % (alpha_min_white.x[0], ),
-                r'$\beta=%.3f$' % (alpha_min_brown.x[1], ),
+                r'$\beta=%.3f$' % (alpha_min_white.x[1], ),
                 r'$MSE_{Filter}=%.2e$' % (cost_white, ),
                 r'$MSE_{Noise}=%.2e$' % (standard_cost_white, ),
                 r'$r_{MSE}=%.2f$ %%' % (100*cost_white/standard_cost_white, )))
@@ -274,7 +289,7 @@ for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
                 r'Quantisation Noise',
                 r'$stepsize=%.2f$' % (noise_std_dev, ),
                 r'$\alpha=%.3f$' % (alpha_min_quant.x[0], ),
-                r'$\beta=%.3f$' % (alpha_min_brown.x[1], ),
+                r'$\beta=%.3f$' % (alpha_min_quant.x[1], ),
                 r'$MSE_{Filter}=%.2e$' % (cost_quant, ),
                 r'$MSE_{Noise}=%.2e$' % (standard_cost_quant, ),
                 r'$r_{MSE}=%.2f$ %%' % (100*cost_quant/standard_cost_quant, )))
