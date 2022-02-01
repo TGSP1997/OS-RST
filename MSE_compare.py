@@ -162,7 +162,7 @@ plot_sig_mse([MSE_sine_quant_wiener, MSE_sine_quant_kalman,MSE_sine_quant_savgol
 
 ############### NICHT abgeleitetes Polynom
 # white poly
-plot_sig_mse([MSE_poly_white_wiener, MSE_poly_white_kalman,MSE_poly_white_savgol,MSE_poly_white_butter,MSE_poly_white_exp], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Polynom, Weißes R., Filter', MSE_poly_white_ref, 30)
+plot_sig_mse([MSE_poly_white_wiener, MSE_poly_white_kalman,MSE_poly_white_savgol,MSE_poly_white_butter,MSE_poly_white_exp], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Polynom, Weißes R., Filter', MSE_poly_white_ref, 20)
 # brown poly
 plot_sig_mse([MSE_poly_brown_wiener, MSE_poly_brown_kalman,MSE_poly_brown_savgol,MSE_poly_brown_butter,MSE_poly_brown_exp], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Polynom, Braunes R., Filter', MSE_poly_brown_ref, 30)
 # quant poly
@@ -170,19 +170,19 @@ plot_sig_mse([MSE_poly_quant_wiener, MSE_poly_quant_kalman,MSE_poly_quant_savgol
 
 ############### abgeleiteter Sinus
 # white sine
-plot_sig_mse([MSE_sine_white_wiener_dot, MSE_sine_white_kalman_dot,MSE_sine_white_savgol_dot,MSE_sine_white_butter_dot,MSE_sine_white_exp_dot], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Sinus, Weißes R., Filter & Ableitung', MSE_sine_white_ref_dot, 0.6)
+plot_sig_mse([MSE_sine_white_wiener_dot, MSE_sine_white_kalman_dot,MSE_sine_white_savgol_dot,MSE_sine_white_butter_dot,MSE_sine_white_exp_dot], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Sinus, Weißes R., Filter & Ableitung', MSE_sine_white_ref_dot, 0.2)
 # brown sine
-plot_sig_mse([MSE_sine_brown_wiener_dot, MSE_sine_brown_kalman_dot, MSE_sine_brown_savgol_dot, MSE_sine_brown_butter_dot, MSE_sine_brown_exp_dot,], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Sinus, Braunes R., Filter & Ableitung', MSE_sine_brown_ref_dot, 20)
+plot_sig_mse([MSE_sine_brown_wiener_dot, MSE_sine_brown_kalman_dot, MSE_sine_brown_savgol_dot, MSE_sine_brown_butter_dot, MSE_sine_brown_exp_dot,], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Sinus, Braunes R., Filter & Ableitung', MSE_sine_brown_ref_dot, 10)
 # quant sine
-plot_sig_mse([MSE_sine_quant_wiener_dot, MSE_sine_quant_kalman_dot, MSE_sine_quant_savgol_dot, MSE_sine_quant_butter_dot, MSE_sine_quant_exp_dot,], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Sinus, Quantisierungsr., Filter & Ableitung', MSE_sine_quant_ref_dot, 10)
+plot_sig_mse([MSE_sine_quant_wiener_dot, MSE_sine_quant_kalman_dot, MSE_sine_quant_savgol_dot, MSE_sine_quant_butter_dot, MSE_sine_quant_exp_dot,], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Sinus, Quantisierungsr., Filter & Ableitung', MSE_sine_quant_ref_dot, 5)
 
 ############### abgeleitetes Polynom
 # white poly
-plot_sig_mse([MSE_poly_white_wiener_dot, MSE_poly_white_kalman_dot, MSE_poly_white_savgol_dot, MSE_poly_white_butter_dot, MSE_poly_white_exp_dot], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Polynom, Weißes R., Filter & Ableitung', MSE_poly_white_ref_dot, 0.025)
+plot_sig_mse([MSE_poly_white_wiener_dot, MSE_poly_white_kalman_dot, MSE_poly_white_savgol_dot, MSE_poly_white_butter_dot, MSE_poly_white_exp_dot], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Polynom, Weißes R., Filter & Ableitung', MSE_poly_white_ref_dot, 0.01)
 # brown poly
-plot_sig_mse([MSE_poly_brown_wiener_dot, MSE_poly_brown_kalman_dot, MSE_poly_brown_savgol_dot, MSE_poly_brown_butter_dot, MSE_poly_brown_exp_dot], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Polynom, Braunes R., Filter & Ableitung', MSE_poly_brown_ref_dot, 0.2)
+plot_sig_mse([MSE_poly_brown_wiener_dot, MSE_poly_brown_kalman_dot, MSE_poly_brown_savgol_dot, MSE_poly_brown_butter_dot, MSE_poly_brown_exp_dot], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Polynom, Braunes R., Filter & Ableitung', MSE_poly_brown_ref_dot, 0.15)
 # quant poly
-plot_sig_mse([MSE_poly_quant_wiener_dot, MSE_poly_quant_kalman_dot, MSE_poly_quant_savgol_dot, MSE_poly_quant_butter_dot, MSE_poly_quant_exp_dot], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Polynom, Quantisierungsr., Filter & Ableitung', MSE_poly_quant_ref_dot, 0.4)
+plot_sig_mse([MSE_poly_quant_wiener_dot, MSE_poly_quant_kalman_dot, MSE_poly_quant_savgol_dot, MSE_poly_quant_butter_dot, MSE_poly_quant_exp_dot], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Polynom, Quantisierungsr., Filter & Ableitung', MSE_poly_quant_ref_dot, 0.3)
 
 from os import path
 outpath = r"Bilder_Vergleich/Prozentual/"
@@ -209,11 +209,11 @@ plot_sig_mse_absolut([MSE_poly_quant_wiener, MSE_poly_quant_kalman,MSE_poly_quan
 
 ############### abgeleiteter Sinus
 # white sine
-plot_sig_mse_absolut([MSE_sine_white_wiener_dot, MSE_sine_white_kalman_dot,MSE_sine_white_savgol_dot,MSE_sine_white_butter_dot,MSE_sine_white_exp_dot], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Sinus, Weißes R. , Filter & Ableitung', MSE_sine_white_ref_dot, 120)
+plot_sig_mse_absolut([MSE_sine_white_wiener_dot, MSE_sine_white_kalman_dot,MSE_sine_white_savgol_dot,MSE_sine_white_butter_dot,MSE_sine_white_exp_dot], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Sinus, Weißes R. , Filter & Ableitung', MSE_sine_white_ref_dot, 60)
 # brown sine
-plot_sig_mse_absolut([MSE_sine_brown_wiener_dot, MSE_sine_brown_kalman_dot, MSE_sine_brown_savgol_dot, MSE_sine_brown_butter_dot, MSE_sine_brown_exp_dot,], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Sinus, Braunes R., Filter & Ableitung', MSE_sine_brown_ref_dot, 120)
+plot_sig_mse_absolut([MSE_sine_brown_wiener_dot, MSE_sine_brown_kalman_dot, MSE_sine_brown_savgol_dot, MSE_sine_brown_butter_dot, MSE_sine_brown_exp_dot,], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Sinus, Braunes R., Filter & Ableitung', MSE_sine_brown_ref_dot, 100)
 # quant sine
-plot_sig_mse_absolut([MSE_sine_quant_wiener_dot, MSE_sine_quant_kalman_dot, MSE_sine_quant_savgol_dot, MSE_sine_quant_butter_dot, MSE_sine_quant_exp_dot,], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Sinus, Quantisierungsr., Filter & Ableitung', MSE_sine_quant_ref_dot, 120)
+plot_sig_mse_absolut([MSE_sine_quant_wiener_dot, MSE_sine_quant_kalman_dot, MSE_sine_quant_savgol_dot, MSE_sine_quant_butter_dot, MSE_sine_quant_exp_dot,], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Sinus, Quantisierungsr., Filter & Ableitung', MSE_sine_quant_ref_dot, 40)
 
 ############### abgeleitetes Polynom
 # white poly
@@ -221,7 +221,7 @@ plot_sig_mse_absolut([MSE_poly_white_wiener_dot, MSE_poly_white_kalman_dot, MSE_
 # brown poly
 plot_sig_mse_absolut([MSE_poly_brown_wiener_dot, MSE_poly_brown_kalman_dot, MSE_poly_brown_savgol_dot, MSE_poly_brown_butter_dot, MSE_poly_brown_exp_dot], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Polynom, Braunes R., Filter & Ableitung', MSE_poly_brown_ref_dot, 4)
 # quant poly
-plot_sig_mse_absolut([MSE_poly_quant_wiener_dot, MSE_poly_quant_kalman_dot, MSE_poly_quant_savgol_dot, MSE_poly_quant_butter_dot, MSE_poly_quant_exp_dot], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Polynom, Quantisierungsr., Filter & Ableitung', MSE_poly_quant_ref_dot, 5)
+plot_sig_mse_absolut([MSE_poly_quant_wiener_dot, MSE_poly_quant_kalman_dot, MSE_poly_quant_savgol_dot, MSE_poly_quant_butter_dot, MSE_poly_quant_exp_dot], ['Wiener', 'Kalman','Savgol','Butter','Exp'], 'Polynom, Quantisierungsr., Filter & Ableitung', MSE_poly_quant_ref_dot, 4)
 
 from os import path
 outpath = r"Bilder_Vergleich/Absolut/"
