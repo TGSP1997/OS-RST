@@ -32,15 +32,15 @@ def plot_sig_mse(signals, labels, title, ref, ymax):
             i = i+1
     for rect, label in zip(rects, box_labels):
         height = rect.get_height()
-        ax.text(
-            rect.get_x() + rect.get_width() / 2, 0.025*ymax, label, ha="center", va="bottom", rotation = "vertical", color=(1,1,1,1), fontweight = "semibold", fontsize=8
-        )
+        #ax.text(
+         #   rect.get_x() + rect.get_width() / 2, 0.025*ymax, label, ha="center", va="bottom", rotation = "vertical", color=(1,1,1,1), fontweight = "semibold", fontsize=8
+        #)
     
     ax.set_xlabel(r'noise $\sigma$', fontsize=16)
     ax.set_ylabel('Relatives MSE [%]', fontsize=16)
     ax.set_title(title, fontsize=16)
-    ax.set_xticks(x, labels, fontsize =14)
-    plt.yticks( fontsize =14)
+    ax.set_xticks(x, labels, fontsize =15)
+    plt.yticks( fontsize =15)
     plt.ylim(0, ymax)
     ax.legend()
 
