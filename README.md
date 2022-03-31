@@ -1,6 +1,8 @@
 # OS-RST
 Oberseminar am Institut für Regelungs- und Steuerungstheorie zum Thema: Differentiation verrauschter Messsignale
 
+Die verschiedenen "main..."-Files sind zur simulativen Untersuchung der Filter auszuführen, wobei auch der jeweilige Autor für mögliche Rückfragen benannt ist.
+
 Simulationsrahmenparameter:
 point_counter = 500, step_size = 2e-3
 
