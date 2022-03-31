@@ -131,8 +131,6 @@ class Filter:
         sigma = noise_stdev
         N = m//2  # (half) window length
         
-
-        ####################### TIME
         # unbiased crosscorrelation function
         def xcorr(x, y, M):
             """
@@ -173,52 +171,6 @@ class Filter:
         H_opt_noncausal=np.ones(len(s_hat_noncausal))
 
         return [s_hat_noncausal]
-    
-        ##################### FREQ PERIODO
-        '''
-        S_bb = np.ones(len(y)) # np.square(np.abs(np.fft.fft(noise))) / n  # real
-        S_bb_ideal = np.ones(n) * sigma ** 2   # ideal
-        S_yy = np.square(np.abs(np.fft.fft(y))) / n
-
-        # method of averaged periodograms for psd smoothing
-        # S_yy = np.maximum(S_yy, S_bb_ideal)
-        n_bin = 5
-        m_win = n//n_bin
-        S_tmp = S_yy*0
-        for i in range(n_bin):
-            y_tmp = y.copy()
-            y_tmp[:i*m_win] = 0
-            y_tmp[(i+1)*m_win:] = 0
-            S_tmp += np.square(np.abs(np.fft.fft(y_tmp))) / m_win / n_bin
-
-        # H_opt = np.maximum(0, np.divide(S_yy - S_bb, S_yy))
-        # H_opt = np.maximum(0, np.divide(S_yy - S_bb_ideal, S_yy))
-        H_opt = np.maximum(0, np.divide(S_tmp - S_bb_ideal, S_tmp))
-
-        # apply filter in frequency domain
-        y_fft = np.fft.fft(y)
-        S_hat = np.multiply(H_opt, y_fft)
-        s_hat_noncausal_freq = np.real(np.fft.ifft(S_hat))
-
-        y_ext = np.append(np.flip(y), [y])
-        y_fft_ext = np.fft.fft(y_ext)
-        H_opt_ext = np.repeat(H_opt, 2)
-        S_hat_ext = np.multiply(H_opt_ext, y_fft_ext)
-        s_hat_noncausal_freq_ext = np.real(np.fft.ifft(S_hat_ext))[n:]
-
-        return [s_hat_noncausal_freq_ext]
-        '''
-
-        ####################### FREQ
-        '''
-        S_nn =  np.ones(len(y))*noise_stdev**2
-        S_yy = np.square(np.abs(np.fft.fft(y)/len(y)))
-        H_noncausal = np.maximum(0, np.divide(S_yy - S_nn , S_yy))
-        X_hat = np.multiply(H_noncausal, np.fft.fft(y))
-        
-        x_hat = np.real(np.fft.ifft(X_hat))
-        return [x_hat]
-        '''
 
 
     def __filter_fun_kalman(self,t,y,para):
@@ -325,8 +277,6 @@ class Filter:
         n = len(y)
         N = m//2  # (half) window length
         
-
-        ####################### TIME
         # unbiased crosscorrelation function
         def xcorr(x, y, M):
             """

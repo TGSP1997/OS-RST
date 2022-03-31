@@ -327,10 +327,4 @@ plot_bode.plot_sig(t,[[u,u,u,u,u,u],[y1,y3,y5,y7,y9,y10]],[
 
 ###########################################################
 
-
-#C:\Users\Sandro\Desktop\Bilder_OS
-from os import path
-outpath = r"C:\Users\Sandro\Desktop\Bilder_OS\sigma" + str(noise_std_dev) + r"/"
-for i in plt.get_fignums():
-        plt.figure(i).savefig(path.join(outpath,"figure_{0}.png".format(i)))
-#plt.show()
+plt.show()

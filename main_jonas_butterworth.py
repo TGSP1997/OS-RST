@@ -279,14 +279,6 @@ for noise_std_dev in [0.1, 0.2, 0.3, 0.4, 0.5]:
         'Filtered & derived signal | '+ str(order) + '. order BW-Filter',
         box_label_white,box_label_brown,box_label_quant],True)
 
-       
-
-
-        from os import path
-        outpath = r"D:/Uni/Oberseminar/Rep/Bilder_Jonas/Butter/sigma" + str(noise_std_dev) + r"/"
-        for i in plt.get_fignums():
-                plt.figure(i).savefig(path.join(outpath,"figure_{0}.png".format(i)))
-
         plt.show()
 
  # 10. Bode-Plot
@@ -340,10 +332,5 @@ plot_bode.plot_sig(t,[[u,u,u,u,u,u],[o1,o2,o3,o4,o5,o6]],[
         r"4th order, $\frac{f}{f_S}$ = " + str((freq/2)),
         r"5th order, $\frac{f}{f_S}$ = " + str((freq/2)),
         r"6th order, $\frac{f}{f_S}$ = " + str((freq/2)),], ylim = [-60,40])
-
-from os import path
-outpath = r"D:/Uni/Oberseminar/Rep/Bilder_Jonas/Butter/Bode/"
-for i in plt.get_fignums():
-        plt.figure(i).savefig(path.join(outpath,"figure_{0}.png".format(i)))
 
 plt.show()

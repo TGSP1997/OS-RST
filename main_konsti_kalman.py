@@ -13,13 +13,12 @@ from plot_sig import *
 from cost import *
 
 step_size       = 2.0e-3
-
 noise_std_dev   = 0.5
 
 # 1. Filtereigenschaften auf Sinus / Polynom
 point_counter = 500
 sine    = Input_Function(Input_Enum.SINE, [1, 0.5, 0, 0], sampling_period = step_size, point_counter=point_counter)
-polynome = Input_Function(Input_Enum.POLYNOM, [20,-30,15,0], sampling_period = step_size, point_counter=point_counter) #coefs in descending order 2x^2+1 = [2,0,1]
+polynome = Input_Function(Input_Enum.POLYNOM, [4,-6,3,0], sampling_period = step_size, point_counter=point_counter) #coefs in descending order 2x^2+1 = [2,0,1]
 input_func = polynome
 
 kalman_filter_order = 2 #4

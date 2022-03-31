@@ -288,8 +288,4 @@ for noise_std_dev  in [0.1, 0.2, 0.3, 0.4, 0.5]:
         'Filtered & derived signal \n'+ str(order) + '. order exp smoothing',
         box_label_white,box_label_brown,box_label_quant],True)
 
-        from os import path
-        outpath = r"Bilder_Jonas/Exp mit Startwertvorgabe/sigma" + str(noise_std_dev) + r"/"
-        for i in plt.get_fignums():
-                plt.figure(i).savefig(path.join(outpath,"figure_{0}.png".format(i)))
         plt.show()
