@@ -90,11 +90,11 @@ print(y_kalman)
 
 plot_bode = Plot_Sig(Plot_Enum.BODE,"Bode Plot Filter Comparison",parameters = 0)
 plot_bode.plot_sig(t,[[u,u,u,u,u],[y_wiener,y_kalman, y_savgol,y_exp,y_butter]],[
-        "Wiener",
-        "Kalman",
-        "Savitzy-Golay",
-        "Exponential Smoothing",
-        "Butterworth",
-        ],ylim = [-50,30])
+        r"Wiener,$\sigma = 0.4$",
+        r"Kalman, Prozessrauschen $\sigma = 1e4$",
+        r"Savitzy-Golay, Fensterbr. = 7, poly = 3",
+        r"Exponentiale Gl., $\alpha = \beta = 0.2$",
+        r"Butterworth, $\frac{f}{f_s} = 0.01$",
+        ],ylim = [-40,10])
 
 plt.show()
